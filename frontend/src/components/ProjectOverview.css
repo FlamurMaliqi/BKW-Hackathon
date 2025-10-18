@@ -10,6 +10,8 @@
  * - Fixed sidebar navigation (280px wide)
  * - Main content area with header and cards grid
  * - Responsive design for different screen sizes
+ * - Interactive project lists with expandable details
+ * - Multiple chart visualizations
  */
 
 
@@ -27,7 +29,6 @@
   border-bottom: 1px solid #E9ECEF;  /* Subtle border to separate from content */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* Subtle shadow for depth */
 }
-
 
 /* Main page title styling - matching medical app typography */
 .content-header h1 {
@@ -50,52 +51,439 @@
   padding: 40px;        /* Generous padding around the content */
 }
 
-/* Grid layout for dashboard cards */
-.cards-grid {
-  display: grid;         /* CSS Grid for flexible card layout */
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));  /* Responsive grid */
-  gap: 24px;            /* Space between cards */
+/* ===== GRAPHS OVERVIEW SECTION ===== */
+
+/* Graphs overview container */
+.graphs-overview {
+  margin-bottom: 40px;
 }
 
-/* Individual dashboard card styling - matching medical app cards */
-.card {
-  background: #FFFFFF;   /* White card background */
-  border: 1px solid #E9ECEF;  /* Subtle border */
-  border-radius: 8px;   /* Less rounded corners for medical app style */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);  /* Slightly more prominent shadow */
-  overflow: hidden;     /* Ensure content doesn't overflow rounded corners */
-  transition: all 0.2s ease;  /* Smooth hover transitions */
+/* Graphs header with title and action button */
+.graphs-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #1A5276;
 }
 
-/* Card hover effect for better interactivity */
-.card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);  /* Enhanced shadow on hover */
-  transform: translateY(-1px);  /* Slight lift effect */
+.graphs-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #212529;
 }
 
-/* Card header with blue background - matching medical app style */
-.card-header {
-  background: #1A5276;  /* Professional blue background matching medical app */
-  color: white;        /* White text for contrast */
-  padding: 20px 24px;   /* Internal spacing */
-  display: flex;       /* Flexbox for header layout */
-  justify-content: space-between;  /* Space between title and actions */
-  align-items: center; /* Vertically center header content */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);  /* Subtle separator */
+/* Grid layout for the three main graphs */
+.graphs-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+  gap: 24px;
 }
 
-/* Card title styling */
-.card-header h3 {
-  margin: 0;           /* Remove default margins */
-  font-size: 18px;     /* Medium font size for card titles */
-  font-weight: 600;    /* Semi-bold for emphasis */
+/* Individual graph card styling */
+.graph-card {
+  background: #FFFFFF;
+  border: 1px solid #E9ECEF;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  overflow: hidden;
+  transition: all 0.2s ease;
 }
 
-/* Container for action buttons in card header */
-.card-actions {
-  display: flex;       /* Horizontal layout for buttons */
-  gap: 12px;          /* Space between buttons */
+.graph-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
+  transform: translateY(-1px);
 }
+
+/* Graph card header */
+.graph-header {
+  background: #1A5276;
+  color: white;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.graph-header h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.graph-icon {
+  font-size: 18px;
+}
+
+/* Graph content area */
+.graph-content {
+  padding: 20px;
+  background: #FAFBFC;
+}
+
+/* ===== GANTT CHART STYLING ===== */
+.gantt-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.gantt-bar {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.gantt-label {
+  min-width: 120px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.gantt-progress {
+  flex: 1;
+  height: 20px;
+  background: #E9ECEF;
+  border-radius: 10px;
+  overflow: hidden;
+  position: relative;
+}
+
+.gantt-fill {
+  height: 100%;
+  border-radius: 10px;
+  transition: width 0.3s ease;
+}
+
+.gantt-deadline {
+  min-width: 80px;
+  font-size: 11px;
+  color: #6C757D;
+  text-align: right;
+}
+
+/* ===== BUDGET CHART STYLING ===== */
+.budget-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.budget-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.budget-label {
+  min-width: 100px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #495057;
+}
+
+.budget-bar {
+  flex: 1;
+  height: 16px;
+  background: #E9ECEF;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.budget-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #1A5276, #2E86AB);
+  border-radius: 8px;
+  transition: width 0.3s ease;
+}
+
+.budget-amount {
+  min-width: 80px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #1A5276;
+  text-align: right;
+}
+
+/* ===== RESOURCE CHART STYLING ===== */
+.resource-chart {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.resource-item {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 12px;
+  background: white;
+  border-radius: 6px;
+  border: 1px solid #E9ECEF;
+}
+
+.resource-label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #212529;
+}
+
+.resource-team {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.team-member {
+  background: #1A5276;
+  color: white;
+  padding: 4px 8px;
+  border-radius: 12px;
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.resource-count {
+  font-size: 11px;
+  color: #6C757D;
+  font-weight: 500;
+}
+
+/* ===== PROJECTS SECTION ===== */
+
+/* Projects section container */
+.projects-section {
+  margin-top: 40px;
+}
+
+/* Projects header */
+.projects-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+  padding-bottom: 16px;
+  border-bottom: 2px solid #1A5276;
+}
+
+.projects-header h2 {
+  margin: 0;
+  font-size: 24px;
+  font-weight: 700;
+  color: #212529;
+}
+
+.projects-actions {
+  display: flex;
+  gap: 12px;
+}
+
+/* Projects list container */
+.projects-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Individual project item */
+.project-item {
+  background: #FFFFFF;
+  border: 1px solid #E9ECEF;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.project-item:hover {
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Project summary (clickable header) */
+.project-summary {
+  display: flex;
+  align-items: center;
+  padding: 20px;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.project-summary:hover {
+  background: #F8F9FA;
+}
+
+/* Project info section */
+.project-info {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.project-name {
+  font-size: 16px;
+  font-weight: 600;
+  color: #212529;
+  margin: 0;
+}
+
+.project-meta {
+  display: flex;
+  gap: 16px;
+  font-size: 12px;
+  color: #6C757D;
+}
+
+.project-deadline,
+.project-priority,
+.project-status {
+  font-weight: 500;
+}
+
+/* Project progress section */
+.project-progress {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 0 20px;
+}
+
+.progress-bar {
+  width: 120px;
+  height: 8px;
+  background: #E9ECEF;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #28a745, #20c997);
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+.progress-text {
+  font-size: 12px;
+  font-weight: 600;
+  color: #495057;
+  min-width: 35px;
+}
+
+/* Project actions section */
+.project-actions {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.btn-details {
+  padding: 8px 16px;
+  background: #1A5276;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.btn-details:hover {
+  background: #154360;
+}
+
+.expand-icon {
+  font-size: 14px;
+  color: #6C757D;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+/* Project details (expandable section) */
+.project-details {
+  background: #F8F9FA;
+  border-top: 1px solid #E9ECEF;
+  padding: 24px;
+}
+
+.details-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+  gap: 24px;
+}
+
+.detail-section h4 {
+  margin: 0 0 12px 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #212529;
+}
+
+.detail-section p {
+  margin: 0;
+  font-size: 13px;
+  color: #495057;
+  line-height: 1.5;
+}
+
+/* Team list styling */
+.team-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+/* Budget info styling */
+.budget-info {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.budget-info .budget-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #495057;
+}
+
+.budget-info .budget-item span:first-child {
+  font-weight: 500;
+}
+
+.budget-info .budget-item span:last-child {
+  font-weight: 600;
+  color: #1A5276;
+}
+
+/* Progress details styling */
+.progress-details {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.progress-item {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #495057;
+}
+
+.progress-item span:first-child {
+  font-weight: 500;
+}
+
+.progress-item span:last-child {
+  font-weight: 600;
+}
+
+/* ===== BUTTON STYLING ===== */
 
 /* Primary and secondary button base styles - matching medical app */
 .btn-primary, .btn-secondary {
@@ -132,75 +520,21 @@
   background: #E9ECEF;  /* Slightly darker gray on hover */
 }
 
-/* Card content area */
-.card-content {
-  padding: 24px;       /* Internal spacing for card content */
-}
+/* ===== RESPONSIVE DESIGN ===== */
 
-/* Placeholder content styling - refined for medical app aesthetic */
-.placeholder-content {
-  text-align: center;   /* Center the placeholder content */
-  padding: 48px 24px;   /* More generous padding for better spacing */
-  background: #FAFBFC;  /* Very light background for subtle contrast */
-  border-radius: 6px;   /* Rounded corners for modern look */
-  margin: 16px;         /* Margin from card edges */
-}
-
-/* Large emoji icons for visual appeal - refined styling */
-.placeholder-icon {
-  font-size: 56px;     /* Larger emoji size for better visibility */
-  margin-bottom: 20px; /* More space below icon */
-  opacity: 0.8;        /* Slightly transparent for subtle effect */
-}
-
-/* Placeholder description text - improved typography */
-.placeholder-content p {
-  font-size: 16px;     /* Readable font size */
-  color: #6C757D;     /* Muted gray color */
-  margin-bottom: 28px; /* More space below description */
-  line-height: 1.5;    /* Better line height for readability */
-  font-weight: 500;    /* Medium font weight for better visibility */
-}
-
-/* Feature list styling - refined for medical app */
-.placeholder-content ul {
-  text-align: left;    /* Left-align the list */
-  max-width: 320px;    /* Slightly wider for better readability */
-  margin: 0 auto;      /* Center the list */
-  padding: 0;          /* Remove default padding */
-  list-style: none;   /* Remove default list bullets */
-}
-
-/* Individual list item styling - improved spacing */
-.placeholder-content li {
-  padding: 10px 0;     /* More vertical spacing between items */
-  color: #495057;      /* Dark gray text */
-  position: relative; /* For custom bullet positioning */
-  padding-left: 24px;  /* More space for custom bullet */
-  font-size: 15px;     /* Slightly larger font size */
-  line-height: 1.4;    /* Better line height for readability */
-}
-
-/* Custom bullet styling using CSS pseudo-element - refined */
-.placeholder-content li:before {
-  content: "•";       /* Custom bullet character */
-  color: #1A5276;     /* Blue color to match theme */
-  font-weight: bold;   /* Bold bullet */
-  position: absolute;  /* Position absolutely */
-  left: 0;           /* Align to the left */
-  font-size: 16px;    /* Slightly larger bullet */
-}
-
-/* Responsive Design - Tablet and smaller desktop screens */
+/* Tablet and smaller desktop screens */
 @media (max-width: 1024px) {
-  .cards-grid {
-    grid-template-columns: 1fr;  /* Single column layout */
+  .graphs-grid {
+    grid-template-columns: 1fr;
+  }
+  
+  .details-grid {
+    grid-template-columns: 1fr;
   }
 }
 
-/* Responsive Design - Mobile screens */
+/* Mobile screens */
 @media (max-width: 768px) {
-  
   .content-header {
     padding: 24px 20px;  /* Reduced padding for mobile */
   }
@@ -213,15 +547,30 @@
     font-size: 24px;     /* Smaller title on mobile */
   }
   
-  /* Stack card header elements vertically on mobile */
-  .card-header {
-    flex-direction: column;  /* Vertical layout */
-    gap: 16px;              /* Space between title and actions */
-    align-items: stretch;   /* Stretch to full width */
+  .graphs-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
   }
   
-  /* Center action buttons on mobile */
-  .card-actions {
+  .projects-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .project-summary {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .project-progress {
+    margin: 0;
+    justify-content: center;
+  }
+  
+  .project-actions {
     justify-content: center;
   }
 }
