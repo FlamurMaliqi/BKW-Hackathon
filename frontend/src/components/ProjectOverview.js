@@ -15,7 +15,9 @@
 
 import React, { useState, useEffect } from 'react';
 import './ProjectOverview.css';
-import { getProjects } from '../services/api';
+import { getProjects, createProject, assignEngineerToProject, unassignEngineerFromProject } from '../services/api';
+import CreateProjectModal from './CreateProjectModal';
+import AssignEngineerModal from './AssignEngineerModal';
 
 const ProjectOverview = () => {
   // State for managing expanded project items
@@ -23,28 +25,74 @@ const ProjectOverview = () => {
   const [projects, setProjects] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
 
-  // Fetch projects from backend on component mount
-  useEffect(() => {
-    const fetchProjects = async () => {
-      try {
-        setLoading(true);
-        const response = await getProjects();
-        if (response.status === 'success' && response.projects) {
-          setProjects(response.projects);
-        } else {
-          throw new Error('Failed to fetch projects');
-        }
-      } catch (err) {
-        console.error('Error fetching projects:', err);
-        setError(err.message);
-      } finally {
-        setLoading(false);
+  // Fetch projects from backend
+  const fetchProjects = async () => {
+    try {
+      setLoading(true);
+      const response = await getProjects();
+      if (response.status === 'success' && response.projects) {
+        setProjects(response.projects);
+      } else {
+        throw new Error('Failed to fetch projects');
       }
-    };
+    } catch (err) {
+      console.error('Error fetching projects:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
 
+  // Fetch projects on component mount
+  useEffect(() => {
     fetchProjects();
   }, []);
+
+  // Handle project creation
+  const handleCreateProject = async (projectData) => {
+    const response = await createProject(projectData);
+    if (response.status === 'success') {
+      await fetchProjects(); // Refresh project list
+    } else {
+      throw new Error(response.error || 'Failed to create project');
+    }
+  };
+
+  // Handle engineer assignment
+  const handleAssignEngineer = async (assignmentData) => {
+    const response = await assignEngineerToProject(selectedProject.id, assignmentData);
+    if (response.status === 'success') {
+      await fetchProjects(); // Refresh project list
+    } else {
+      throw new Error(response.error || 'Failed to assign engineer');
+    }
+  };
+
+  // Handle engineer unassignment
+  const handleUnassignEngineer = async (projectId, engineerName) => {
+    if (!window.confirm(`Remove ${engineerName} from this project?`)) {
+      return;
+    }
+
+    try {
+      // Find engineer ID by name (this is a workaround - ideally we'd store engineer IDs)
+      // For now, we'll need to implement this differently or fetch engineer details
+      console.log('Unassign engineer:', engineerName, 'from project:', projectId);
+      alert('Unassign functionality needs engineer ID mapping');
+    } catch (err) {
+      alert('Failed to remove engineer: ' + err.message);
+    }
+  };
+
+  // Open assign modal for a project
+  const openAssignModal = (project) => {
+    setSelectedProject(project);
+    setShowAssignModal(true);
+  };
 
   // Dummy data for projects (fallback - removed)
   const fallbackProjects = [
@@ -269,7 +317,7 @@ const ProjectOverview = () => {
             <h2>Active Projects</h2>
             <div className="projects-actions">
               <button className="btn-secondary">Export</button>
-              <button className="btn-primary">New Project</button>
+              <button className="btn-primary" onClick={() => setShowCreateModal(true)}>New Project</button>
             </div>
           </div>
 
@@ -332,10 +380,27 @@ const ProjectOverview = () => {
                       </div>
                       <div className="detail-section">
                         <h4>Team Members</h4>
-                        <div className="team-list">
-                          {(project.team_members || []).map((member, index) => (
-                            <span key={index} className="team-member">{member}</span>
-                          ))}
+                        <div className="team-members-section">
+                          <div className="team-list">
+                            {(project.team_members || []).map((member, index) => (
+                              <div key={index} className="team-member-item">
+                                <span className="team-member">{member}</span>
+                                <button
+                                  className="btn-remove-member"
+                                  onClick={() => handleUnassignEngineer(project.id, member)}
+                                  title="Remove from project"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                          <button
+                            className="btn-assign-engineer"
+                            onClick={() => openAssignModal(project)}
+                          >
+                            + Assign Engineer
+                          </button>
                         </div>
                       </div>
                       <div className="detail-section">
@@ -378,6 +443,21 @@ const ProjectOverview = () => {
           </div>
         </div>
       </div>
+
+      {/* Modals */}
+      <CreateProjectModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onProjectCreated={handleCreateProject}
+      />
+
+      <AssignEngineerModal
+        isOpen={showAssignModal}
+        onClose={() => setShowAssignModal(false)}
+        projectId={selectedProject?.id}
+        projectName={selectedProject?.name}
+        onEngineerAssigned={handleAssignEngineer}
+      />
     </div>
   );
 };

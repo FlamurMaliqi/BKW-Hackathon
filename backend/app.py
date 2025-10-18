@@ -162,6 +162,75 @@ def get_conflicts():
     except Exception as exc:  # pragma: no cover - defensive API layer
         return jsonify({'status': 'error', 'error': str(exc)}), 500
 
+@app.route('/api/projects', methods=['POST'])
+def create_project():
+    """Create a new project."""
+    try:
+        data = request.get_json(force=True) if request.is_json else {}
+        name = data.get('name')
+        description = data.get('description', '')
+        deadline = data.get('deadline')
+        priority = data.get('priority', 'medium')
+        budget_total = data.get('budget_total', 0.0)
+
+        if not name or not deadline:
+            return jsonify({'status': 'error', 'error': 'Name and deadline are required'}), 400
+
+        project = db_manager.create_project(
+            name=name,
+            description=description,
+            deadline=deadline,
+            priority=priority,
+            budget_total=float(budget_total)
+        )
+        return jsonify({'project': project, 'status': 'success'}), 201
+    except Exception as exc:
+        return jsonify({'status': 'error', 'error': str(exc)}), 500
+
+@app.route('/api/projects/<int:project_id>/assign', methods=['POST'])
+def assign_engineer(project_id):
+    """Assign an engineer to a project."""
+    try:
+        data = request.get_json(force=True) if request.is_json else {}
+        engineer_id = data.get('engineer_id')
+        hours_per_week = data.get('hours_per_week')
+        start_date = data.get('start_date')
+        end_date = data.get('end_date')
+
+        if not engineer_id or not hours_per_week:
+            return jsonify({'status': 'error', 'error': 'engineer_id and hours_per_week are required'}), 400
+
+        assignment = db_manager.assign_engineer_to_project(
+            engineer_id=int(engineer_id),
+            project_id=project_id,
+            hours_per_week=int(hours_per_week),
+            start_date=start_date,
+            end_date=end_date
+        )
+        return jsonify({'assignment': assignment, 'status': 'success'}), 201
+    except Exception as exc:
+        return jsonify({'status': 'error', 'error': str(exc)}), 500
+
+@app.route('/api/projects/<int:project_id>/assign/<int:engineer_id>', methods=['DELETE'])
+def unassign_engineer(project_id, engineer_id):
+    """Remove an engineer from a project."""
+    try:
+        rows_affected = db_manager.unassign_engineer_from_project(engineer_id, project_id)
+        if rows_affected == 0:
+            return jsonify({'status': 'error', 'error': 'Assignment not found'}), 404
+        return jsonify({'status': 'success'}), 200
+    except Exception as exc:
+        return jsonify({'status': 'error', 'error': str(exc)}), 500
+
+@app.route('/api/projects/<int:project_id>/available-engineers', methods=['GET'])
+def get_available_engineers_for_project(project_id):
+    """Get engineers not assigned to this project."""
+    try:
+        engineers = db_manager.get_available_engineers(project_id=project_id)
+        return jsonify({'engineers': engineers, 'status': 'success'})
+    except Exception as exc:
+        return jsonify({'status': 'error', 'error': str(exc)}), 500
+
 if __name__ == '__main__':
     # Development server
     app.run(debug=True, host='0.0.0.0', port=5000)

@@ -81,6 +81,61 @@ export const sendAIChat = async (query) => {
   });
 };
 
+/**
+ * Create a new project
+ * @param {Object} projectData - Project information
+ * @param {string} projectData.name - Project name
+ * @param {string} projectData.description - Project description
+ * @param {string} projectData.deadline - Project deadline (YYYY-MM-DD)
+ * @param {string} projectData.priority - Project priority (high, medium, low)
+ * @param {number} projectData.budget_total - Total budget
+ * @returns {Promise<{project: Object, status: string}>}
+ */
+export const createProject = async (projectData) => {
+  return apiFetch('/api/projects', {
+    method: 'POST',
+    body: JSON.stringify(projectData),
+  });
+};
+
+/**
+ * Assign an engineer to a project
+ * @param {number} projectId - Project ID
+ * @param {Object} assignmentData - Assignment information
+ * @param {number} assignmentData.engineer_id - Engineer ID
+ * @param {number} assignmentData.hours_per_week - Hours per week
+ * @param {string} assignmentData.start_date - Start date (YYYY-MM-DD, optional)
+ * @param {string} assignmentData.end_date - End date (YYYY-MM-DD, optional)
+ * @returns {Promise<{assignment: Object, status: string}>}
+ */
+export const assignEngineerToProject = async (projectId, assignmentData) => {
+  return apiFetch(`/api/projects/${projectId}/assign`, {
+    method: 'POST',
+    body: JSON.stringify(assignmentData),
+  });
+};
+
+/**
+ * Remove an engineer from a project
+ * @param {number} projectId - Project ID
+ * @param {number} engineerId - Engineer ID
+ * @returns {Promise<{status: string}>}
+ */
+export const unassignEngineerFromProject = async (projectId, engineerId) => {
+  return apiFetch(`/api/projects/${projectId}/assign/${engineerId}`, {
+    method: 'DELETE',
+  });
+};
+
+/**
+ * Get engineers available for assignment to a project
+ * @param {number} projectId - Project ID
+ * @returns {Promise<{engineers: Array, status: string}>}
+ */
+export const getAvailableEngineers = async (projectId) => {
+  return apiFetch(`/api/projects/${projectId}/available-engineers`);
+};
+
 // Export all API functions as a default object for convenience
 export default {
   getProjects,
@@ -88,4 +143,8 @@ export default {
   getTeams,
   getConflicts,
   sendAIChat,
+  createProject,
+  assignEngineerToProject,
+  unassignEngineerFromProject,
+  getAvailableEngineers,
 };

@@ -328,6 +328,126 @@ class DatabaseManager:
         """
         return self.execute_query(query)
 
+    # ------------------------------------------------------------------
+    # Project and assignment mutation methods
+    # ------------------------------------------------------------------
+    def create_project(
+        self,
+        name: str,
+        description: str,
+        deadline: date,
+        priority: str = 'medium',
+        budget_total: float = 0.0
+    ) -> Dict[str, Any]:
+        """Create a new project and return it."""
+        query = """
+        INSERT INTO projects (name, description, deadline, priority, budget_total, status, completion_percent, budget_spent)
+        VALUES (%s, %s, %s, %s, %s, 'active', 0, 0)
+        RETURNING id, name, description, deadline, status, priority, completion_percent, budget_total, budget_spent, created_at, updated_at
+        """
+        with self.get_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(query, (name, description, deadline, priority, budget_total))
+                conn.commit()
+                result = cursor.fetchone()
+                if result:
+                    return self._normalize_row(dict(result))
+        raise ValueError('Failed to create project')
+
+    def update_project(self, project_id: int, updates: Dict[str, Any]) -> Dict[str, Any]:
+        """Update project fields and return updated project."""
+        allowed_fields = {'name', 'description', 'deadline', 'status', 'priority', 'completion_percent', 'budget_total', 'budget_spent'}
+        update_fields = {k: v for k, v in updates.items() if k in allowed_fields}
+
+        if not update_fields:
+            raise ValueError('No valid fields to update')
+
+        set_clause = ', '.join([f"{field} = %s" for field in update_fields.keys()])
+        set_clause += ', updated_at = CURRENT_TIMESTAMP'
+        values = list(update_fields.values()) + [project_id]
+
+        query = f"""
+        UPDATE projects
+        SET {set_clause}
+        WHERE id = %s
+        RETURNING id, name, description, deadline, status, priority, completion_percent, budget_total, budget_spent, created_at, updated_at
+        """
+        with self.get_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(query, values)
+                conn.commit()
+                result = cursor.fetchone()
+                if result:
+                    return self._normalize_row(dict(result))
+        raise ValueError(f'Project with id {project_id} not found')
+
+    def assign_engineer_to_project(
+        self,
+        engineer_id: int,
+        project_id: int,
+        hours_per_week: int,
+        start_date: Optional[date] = None,
+        end_date: Optional[date] = None
+    ) -> Dict[str, Any]:
+        """Assign an engineer to a project."""
+        query = """
+        INSERT INTO project_assignments (engineer_id, project_id, hours_per_week, start_date, end_date)
+        VALUES (%s, %s, %s, %s, %s)
+        RETURNING id, engineer_id, project_id, hours_per_week, start_date, end_date, created_at
+        """
+        with self.get_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(query, (engineer_id, project_id, hours_per_week, start_date, end_date))
+                conn.commit()
+                result = cursor.fetchone()
+                if result:
+                    return self._normalize_row(dict(result))
+        raise ValueError('Failed to create assignment (may already exist)')
+
+    def unassign_engineer_from_project(self, engineer_id: int, project_id: int) -> int:
+        """Remove an engineer from a project assignment."""
+        query = """
+        DELETE FROM project_assignments
+        WHERE engineer_id = %s AND project_id = %s
+        """
+        return self.execute_update(query, (engineer_id, project_id))
+
+    def get_available_engineers(self, project_id: Optional[int] = None) -> List[Dict[str, Any]]:
+        """Get all engineers or engineers not assigned to a specific project."""
+        if project_id is None:
+            return self.get_all_engineers()
+
+        query = """
+        SELECT
+            e.id,
+            e.name,
+            e.email,
+            e.phone,
+            e.capacity_hours_per_week,
+            e.role,
+            e.team_id,
+            t.name AS team_name,
+            t.color AS team_color,
+            e.status,
+            e.availability,
+            e.workload_percent,
+            e.is_overworked,
+            e.skills,
+            COALESCE(SUM(pa.hours_per_week), 0) AS current_hours,
+            e.capacity_hours_per_week - COALESCE(SUM(pa.hours_per_week), 0) AS available_hours
+        FROM engineers e
+        LEFT JOIN teams t ON t.id = e.team_id
+        LEFT JOIN project_assignments pa ON pa.engineer_id = e.id
+        WHERE e.id NOT IN (
+            SELECT engineer_id FROM project_assignments WHERE project_id = %s
+        )
+        GROUP BY e.id, e.name, e.email, e.phone, e.capacity_hours_per_week, e.role,
+                 e.team_id, t.name, t.color, e.status, e.availability, e.workload_percent,
+                 e.is_overworked, e.skills
+        ORDER BY e.name
+        """
+        return self.execute_query(query, (project_id,))
+
 
 # Global database manager instance
 db_manager = DatabaseManager()

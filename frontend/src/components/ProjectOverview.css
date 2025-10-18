@@ -574,3 +574,55 @@
     justify-content: center;
   }
 }
+
+/* Team members section in expanded details */
+.team-members-section {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.team-member-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 12px;
+  background: #F8F9FA;
+  border-radius: 4px;
+  margin-bottom: 4px;
+}
+
+.btn-remove-member {
+  background: none;
+  border: none;
+  color: #dc3545;
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: all 0.2s ease;
+}
+
+.btn-remove-member:hover {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-assign-engineer {
+  background: #1A5276;
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.btn-assign-engineer:hover {
+  background: #154360;
+}
