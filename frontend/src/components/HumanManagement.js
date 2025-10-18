@@ -16,8 +16,9 @@
 
 import React, { useState, useMemo, useEffect } from 'react';
 import TeamDetail from './TeamDetail';
+import AddMemberModal from './AddMemberModal';
 import './HumanManagement.css';
-import { getEngineers, getTeams } from '../services/api';
+import { getEngineers, getTeams, createEngineer } from '../services/api';
 
 const HumanManagement = () => {
   // State for search and filtering
@@ -33,6 +34,7 @@ const HumanManagement = () => {
   const [error, setError] = useState(null);
   const [engineers, setEngineers] = useState([]);
   const [teams, setTeams] = useState([]);
+  const [showAddMemberModal, setShowAddMemberModal] = useState(false);
 
   // Fetch engineers and teams from backend
   useEffect(() => {
@@ -307,6 +309,23 @@ const HumanManagement = () => {
     setSelectedTeam(null);
   };
 
+  // Handle adding a new member
+  const handleAddMember = async (memberData) => {
+    try {
+      const response = await createEngineer(memberData);
+      if (response.status === 'success') {
+        // Refresh the engineers list
+        const engineersResponse = await getEngineers(7);
+        if (engineersResponse.status === 'success' && engineersResponse.engineers) {
+          setEngineers(engineersResponse.engineers);
+        }
+        setShowAddMemberModal(false);
+      }
+    } catch (err) {
+      throw new Error(err.message || 'Failed to add member');
+    }
+  };
+
   // Get activity level color
   const getActivityColor = (level) => {
     if (level === 0) return '#ebedf0';
@@ -441,7 +460,12 @@ const HumanManagement = () => {
             <h2>{groupBy === 'team' ? 'Teams' : 'Projects'} Overview</h2>
             <div className="workers-actions">
               <button className="btn-secondary">Export</button>
-              <button className="btn-primary">Add Member</button>
+              <button 
+                className="btn-primary" 
+                onClick={() => setShowAddMemberModal(true)}
+              >
+                Add Member
+              </button>
             </div>
           </div>
 
@@ -586,6 +610,13 @@ const HumanManagement = () => {
           </div>
         </div>
       </div>
+
+      {/* Add Member Modal */}
+      <AddMemberModal
+        isOpen={showAddMemberModal}
+        onClose={() => setShowAddMemberModal(false)}
+        onMemberAdded={handleAddMember}
+      />
     </div>
   );
 };

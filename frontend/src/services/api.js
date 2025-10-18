@@ -138,6 +138,27 @@ export const getAvailableEngineers = async (projectId) => {
 };
 
 /**
+ * Create a new engineer/team member
+ * @param {Object} engineerData - Engineer information
+ * @param {string} engineerData.name - Engineer name
+ * @param {string} engineerData.email - Engineer email
+ * @param {string} engineerData.role - Engineer role
+ * @param {number} engineerData.team_id - Team ID
+ * @param {string} engineerData.phone - Phone number (optional)
+ * @param {number} engineerData.capacity_hours_per_week - Hours per week (default: 40)
+ * @param {string} engineerData.status - Status (default: 'active')
+ * @param {string} engineerData.availability - Availability (default: 'available')
+ * @param {Array<string>} engineerData.skills - Skills array (optional)
+ * @returns {Promise<{engineer: Object, status: string}>}
+ */
+export const createEngineer = async (engineerData) => {
+  return apiFetch('/api/engineers', {
+    method: 'POST',
+    body: JSON.stringify(engineerData),
+  });
+};
+
+/**
  * Get workload analysis and overwork periods for an engineer
  * @param {number} engineerId - Engineer ID
  * @param {number} daysAhead - Number of days ahead to analyze (default: 90)
@@ -196,6 +217,7 @@ export default {
   assignEngineerToProject,
   unassignEngineerFromProject,
   getAvailableEngineers,
+  createEngineer,
   getEngineerWorkload,
   getEngineerTimeline,
   getTeamWorkload,

@@ -283,6 +283,39 @@ def get_available_engineers_for_project(project_id):
     except Exception as exc:
         return jsonify({'status': 'error', 'error': str(exc)}), 500
 
+@app.route('/api/engineers', methods=['POST'])
+def create_engineer():
+    """Create a new engineer."""
+    try:
+        data = request.get_json(force=True) if request.is_json else {}
+        name = data.get('name')
+        email = data.get('email')
+        role = data.get('role')
+        team_id = data.get('team_id')
+        phone = data.get('phone', '')
+        capacity_hours_per_week = data.get('capacity_hours_per_week', 40)
+        status = data.get('status', 'active')
+        availability = data.get('availability', 'available')
+        skills = data.get('skills', [])
+
+        if not name or not email or not role or not team_id:
+            return jsonify({'status': 'error', 'error': 'Name, email, role, and team_id are required'}), 400
+
+        engineer = db_manager.create_engineer(
+            name=name,
+            email=email,
+            role=role,
+            team_id=int(team_id),
+            phone=phone,
+            capacity_hours_per_week=int(capacity_hours_per_week),
+            status=status,
+            availability=availability,
+            skills=skills
+        )
+        return jsonify({'engineer': engineer, 'status': 'success'}), 201
+    except Exception as exc:
+        return jsonify({'status': 'error', 'error': str(exc)}), 500
+
 # ---------------------------------------------------------------------
 # Workload Analysis Endpoints
 # ---------------------------------------------------------------------

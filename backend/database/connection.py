@@ -449,6 +449,29 @@ class DatabaseManager:
         """
         return self.execute_query(query, (project_id,))
 
+    def create_engineer(self, name: str, email: str, role: str, team_id: int, 
+                       phone: str = None, capacity_hours_per_week: int = 40,
+                       status: str = 'active', availability: str = 'available',
+                       skills: List[str] = None) -> Dict[str, Any]:
+        """Create a new engineer."""
+        query = """
+        INSERT INTO engineers (name, email, phone, capacity_hours_per_week, role, 
+                             team_id, status, availability, skills)
+        VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
+        RETURNING id, name, email, phone, capacity_hours_per_week, role, team_id, 
+                  status, availability, workload_percent, is_overworked, skills, created_at
+        """
+        skills_array = skills or []
+        with self.get_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(query, (name, email, phone, capacity_hours_per_week, 
+                                     role, team_id, status, availability, skills_array))
+                conn.commit()
+                result = cursor.fetchone()
+                if result:
+                    return self._normalize_row(dict(result))
+        raise ValueError('Failed to create engineer')
+
 
 # Global database manager instance
 db_manager = DatabaseManager()
