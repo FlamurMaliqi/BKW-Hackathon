@@ -1,182 +1,266 @@
 """
 BKW Hackathon - Conflict Detection Engine
-Core logic for detecting project conflicts, overcapacity, and risks
+Refactored to operate on the new resource planning and risk schema.
 """
-from datetime import datetime, date, timedelta
-from typing import List, Dict, Any, Tuple
+from datetime import date, datetime, timedelta
+from typing import Any, Dict, List, Optional
+
 from database.connection import db_manager
 
+_AVAILABLE_CODES = {'AVAILABLE', 'FLEX', 'FREE'}
+
+
 class ConflictDetector:
-    """Detects various types of conflicts in project management"""
-    
-    def __init__(self):
+    """Detects conflicts and insights using the modernised data model."""
+
+    def __init__(self) -> None:
         self.db = db_manager
-    
-    def detect_deadline_overlaps(self) -> List[Dict[str, Any]]:
-        """
-        Detect projects with overlapping deadlines that might cause conflicts
-        Returns list of overlapping project pairs
-        """
-        query = """
-        WITH project_pairs AS (
-            SELECT 
-                p1.id as project1_id,
-                p1.name as project1_name,
-                p1.deadline as project1_deadline,
-                p2.id as project2_id,
-                p2.name as project2_name,
-                p2.deadline as project2_deadline,
-                ABS(p1.deadline - p2.deadline) as days_apart
-            FROM projects p1
-            CROSS JOIN projects p2
-            WHERE p1.id < p2.id  -- Avoid duplicates and self-comparison
-            AND p1.status = 'active' 
-            AND p2.status = 'active'
-        )
-        SELECT *
-        FROM project_pairs
-        WHERE days_apart <= 7  -- Projects within 7 days are considered overlapping
-        ORDER BY days_apart
-        """
-        return self.db.execute_query(query)
-    
-    def detect_overcapacity(self) -> List[Dict[str, Any]]:
-        """
-        Detect engineers who are overbooked (assigned hours > capacity)
-        Returns list of overbooked engineers
-        """
-        query = """
-        SELECT 
-            e.id,
-            e.name,
-            e.capacity_hours_per_week,
-            COALESCE(SUM(pa.hours_per_week), 0) as assigned_hours,
-            COALESCE(SUM(pa.hours_per_week), 0) - e.capacity_hours_per_week as overage_hours
-        FROM engineers e
-        LEFT JOIN project_assignments pa ON e.id = pa.engineer_id
-        GROUP BY e.id, e.name, e.capacity_hours_per_week
-        HAVING COALESCE(SUM(pa.hours_per_week), 0) > e.capacity_hours_per_week
-        ORDER BY overage_hours DESC
-        """
-        return self.db.execute_query(query)
-    
-    def detect_holiday_conflicts(self) -> List[Dict[str, Any]]:
-        """
-        Detect project assignments that conflict with engineer absences
-        Returns list of holiday conflicts
-        """
-        query = """
-        SELECT 
-            a.engineer_id,
-            e.name as engineer_name,
-            a.start_date as absence_start,
-            a.end_date as absence_end,
-            a.reason,
-            pa.project_id,
-            p.name as project_name,
-            pa.hours_per_week as assigned_hours
-        FROM absences a
-        JOIN engineers e ON a.engineer_id = e.id
-        JOIN project_assignments pa ON a.engineer_id = pa.engineer_id
-        JOIN projects p ON pa.project_id = p.id
-        WHERE a.start_date <= p.deadline 
-        AND a.end_date >= pa.start_date
-        ORDER BY a.start_date
-        """
-        return self.db.execute_query(query)
-    
-    def detect_upcoming_risks(self, days_ahead: int = 30) -> List[Dict[str, Any]]:
-        """
-        Detect upcoming risks based on deadlines and workload
-        Returns list of potential risks
-        """
-        future_date = date.today() + timedelta(days=days_ahead)
-        
-        query = """
-        SELECT 
-            p.id,
-            p.name,
-            p.deadline,
-            p.deadline - CURRENT_DATE as days_until_deadline,
-            COUNT(pa.engineer_id) as assigned_engineers,
-            SUM(pa.hours_per_week) as total_hours,
-            CASE 
-                WHEN p.deadline - CURRENT_DATE <= 7 THEN 'CRITICAL'
-                WHEN p.deadline - CURRENT_DATE <= 14 THEN 'HIGH'
-                WHEN p.deadline - CURRENT_DATE <= 30 THEN 'MEDIUM'
-                ELSE 'LOW'
-            END as risk_level
-        FROM projects p
-        LEFT JOIN project_assignments pa ON p.id = pa.project_id
-        WHERE p.status = 'active'
-        AND p.deadline <= %s
-        GROUP BY p.id, p.name, p.deadline
-        HAVING COUNT(pa.engineer_id) = 0 OR SUM(pa.hours_per_week) = 0
-        ORDER BY p.deadline
-        """
-        return self.db.execute_query(query, (future_date,))
-    
+        self._capacity_cache: Optional[Dict[str, Any]] = None
+
+    # ------------------------------------------------------------------
+    # Capacity context helpers
+    # ------------------------------------------------------------------
+    def _load_capacity_context(self) -> Dict[str, Any]:
+        snapshot = self.db.get_latest_capacity_snapshot()
+        if not snapshot:
+            return {
+                'snapshot': None,
+                'entries': [],
+                'member_load': {},
+            }
+
+        entries = self.db.get_capacity_entries(snapshot_id=int(snapshot['id']))
+        member_load: Dict[int, Dict[str, Any]] = {}
+
+        for entry in entries:
+            member_id = entry.get('team_member_id')
+            if member_id is None:
+                continue
+
+            current_load = float(entry.get('current_week_load') or 0.0)
+            four_week_load = float(entry.get('four_week_load') or 0.0)
+
+            member_data = member_load.setdefault(
+                member_id,
+                {
+                    'team_member_id': member_id,
+                    'full_name': entry.get('full_name'),
+                    'team_name': entry.get('team_name'),
+                    'capacity_percent': float(entry.get('capacity_percent') or 100.0),
+                    'current_load': 0.0,
+                    'four_week_load': 0.0,
+                    'assignments': [],
+                },
+            )
+
+            member_data['current_load'] += current_load
+            member_data['four_week_load'] += four_week_load
+            member_data['assignments'].append({
+                'project_code': entry.get('project_code'),
+                'project_name': entry.get('project_name'),
+                'workstream': entry.get('workstream'),
+                'current_week_load': round(current_load, 2),
+                'four_week_load': round(four_week_load, 2),
+                'risk_flag': entry.get('risk_flag'),
+            })
+
+        return {
+            'snapshot': snapshot,
+            'entries': entries,
+            'member_load': member_load,
+        }
+
+    def _capacity_context(self) -> Dict[str, Any]:
+        if self._capacity_cache is None:
+            self._capacity_cache = self._load_capacity_context()
+        return self._capacity_cache
+
+    def _reset_capacity_cache(self) -> None:
+        self._capacity_cache = None
+
+    @staticmethod
+    def _member_capacity_fte(member_data: Dict[str, Any]) -> float:
+        capacity_percent = float(member_data.get('capacity_percent') or 100.0)
+        fte = capacity_percent / 100.0
+        return fte if fte > 0 else 1.0
+
+    # ------------------------------------------------------------------
+    # Detection routines
+    # ------------------------------------------------------------------
+    def detect_capacity_pressure(
+        self,
+        current_threshold: float = 1.0,
+        future_threshold: float = 1.0,
+    ) -> List[Dict[str, Any]]:
+        context = self._capacity_context()
+        member_load: Dict[int, Dict[str, Any]] = context['member_load']
+        if not member_load:
+            return []
+
+        overloads: List[Dict[str, Any]] = []
+        for member_id, data in member_load.items():
+            capacity_fte = self._member_capacity_fte(data)
+            current_ratio = data['current_load'] / capacity_fte if capacity_fte else 0.0
+            future_ratio = data['four_week_load'] / capacity_fte if capacity_fte else 0.0
+
+            if current_ratio <= current_threshold and future_ratio <= future_threshold:
+                continue
+
+            overloads.append({
+                'team_member_id': member_id,
+                'full_name': data.get('full_name'),
+                'team_name': data.get('team_name'),
+                'capacity_fte': round(capacity_fte, 2),
+                'current_load_fte': round(data['current_load'], 2),
+                'four_week_load_fte': round(data['four_week_load'], 2),
+                'current_load_ratio': round(current_ratio, 2),
+                'four_week_load_ratio': round(future_ratio, 2),
+                'assignments': data['assignments'],
+            })
+
+        overloads.sort(key=lambda item: item['current_load_ratio'], reverse=True)
+        return overloads
+
+    def detect_unassigned_projects(self) -> List[Dict[str, Any]]:
+        context = self._capacity_context()
+        snapshot = context['snapshot']
+        if not snapshot:
+            return []
+        return self.db.get_projects_without_allocations(snapshot_id=int(snapshot['id']))
+
+    def detect_availability_conflicts(self, days_ahead: int = 28) -> List[Dict[str, Any]]:
+        context = self._capacity_context()
+        member_load: Dict[int, Dict[str, Any]] = context['member_load']
+        if not member_load:
+            return []
+
+        start = date.today()
+        end = start + timedelta(days=days_ahead)
+        availability = self.db.get_member_availability_window(start, end)
+        if not availability:
+            return []
+
+        conflicts: List[Dict[str, Any]] = []
+        for record in availability:
+            status_code = (record.get('status_code') or '').upper()
+            if status_code in _AVAILABLE_CODES:
+                continue
+
+            member_id = record.get('team_member_id')
+            if member_id not in member_load:
+                continue
+
+            load = member_load[member_id]
+            conflicts.append({
+                'team_member_id': member_id,
+                'full_name': load.get('full_name'),
+                'team_name': load.get('team_name'),
+                'day': record.get('day'),
+                'status_code': record.get('status_code'),
+                'status_description': record.get('status_description'),
+                'comment': record.get('comment'),
+                'current_load_fte': round(load['current_load'], 2),
+                'four_week_load_fte': round(load['four_week_load'], 2),
+            })
+
+        conflicts.sort(key=lambda item: (item['day'], item['full_name']))
+        return conflicts
+
+    def detect_high_risk_projects(self, risk_threshold: float = 9.0) -> List[Dict[str, Any]]:
+        portfolio = self.db.get_project_portfolio()
+        high_risk: List[Dict[str, Any]] = []
+        for project in portfolio:
+            score = float(project.get('computed_risk_score') or 0.0)
+            if score < risk_threshold:
+                continue
+
+            high_risk.append({
+                'project_id': project.get('id'),
+                'project_code': project.get('project_code'),
+                'project_name': project.get('project_name'),
+                'delivery_team': project.get('delivery_team'),
+                'status': project.get('status'),
+                'computed_risk_score': round(score, 2),
+                'recorded_risk_score': project.get('recorded_risk_score'),
+                'risk_probability': project.get('risk_probability'),
+                'risk_impact': project.get('risk_impact'),
+                'risk_description': project.get('risk_description'),
+                'mitigation_plan': project.get('mitigation_plan'),
+                'reporting_year': project.get('reporting_year'),
+                'reporting_quarter': project.get('reporting_quarter'),
+            })
+
+        high_risk.sort(key=lambda item: item['computed_risk_score'], reverse=True)
+        return high_risk
+
     def get_workload_summary(self) -> Dict[str, Any]:
-        """
-        Get overall workload summary for all engineers
-        Returns summary statistics
-        """
-        query = """
-        SELECT 
-            COUNT(DISTINCT e.id) as total_engineers,
-            COUNT(DISTINCT p.id) as total_projects,
-            AVG(e.capacity_hours_per_week) as avg_capacity,
-            SUM(COALESCE(pa.hours_per_week, 0)) as total_assigned_hours,
-            COUNT(CASE WHEN COALESCE(SUM(pa.hours_per_week), 0) > e.capacity_hours_per_week THEN 1 END) as overbooked_count
-        FROM engineers e
-        LEFT JOIN project_assignments pa ON e.id = pa.engineer_id
-        LEFT JOIN projects p ON pa.project_id = p.id AND p.status = 'active'
-        GROUP BY e.id, e.capacity_hours_per_week
-        """
-        
-        # This query needs to be restructured for proper aggregation
-        engineers = self.db.execute_query("SELECT * FROM engineers")
-        projects = self.db.execute_query("SELECT * FROM projects WHERE status = 'active'")
-        assignments = self.db.execute_query("SELECT * FROM project_assignments")
-        
-        # Calculate summary statistics
-        total_engineers = len(engineers)
-        total_projects = len(projects)
-        avg_capacity = sum(e['capacity_hours_per_week'] for e in engineers) / total_engineers if engineers else 0
-        
-        # Calculate overbooked engineers
-        overbooked_count = 0
-        total_assigned_hours = 0
-        
-        for engineer in engineers:
-            engineer_assignments = [a for a in assignments if a['engineer_id'] == engineer['id']]
-            assigned_hours = sum(a['hours_per_week'] for a in engineer_assignments)
-            total_assigned_hours += assigned_hours
-            
-            if assigned_hours > engineer['capacity_hours_per_week']:
-                overbooked_count += 1
-        
-        return {
-            'total_engineers': total_engineers,
-            'total_projects': total_projects,
-            'avg_capacity': round(avg_capacity, 1),
-            'total_assigned_hours': total_assigned_hours,
-            'overbooked_count': overbooked_count,
-            'overbooked_percentage': round((overbooked_count / total_engineers * 100), 1) if total_engineers > 0 else 0
+        context = self._capacity_context()
+        snapshot = context['snapshot']
+        member_load: Dict[int, Dict[str, Any]] = context['member_load']
+
+        team_members = self.db.get_team_members()
+        total_members = len(team_members)
+        total_capacity = sum(self._member_capacity_fte(member) for member in team_members)
+
+        current_total = sum(data['current_load'] for data in member_load.values())
+        four_week_total = sum(data['four_week_load'] for data in member_load.values())
+
+        overloaded = 0
+        peak_member: Optional[Dict[str, Any]] = None
+        for data in member_load.values():
+            capacity_fte = self._member_capacity_fte(data)
+            current_ratio = data['current_load'] / capacity_fte if capacity_fte else 0.0
+            future_ratio = data['four_week_load'] / capacity_fte if capacity_fte else 0.0
+
+            if current_ratio > 1.0 or future_ratio > 1.0:
+                overloaded += 1
+
+            if not peak_member or current_ratio > peak_member['current_load_ratio']:
+                peak_member = {
+                    'team_member_id': data['team_member_id'],
+                    'full_name': data.get('full_name'),
+                    'team_name': data.get('team_name'),
+                    'capacity_fte': round(capacity_fte, 2),
+                    'current_load_fte': round(data['current_load'], 2),
+                    'four_week_load_fte': round(data['four_week_load'], 2),
+                    'current_load_ratio': round(current_ratio, 2),
+                }
+
+        summary = {
+            'snapshot': snapshot,
+            'total_team_members': total_members,
+            'total_capacity_fte': round(total_capacity, 2),
+            'current_committed_fte': round(current_total, 2),
+            'four_week_committed_fte': round(four_week_total, 2),
+            'overloaded_member_count': overloaded,
+            'overloaded_member_ratio': round((overloaded / total_members * 100.0), 1) if total_members else 0.0,
+            'peak_member': peak_member,
+            'generated_at': datetime.utcnow().isoformat() + 'Z',
         }
-    
-    def get_all_conflicts(self) -> Dict[str, List[Dict[str, Any]]]:
-        """
-        Get all types of conflicts in one comprehensive report
-        Returns dictionary with different conflict types
-        """
-        return {
-            'deadline_overlaps': self.detect_deadline_overlaps(),
-            'overcapacity': self.detect_overcapacity(),
-            'holiday_conflicts': self.detect_holiday_conflicts(),
-            'upcoming_risks': self.detect_upcoming_risks(),
-            'workload_summary': self.get_workload_summary()
-        }
+        return summary
+
+    # ------------------------------------------------------------------
+    # Public aggregation
+    # ------------------------------------------------------------------
+    def get_all_conflicts(
+        self,
+        days_ahead: int = 28,
+        risk_threshold: float = 9.0,
+        current_threshold: float = 1.0,
+        future_threshold: float = 1.0,
+    ) -> Dict[str, Any]:
+        self._reset_capacity_cache()
+        try:
+            return {
+                'capacity_pressure': self.detect_capacity_pressure(current_threshold, future_threshold),
+                'unassigned_projects': self.detect_unassigned_projects(),
+                'upcoming_availability_conflicts': self.detect_availability_conflicts(days_ahead=days_ahead),
+                'high_risk_projects': self.detect_high_risk_projects(risk_threshold=risk_threshold),
+                'workload_summary': self.get_workload_summary(),
+            }
+        finally:
+            self._reset_capacity_cache()
+
 
 # Global conflict detector instance
 conflict_detector = ConflictDetector()
