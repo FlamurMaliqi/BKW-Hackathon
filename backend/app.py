@@ -1,9 +1,9 @@
-"""
-BKW Hackathon - AI Project Management Backend
-Main Flask application entry point
-"""
+"""BKW Hackathon - AI Project Management Backend (refactored schema)"""
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+
+from conflict_detection import conflict_detector
+from database.connection import db_manager
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -43,21 +43,31 @@ def ai_chat():
 
 @app.route('/api/projects', methods=['GET'])
 def get_projects():
-    """Get all projects"""
-    # TODO: Implement database query
-    return jsonify({
-        'projects': [],
-        'status': 'success'
-    })
+    """Return the current project portfolio enriched with risk metrics."""
+    try:
+        projects = db_manager.get_project_portfolio()
+        return jsonify({'projects': projects, 'status': 'success'})
+    except Exception as exc:  # pragma: no cover - defensive API layer
+        return jsonify({'status': 'error', 'error': str(exc)}), 500
 
 @app.route('/api/conflicts', methods=['GET'])
 def get_conflicts():
-    """Get detected conflicts and risks"""
-    # TODO: Implement conflict detection logic
-    return jsonify({
-        'conflicts': [],
-        'status': 'success'
-    })
+    """Run the conflict detection engine using the new schema."""
+    try:
+        days_ahead = request.args.get('daysAhead', default=28, type=int)
+        risk_threshold = request.args.get('riskThreshold', default=9.0, type=float)
+        current_threshold = request.args.get('currentThreshold', default=1.0, type=float)
+        future_threshold = request.args.get('futureThreshold', default=1.0, type=float)
+
+        conflicts = conflict_detector.get_all_conflicts(
+            days_ahead=days_ahead,
+            risk_threshold=risk_threshold,
+            current_threshold=current_threshold,
+            future_threshold=future_threshold,
+        )
+        return jsonify({'conflicts': conflicts, 'status': 'success'})
+    except Exception as exc:  # pragma: no cover - defensive API layer
+        return jsonify({'status': 'error', 'error': str(exc)}), 500
 
 if __name__ == '__main__':
     # Development server
