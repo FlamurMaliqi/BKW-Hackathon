@@ -77,7 +77,6 @@ class DatabaseManager:
             p.id,
             p.name,
             p.description,
-            p.start_date,
             p.deadline,
             p.status,
             p.priority,
@@ -92,7 +91,7 @@ class DatabaseManager:
         FROM projects p
         LEFT JOIN project_assignments pa ON pa.project_id = p.id
         LEFT JOIN engineers e ON e.id = pa.engineer_id
-        GROUP BY p.id, p.name, p.description, p.start_date, p.deadline, p.status, p.priority,
+        GROUP BY p.id, p.name, p.description, p.deadline, p.status, p.priority,
                  p.completion_percent, p.budget_total, p.budget_spent, p.created_at, p.updated_at
         ORDER BY p.deadline
         """

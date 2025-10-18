@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Speech Recognition Test</title>
+</head>
+<body>
+    <h1>Speech Recognition Test</h1>
+    <button id="startBtn">Start Listening</button>
+    <div id="result"></div>
+    
+    <script>
+        const startBtn = document.getElementById('startBtn');
+        const result = document.getElementById('result');
+        
+        // Check support
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const isSupported = !!SpeechRecognition;
+        
+        result.innerHTML = `
+            <p><strong>Speech Recognition Support:</strong> ${isSupported ? '✅ Supported' : '❌ Not Supported'}</p>
+            <p><strong>Secure Context:</strong> ${window.isSecureContext ? '✅ Yes' : '❌ No'}</p>
+            <p><strong>Protocol:</strong> ${window.location.protocol}</p>
+            <p><strong>Hostname:</strong> ${window.location.hostname}</p>
+        `;
+        
+        if (isSupported) {
+            const recognition = new SpeechRecognition();
+            recognition.continuous = false;
+            recognition.interimResults = false;
+            
+            startBtn.onclick = () => {
+                recognition.start();
+                result.innerHTML += '<p>🎤 Listening... Speak now!</p>';
+            };
+            
+            recognition.onresult = (event) => {
+                const transcript = event.results[0][0].transcript;
+                result.innerHTML += `<p><strong>You said:</strong> ${transcript}</p>`;
+            };
+            
+            recognition.onerror = (event) => {
+                result.innerHTML += `<p><strong>Error:</strong> ${event.error}</p>`;
+            };
+        } else {
+            startBtn.disabled = true;
+            startBtn.textContent = 'Not Supported';
+        }
+    </script>
+</body>
+</html>

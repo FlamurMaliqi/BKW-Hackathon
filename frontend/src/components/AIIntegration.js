@@ -16,6 +16,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import './AIIntegration.css';
 import { sendAIChat } from '../services/api';
+import useSpeechToText from '../hooks/useSpeechToText';
 
 // Chat bubble component for individual messages
 const ChatBubble = ({ message, isUser, timestamp }) => {
@@ -43,7 +44,7 @@ const AIIntegration = () => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: "Hello! I'm your AI project assistant. How can I help you today?",
+      text: "Hello! I'm your AI project assistant. How can I help you today? You can type or speak your questions!",
       isUser: false,
       timestamp: "10:30 AM"
     }
@@ -57,11 +58,45 @@ const AIIntegration = () => {
   
   // Ref for auto-scrolling to bottom
   const messagesEndRef = useRef(null);
+
+  // Speech-to-text functionality
+  const {
+    isListening,
+    transcript,
+    interimTranscript,
+    error: speechError,
+    isSupported: isSpeechSupported,
+    startListening,
+    stopListening,
+    toggleListening,
+    resetTranscript
+  } = useSpeechToText({
+    onResult: (finalTranscript) => {
+      setInputValue(finalTranscript);
+    },
+    onError: (error) => {
+      console.error('Speech recognition error:', error);
+    }
+  });
   
   // Auto-scroll to bottom when new messages are added
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
+
+  // Handle speech recognition results
+  useEffect(() => {
+    if (transcript) {
+      setInputValue(transcript);
+    }
+  }, [transcript]);
+
+  // Handle interim results for real-time feedback
+  useEffect(() => {
+    if (interimTranscript) {
+      setInputValue(transcript + interimTranscript);
+    }
+  }, [interimTranscript, transcript]);
 
   // Mock project data that would come from your backend/API
   const projectData = {
@@ -267,15 +302,54 @@ const AIIntegration = () => {
 
           {/* Input area */}
           <div className="chat-input-container">
+            {/* Speech status indicator */}
+            {isListening && (
+              <div className="speech-status">
+                <div className="speech-indicator">
+                  <div className="pulse-dot"></div>
+                  <span>Listening... Speak now</span>
+                </div>
+              </div>
+            )}
+            
+            {/* Speech error display */}
+            {speechError && (
+              <div className="speech-error">
+                <span>Speech recognition error: {speechError}</span>
+                <button onClick={() => window.location.reload()} className="retry-btn">
+                  Retry
+                </button>
+              </div>
+            )}
+            
+            {/* Speech not supported message */}
+            {!isSpeechSupported && !speechError && (
+              <div className="speech-not-supported">
+                <span>🎤 Voice input not available - Please use Chrome, Edge, or Safari browser</span>
+              </div>
+            )}
+            
             <div className="input-wrapper">
               <textarea
                 value={inputValue}
                 onChange={(e) => setInputValue(e.target.value)}
                 onKeyPress={handleKeyPress}
-                placeholder="Ask me anything about your projects..."
+                placeholder={isSpeechSupported ? "Ask me anything about your projects... or click the mic to speak" : "Ask me anything about your projects..."}
                 className="chat-input"
                 rows="1"
               />
+              
+              {/* Microphone button */}
+              {isSpeechSupported && (
+                <button 
+                  onClick={toggleListening}
+                  className={`mic-button ${isListening ? 'listening' : ''}`}
+                  title={isListening ? 'Stop listening' : 'Start voice input'}
+                >
+                  <span className="mic-icon">🎤</span>
+                </button>
+              )}
+              
               <button 
                 onClick={handleSendMessage}
                 disabled={!inputValue.trim() || isLoading}

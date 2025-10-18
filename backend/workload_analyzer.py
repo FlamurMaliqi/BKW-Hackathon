@@ -55,7 +55,7 @@ class WorkloadAnalyzer:
             pa.start_date,
             pa.end_date,
             p.name as project_name,
-            p.start_date as project_start,
+            p.created_at as project_start,
             p.deadline as project_deadline
         FROM project_assignments pa
         JOIN projects p ON p.id = pa.project_id
