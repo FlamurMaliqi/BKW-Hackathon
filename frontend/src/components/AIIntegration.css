@@ -13,37 +13,36 @@
 
 .ai-integration {
   min-height: 100vh;     /* Full viewport height */
-  background: #FFFFFF;   /* Clean white background */
+  background: var(--background);   /* Clean white background */
   padding: 0;           /* No default padding */
 }
 
-/* Header section with breadcrumbs and page title - matching medical app */
+/* Header section with breadcrumbs and page title - matching BKW design */
 .content-header {
-  background: #FFFFFF;   /* White background for header */
-  padding: 32px 40px;    /* Generous padding for breathing room */
-  border-bottom: 1px solid #E9ECEF;  /* Subtle border to separate from content */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* Subtle shadow for depth */
+  background: var(--background);   /* White background for header */
+  padding: var(--spacing-xl) 40px;    /* Generous padding for breathing room */
+  border-bottom: 1px solid var(--bkw-blue);  /* BKW blue border to separate from content */
 }
 
-/* Main page title styling - matching medical app typography */
+/* Main page title styling - matching BKW typography */
 .content-header h1 {
-  margin: 0 0 8px 0;    /* Remove default margins, add bottom margin */
-  font-size: 28px;      /* Slightly smaller for medical app style */
-  font-weight: 700;      /* Bold for emphasis */
-  color: #212529;       /* Dark gray for good contrast */
+  margin: 0 0 var(--spacing-sm) 0;    /* Remove default margins, add bottom margin */
+  font-size: var(--text-h1);      /* BKW H1 size */
+  font-weight: var(--font-bold);      /* Bold for emphasis */
+  color: var(--bkw-blue);       /* BKW blue for title */
   letter-spacing: -0.5px;  /* Tighter letter spacing for modern look */
 }
 
 /* Page subtitle/description styling */
 .content-header p {
   margin: 0;            /* Remove default margins */
-  font-size: 16px;      /* Readable font size */
-  color: #6C757D;       /* Muted gray for subtitle */
+  font-size: var(--text-body);      /* Readable font size */
+  color: var(--bkw-blue);       /* BKW blue for subtitle */
 }
 
 /* Main content area with chat interface */
 .content-body {
-  padding: 40px;        /* Generous padding around the content */
+  padding: var(--spacing-2xl);        /* Generous padding around the content */
   height: calc(100vh - 120px); /* Full height minus header */
   display: flex;
   flex-direction: column;
@@ -51,10 +50,9 @@
 
 /* Chat container */
 .chat-container {
-  background: #FFFFFF;
-  border: 1px solid #E9ECEF;
+  background: var(--background);
+  border: 1px solid var(--bkw-blue);
   border-radius: 12px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -63,13 +61,13 @@
 
 /* Chat header */
 .chat-header {
-  background: #1A5276;
-  color: white;
-  padding: 20px 24px;
+  background: var(--background);
+  color: var(--bkw-blue);
+  padding: 20px var(--spacing-lg);
   display: flex;
   justify-content: space-between;
   align-items: center;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: 1px solid var(--bkw-blue);
 }
 
 .chat-title {
@@ -85,43 +83,43 @@
 .chat-title h3 {
   margin: 0;
   font-size: 18px;
-  font-weight: 600;
+  font-weight: var(--font-semibold);
 }
 
 .chat-actions {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-sm);
 }
 
 /* Quick action buttons */
 .quick-actions {
-  padding: 20px 24px;
-  background: #F8F9FA;
-  border-bottom: 1px solid #E9ECEF;
+  padding: 20px var(--spacing-lg);
+  background: var(--background);
+  border-bottom: 1px solid var(--bkw-blue);
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-sm);
   flex-wrap: wrap;
 }
 
 .quick-action-btn {
-  background: #FFFFFF;
-  border: 1px solid #E9ECEF;
+  background: var(--background);
+  border: 1px solid var(--bkw-blue);
   border-radius: 20px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #495057;
+  padding: var(--spacing-sm) var(--spacing-md);
+  font-size: var(--text-small);
+  font-weight: var(--font-medium);
+  color: var(--bkw-blue);
   cursor: pointer;
   transition: all 0.2s ease;
   display: flex;
   align-items: center;
-  gap: 6px;
+  gap: var(--spacing-xs);
 }
 
 .quick-action-btn:hover {
-  background: #1A5276;
-  color: white;
-  border-color: #1A5276;
+  background: var(--bkw-blue);
+  color: var(--background);
+  border-color: var(--bkw-blue);
   transform: translateY(-1px);
 }
 
@@ -133,14 +131,14 @@
 .messages-container {
   flex: 1;
   overflow-y: auto;
-  padding: 20px 24px;
-  background: #FAFBFC;
+  padding: 20px var(--spacing-lg);
+  background: var(--background);
 }
 
 .messages-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-md);
 }
 
 /* Chat bubble styles */
@@ -161,22 +159,22 @@
 }
 
 .bubble-content {
-  background: white;
+  background: var(--background);
   border-radius: 18px;
-  padding: 16px 20px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  padding: var(--spacing-md) 20px;
+  border: 1px solid var(--bkw-blue);
   position: relative;
 }
 
 .chat-bubble.user .bubble-content {
-  background: #1A5276;
-  color: white;
+  background: var(--bkw-blue);
+  color: var(--background);
 }
 
 .chat-bubble.ai .bubble-content {
-  background: white;
-  color: #212529;
-  border: 1px solid #E9ECEF;
+  background: var(--background);
+  color: var(--bkw-blue);
+  border: 1px solid var(--bkw-blue);
 }
 
 .bubble-text {
@@ -187,9 +185,9 @@
 }
 
 .bubble-timestamp {
-  font-size: 12px;
-  color: #6C757D;
-  margin-top: 8px;
+  font-size: var(--text-caption);
+  color: var(--bkw-blue);
+  margin-top: var(--spacing-sm);
   opacity: 0.7;
 }
 
@@ -201,18 +199,18 @@
   width: 40px;
   height: 40px;
   border-radius: 50%;
-  background: #F8F9FA;
+  background: var(--background);
   display: flex;
   align-items: center;
   justify-content: center;
   font-size: 20px;
   flex-shrink: 0;
-  border: 2px solid #E9ECEF;
+  border: 2px solid var(--bkw-blue);
 }
 
 .chat-bubble.user .bubble-avatar {
-  background: #154360;
-  border-color: #1A5276;
+  background: var(--bkw-blue);
+  border-color: var(--bkw-blue);
 }
 
 /* Typing indicator */
@@ -226,7 +224,7 @@
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #6C757D;
+  background: var(--bkw-blue);
   animation: typing 1.4s infinite ease-in-out;
 }
 
@@ -240,22 +238,22 @@
 
 /* Chat input container */
 .chat-input-container {
-  padding: 20px 24px;
-  background: white;
-  border-top: 1px solid #E9ECEF;
+  padding: 20px var(--spacing-lg);
+  background: var(--background);
+  border-top: 1px solid var(--bkw-blue);
 }
 
 .input-wrapper {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-sm);
   align-items: flex-end;
 }
 
 .chat-input {
   flex: 1;
-  border: 1px solid #E9ECEF;
+  border: 1px solid var(--bkw-blue);
   border-radius: 20px;
-  padding: 12px 20px;
+  padding: var(--spacing-sm) 20px;
   font-size: 15px;
   font-family: inherit;
   resize: none;
@@ -266,13 +264,13 @@
 }
 
 .chat-input:focus {
-  border-color: #1A5276;
-  box-shadow: 0 0 0 3px rgba(26, 82, 118, 0.1);
+  border-color: var(--bkw-blue);
+  box-shadow: 0 0 0 3px rgba(0, 68, 136, 0.1);
 }
 
 .send-button {
-  background: #1A5276;
-  color: white;
+  background: var(--bkw-blue);
+  color: var(--background);
   border: none;
   border-radius: 50%;
   width: 44px;
@@ -286,13 +284,14 @@
 }
 
 .send-button:hover:not(:disabled) {
-  background: #154360;
+  background: var(--bkw-blue);
   transform: scale(1.05);
 }
 
 .send-button:disabled {
-  background: #E9ECEF;
-  color: #6C757D;
+  background: var(--background);
+  color: var(--bkw-blue);
+  border: 1px solid var(--bkw-blue);
   cursor: not-allowed;
   transform: none;
 }
@@ -302,35 +301,36 @@
   transform: rotate(-45deg);
 }
 
-/* Button styles - matching medical app */
+/* Button styles - matching BKW design */
 .btn-primary, .btn-secondary {
-  padding: 10px 18px;
+  padding: var(--button-padding);
   border: none;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
+  border-radius: var(--radius-rounded);
+  font-size: var(--text-small);
+  font-weight: var(--font-semibold);
   cursor: pointer;
   transition: all 0.2s ease;
   text-transform: none;
 }
 
 .btn-primary {
-  background: #1A5276;
-  color: white;
+  background: var(--bkw-blue);
+  color: var(--background);
 }
 
 .btn-primary:hover {
-  background: #154360;
+  background: var(--bkw-blue);
 }
 
 .btn-secondary {
-  background: #F8F9FA;
-  color: #495057;
-  border: 1px solid #E9ECEF;
+  background: var(--background);
+  color: var(--bkw-blue);
+  border: 1px solid var(--bkw-blue);
 }
 
 .btn-secondary:hover {
-  background: #E9ECEF;
+  background: var(--bkw-blue);
+  color: var(--background);
 }
 
 /* Animations */

@@ -18,111 +18,96 @@
   position: fixed;        /* Fixed position so it stays in place when scrolling */
   left: 0;               /* Positioned at the left edge of the screen */
   top: 0;                /* Positioned at the top of the screen */
-  width: 280px;          /* Fixed width for desktop */
+  width: 200px;          /* Reduced width for minimal design */
   height: 100vh;         /* Full viewport height */
-  background: #F8F9FA;   /* Light gray background matching medical app */
-  border-right: 1px solid #E9ECEF;  /* Subtle border to separate from main content */
+  background: #f8fafc;   /* Very slight blue background */
   display: flex;          /* Flexbox layout for vertical arrangement */
   flex-direction: column; /* Stack header and tabs vertically */
   z-index: 1000;         /* High z-index to stay above other content */
-  box-shadow: 2px 0 4px rgba(0, 0, 0, 0.05);  /* Subtle shadow for depth */
+  box-shadow: 2px 0 8px rgba(0, 0, 0, 0.05); /* Subtle shadow instead of border */
 }
 
 /* Header section containing the logo */
 .nav-header {
-  padding: 24px;         /* Internal spacing */
-  border-bottom: 1px solid #E9ECEF;  /* Separator line below header */
+  padding: var(--spacing-md);         /* Reduced padding for minimal design */
+  margin-bottom: var(--spacing-sm);   /* Small margin instead of border */
 }
 
 /* Logo container with horizontal layout */
 .logo {
   display: flex;         /* Flexbox for horizontal alignment */
   align-items: center;   /* Vertically center the logo elements */
-  gap: 12px;            /* Space between icon and text */
+  justify-content: center; /* Center the logo horizontally */
 }
 
-/* Stylized "A" icon in a blue circle - matching medical app design */
-.logo-icon {
-  width: 36px;          /* Slightly larger for better visibility */
-  height: 36px;         /* Slightly larger for better visibility */
-  background: #1A5276;  /* Professional blue background matching medical app */
-  color: white;         /* White text for contrast */
-  border-radius: 10px;  /* More rounded corners for modern look */
-  display: flex;        /* Flexbox for centering the letter */
-  align-items: center;   /* Vertical centering */
-  justify-content: center; /* Horizontal centering */
-  font-weight: 700;    /* Extra bold font weight */
-  font-size: 20px;      /* Larger font size for the icon */
-  box-shadow: 0 2px 4px rgba(26, 82, 118, 0.2);  /* Subtle shadow for depth */
-}
-
-/* Application name text - matching medical app typography */
-.logo-text {
-  font-size: 22px;      /* Slightly larger font size for brand name */
-  font-weight: 700;     /* Bold font weight for better visibility */
-  color: #1A5276;      /* Same blue as the icon for consistency */
-  letter-spacing: -0.5px;  /* Tighter letter spacing for modern look */
+/* BKW Engineering logo image */
+.logo-image {
+  max-width: 160px;     /* Reduced width for minimal design */
+  max-height: 50px;     /* Reduced height for minimal design */
+  width: auto;          /* Auto width to maintain aspect ratio */
+  height: auto;         /* Auto height to maintain aspect ratio */
+  object-fit: contain;  /* Maintain aspect ratio while fitting in container */
 }
 
 /* Container for all navigation tabs */
 .nav-tabs {
   flex: 1;             /* Take up remaining space in the sidebar */
-  padding: 16px 0;      /* Vertical padding for the tabs container */
+  padding: var(--spacing-sm) 0;      /* Reduced padding for minimal design */
 }
 
-/* Individual navigation tab button - matching medical app style */
+/* Individual navigation tab button - minimal clean style */
 .nav-tab {
-  width: 100%;          /* Full width of the sidebar */
-  padding: 18px 24px;   /* Increased padding for better touch targets */
-  border: none;         /* Remove default button border */
-  background: transparent; /* Transparent background by default */
-  display: flex;        /* Flexbox for horizontal alignment of icon and text */
-  align-items: center;   /* Vertically center icon and text */
-  gap: 14px;           /* Slightly more space between icon and text */
-  cursor: pointer;      /* Pointer cursor to indicate clickability */
-  transition: all 0.3s ease; /* Smooth transitions */
-  text-align: left;    /* Left-align the text */
-  font-size: 16px;      /* Readable font size */
-  color: #6C757D;      /* Muted gray color for inactive tabs */
-  font-weight: 500;     /* Medium font weight for better readability */
-  border-radius: 0;     /* No border radius for clean medical app look */
+  width: calc(100% - 16px);  /* Full width minus margins */
+  padding: 16px 12px;        /* Consistent padding */
+  border: none;              /* Remove default button border */
+  background: transparent;   /* Transparent background by default */
+  display: flex;             /* Flexbox for centering text */
+  align-items: center;       /* Vertically center text */
+  justify-content: center;   /* Center text horizontally */
+  cursor: pointer;           /* Pointer cursor to indicate clickability */
+  transition: all 0.2s ease; /* Faster, smoother transitions */
+  text-align: center;        /* Center-align the text */
+  font-size: 14px;           /* Consistent font size */
+  color: var(--bkw-blue);    /* BKW blue color for inactive tabs */
+  font-weight: 500;          /* Medium font weight for better readability */
+  border-radius: 8px;        /* Subtle border radius for modern look */
+  margin: 4px 8px;           /* Consistent margins for breathing room */
+  min-height: 44px;          /* Minimum touch target height */
 }
 
 /* Hover state for navigation tabs */
 .nav-tab:hover {
-  background: #E9ECEF;  /* Light gray background on hover */
-  color: #495057;      /* Darker text color on hover */
+  background: rgba(26, 82, 118, 0.1);  /* Very light blue background on hover */
+  color: var(--bkw-blue);      /* BKW blue text color on hover */
 }
 
-/* Active/selected tab styling - matching medical app active state */
+/* Active/selected tab styling - clean minimal active state */
 .nav-tab.active {
-  background: #1A5276;  /* Blue background for active tab */
-  color: white;        /* White text for contrast */
-  font-weight: 600;    /* Bold font weight for active tab */
-  box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.1);  /* Subtle inner glow */
-}
-
-/* Icon styling within tabs */
-.tab-icon {
-  font-size: 18px;     /* Larger font size for emoji icons */
-  width: 20px;         /* Fixed width for consistent alignment */
-  text-align: center;  /* Center the icon */
+  background: rgba(26, 82, 118, 0.15);  /* More visible blue background for active tab */
+  color: var(--bkw-blue);        /* BKW blue text for active tab */
+  font-weight: 600;              /* Bold font weight for active tab */
+  box-shadow: 0 2px 8px rgba(26, 82, 118, 0.15); /* More prominent shadow */
+  transform: translateY(-1px);   /* Slight lift effect */
 }
 
 /* Text label styling within tabs */
 .tab-label {
-  font-weight: 500;    /* Medium font weight for readability */
+  font-weight: inherit;    /* Inherit font weight from parent */
+  text-align: center;      /* Ensure center alignment */
+  width: 100%;             /* Full width for proper centering */
 }
 
 /* Responsive Design - Tablet and smaller desktop screens */
 @media (max-width: 1024px) {
   .navigation {
-    width: 240px;      /* Slightly narrower sidebar for smaller screens */
+    width: 180px;      /* Narrower sidebar for smaller screens */
   }
   
   .nav-tab {
-    padding: 14px 20px; /* Reduced padding for smaller screens */
-    font-size: 14px;   /* Slightly smaller font size */
+    padding: 14px 10px; /* Reduced padding for smaller screens */
+    font-size: 13px;    /* Smaller font size */
+    margin: 3px 6px;    /* Tighter margins */
+    min-height: 40px;   /* Slightly smaller touch target */
   }
 }
 
@@ -132,29 +117,26 @@
     width: 100%;       /* Full width on mobile */
     height: auto;      /* Auto height instead of full viewport */
     position: relative; /* Relative positioning instead of fixed */
-    border-right: none; /* Remove right border */
-    border-bottom: 1px solid #E9ECEF; /* Add bottom border instead */
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05); /* Shadow instead of border */
   }
   
   /* Horizontal layout for tabs on mobile */
   .nav-tabs {
     display: flex;     /* Flexbox for horizontal arrangement */
-    padding: 0;        /* Remove vertical padding */
+    padding: var(--spacing-sm); /* Small padding */
   }
   
   .nav-tab {
     flex: 1;          /* Equal width for all tabs */
     justify-content: center; /* Center content in each tab */
-    padding: 16px 8px; /* Reduced horizontal padding */
+    padding: 12px 8px; /* Reduced padding for mobile */
+    margin: 0 4px;    /* Small horizontal margins */
+    min-height: 44px; /* Maintain touch target */
+    font-size: 13px;  /* Consistent font size */
   }
   
-  /* Hide text labels on mobile to save space */
+  /* Keep text labels visible on mobile for better UX */
   .tab-label {
-    display: none;
-  }
-  
-  /* Make icons larger on mobile for better touch targets */
-  .tab-icon {
-    font-size: 20px;
+    display: block;
   }
 }

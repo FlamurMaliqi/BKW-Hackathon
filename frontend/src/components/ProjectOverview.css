@@ -18,37 +18,41 @@
 /* Main container for the project overview page */
 .project-overview {
   min-height: 100vh;     /* Full viewport height */
-  background: #FFFFFF;   /* Clean white background */
+  background: var(--background);   /* Clean white background */
   padding: 0;           /* No default padding */
+  width: 100%;          /* Full width */
+  overflow: visible;    /* Let parent handle scrolling */
+  position: relative;   /* Ensure proper positioning */
 }
 
-/* Header section with breadcrumbs and page title - matching medical app */
+/* Header section with breadcrumbs and page title - matching BKW design */
 .content-header {
-  background: #FFFFFF;   /* White background for header */
-  padding: 32px 40px;    /* Generous padding for breathing room */
-  border-bottom: 1px solid #E9ECEF;  /* Subtle border to separate from content */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* Subtle shadow for depth */
+  background: var(--background);   /* White background for header */
+  padding: var(--spacing-xl) 40px;    /* Generous padding for breathing room */
+  border-bottom: 1px solid var(--bkw-blue);  /* BKW blue border to separate from content */
+  margin-left: 0;                  /* Ensure no left margin */
+  width: 100%;                     /* Full width to align with sidebar */
 }
 
-/* Main page title styling - matching medical app typography */
+/* Main page title styling - matching BKW typography */
 .content-header h1 {
-  margin: 0 0 8px 0;    /* Remove default margins, add bottom margin */
-  font-size: 28px;      /* Slightly smaller for medical app style */
-  font-weight: 700;      /* Bold for emphasis */
-  color: #212529;       /* Dark gray for good contrast */
+  margin: 0 0 var(--spacing-sm) 0;    /* Remove default margins, add bottom margin */
+  font-size: var(--text-h1);      /* BKW H1 size */
+  font-weight: var(--font-bold);      /* Bold for emphasis */
+  color: var(--bkw-blue);       /* BKW blue for title */
   letter-spacing: -0.5px;  /* Tighter letter spacing for modern look */
 }
 
 /* Page subtitle/description styling */
 .content-header p {
   margin: 0;            /* Remove default margins */
-  font-size: 16px;      /* Readable font size */
-  color: #6C757D;       /* Muted gray for subtitle */
+  font-size: var(--text-body);      /* Readable font size */
+  color: var(--bkw-blue);       /* BKW blue for subtitle */
 }
 
 /* Main content area with dashboard cards */
 .content-body {
-  padding: 40px;        /* Generous padding around the content */
+  padding: var(--spacing-2xl);        /* Generous padding around the content */
 }
 
 /* ===== GRAPHS OVERVIEW SECTION ===== */
@@ -63,54 +67,55 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid #1A5276;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--bkw-blue);
 }
 
 .graphs-header h2 {
   margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  color: #212529;
+  font-size: var(--text-h2);
+  font-weight: var(--font-bold);
+  color: var(--bkw-blue);
 }
 
 /* Grid layout for the three main graphs */
 .graphs-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-  gap: 24px;
+  gap: var(--spacing-lg);
 }
 
 /* Individual graph card styling */
 .graph-card {
-  background: #FFFFFF;
-  border: 1px solid #E9ECEF;
-  border-radius: 8px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background: var(--background);
+  border: none;                     /* Remove border for cleaner look */
+  border-radius: 12px;              /* Modern border radius */
   overflow: hidden;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); /* Subtle shadow instead of border */
 }
 
 .graph-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);
-  transform: translateY(-1px);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); /* Enhanced shadow on hover */
 }
 
 /* Graph card header */
 .graph-header {
-  background: #1A5276;
-  color: white;
-  padding: 16px 20px;
+  background: #f8fafc;              /* Very subtle background */
+  color: var(--bkw-blue);
+  padding: 20px;                    /* Consistent padding */
   display: flex;
   justify-content: space-between;
   align-items: center;
+  border-bottom: none;              /* Remove border for cleaner look */
 }
 
 .graph-header h3 {
   margin: 0;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: var(--text-h5);
+  font-weight: var(--font-semibold);
 }
 
 .graph-icon {
@@ -120,7 +125,7 @@
 /* Graph content area */
 .graph-content {
   padding: 20px;
-  background: #FAFBFC;
+  background: var(--background);
 }
 
 /* ===== GANTT CHART STYLING ===== */
@@ -220,10 +225,11 @@
   display: flex;
   flex-direction: column;
   gap: 8px;
-  padding: 12px;
-  background: white;
-  border-radius: 6px;
-  border: 1px solid #E9ECEF;
+  padding: 16px;                    /* Increased padding */
+  background: var(--background);
+  border-radius: 8px;               /* Modern border radius */
+  border: none;                     /* Remove border for cleaner look */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle shadow */
 }
 
 .resource-label {
@@ -265,55 +271,61 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 24px;
-  padding-bottom: 16px;
-  border-bottom: 2px solid #1A5276;
+  margin-bottom: var(--spacing-lg);
+  padding-bottom: var(--spacing-md);
+  border-bottom: 1px solid var(--bkw-blue);
 }
 
 .projects-header h2 {
   margin: 0;
-  font-size: 24px;
-  font-weight: 700;
-  color: #212529;
+  font-size: var(--text-h2);
+  font-weight: var(--font-bold);
+  color: var(--bkw-blue);
 }
 
 .projects-actions {
   display: flex;
-  gap: 12px;
+  gap: var(--spacing-sm);
 }
 
 /* Projects list container */
 .projects-list {
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: var(--spacing-md);
+  padding-bottom: 60px; /* Generous bottom padding for proper scrolling */
+  min-height: auto;     /* Allow natural height */
 }
 
 /* Individual project item */
 .project-item {
-  background: #FFFFFF;
-  border: 1px solid #E9ECEF;
-  border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  background: var(--background);
+  border: none;                    /* Remove border for cleaner look */
+  border-radius: 12px;             /* More modern border radius */
   overflow: hidden;
   transition: all 0.2s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04); /* Subtle shadow instead of border */
+  margin-bottom: 16px;             /* Add spacing between cards */
 }
 
 .project-item:hover {
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08); /* Enhanced shadow on hover */
 }
 
 /* Project summary (clickable header) */
 .project-summary {
   display: flex;
-  align-items: center;
-  padding: 20px;
+  align-items: flex-start;         /* Align to top instead of center */
+  padding: 20px 24px;              /* Slightly reduced vertical padding */
   cursor: pointer;
   transition: background-color 0.2s ease;
+  background: var(--background);
+  min-height: auto;                /* Remove fixed height */
 }
 
 .project-summary:hover {
-  background: #F8F9FA;
+  background: #f8fafc;             /* Very subtle background change on hover */
 }
 
 /* Project info section */
@@ -321,27 +333,32 @@
   flex: 1;
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 6px;                        /* Slightly reduced gap */
+  align-items: flex-start;          /* Align content to top */
+  justify-content: flex-start;      /* Start from top */
 }
 
 .project-name {
-  font-size: 16px;
-  font-weight: 600;
-  color: #212529;
-  margin: 0;
+  font-size: var(--text-h5);
+  font-weight: var(--font-semibold);
+  color: var(--bkw-blue);
+  margin: 0 0 4px 0;               /* Reduced bottom margin */
+  line-height: 1.2;                /* Tighter line height */
 }
 
 .project-meta {
   display: flex;
-  gap: 16px;
-  font-size: 12px;
-  color: #6C757D;
+  gap: var(--spacing-md);
+  font-size: var(--text-caption);
+  color: var(--bkw-blue);
+  flex-wrap: wrap;                 /* Allow wrapping on smaller screens */
+  align-items: center;             /* Center align the meta items */
 }
 
 .project-deadline,
 .project-priority,
 .project-status {
-  font-weight: 500;
+  font-weight: var(--font-medium);
 }
 
 /* Project progress section */
@@ -350,27 +367,28 @@
   align-items: center;
   gap: 12px;
   margin: 0 20px;
+  align-self: flex-start;           /* Align to top of container */
 }
 
 .progress-bar {
   width: 120px;
   height: 8px;
-  background: #E9ECEF;
-  border-radius: 4px;
+  background: var(--border-color);
+  border-radius: var(--radius-subtle);
   overflow: hidden;
 }
 
 .progress-fill {
   height: 100%;
-  background: linear-gradient(90deg, #28a745, #20c997);
-  border-radius: 4px;
+  background: linear-gradient(90deg, var(--success), #20c997);
+  border-radius: var(--radius-subtle);
   transition: width 0.3s ease;
 }
 
 .progress-text {
-  font-size: 12px;
-  font-weight: 600;
-  color: #495057;
+  font-size: var(--text-caption);
+  font-weight: var(--font-semibold);
+  color: var(--bkw-blue);
   min-width: 35px;
 }
 
@@ -379,63 +397,65 @@
   display: flex;
   align-items: center;
   gap: 12px;
+  align-self: flex-start;           /* Align to top of container */
 }
 
 .btn-details {
-  padding: 8px 16px;
-  background: #1A5276;
-  color: white;
+  padding: 8px var(--spacing-md);
+  background: var(--bkw-blue);
+  color: var(--bkw-white);
   border: none;
-  border-radius: 4px;
-  font-size: 12px;
-  font-weight: 500;
+  border-radius: var(--radius-subtle);
+  font-size: var(--text-caption);
+  font-weight: var(--font-medium);
   cursor: pointer;
   transition: background-color 0.2s ease;
 }
 
 .btn-details:hover {
-  background: #154360;
+  background: var(--dark-blue);
 }
 
 .expand-icon {
-  font-size: 14px;
-  color: #6C757D;
+  font-size: var(--text-small);
+  color: var(--bkw-blue);
   cursor: pointer;
   transition: transform 0.2s ease;
 }
 
 /* Project details (expandable section) */
 .project-details {
-  background: #F8F9FA;
-  border-top: 1px solid #E9ECEF;
-  padding: 24px;
+  background: #f8fafc;             /* Very subtle background to separate from summary */
+  border-top: none;                /* Remove border for cleaner look */
+  padding: 24px;                   /* Consistent padding */
+  margin-top: 0;                   /* Remove margin */
 }
 
 .details-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 24px;
+  gap: var(--spacing-lg);
 }
 
 .detail-section h4 {
-  margin: 0 0 12px 0;
-  font-size: 14px;
-  font-weight: 600;
-  color: #212529;
+  margin: 0 0 var(--spacing-sm) 0;
+  font-size: var(--text-small);
+  font-weight: var(--font-semibold);
+  color: var(--bkw-blue);
 }
 
 .detail-section p {
   margin: 0;
   font-size: 13px;
-  color: #495057;
-  line-height: 1.5;
+  color: var(--bkw-blue);
+  line-height: var(--line-normal);
 }
 
 /* Team list styling */
 .team-list {
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
+  gap: var(--spacing-sm);
 }
 
 /* Budget info styling */
@@ -449,16 +469,16 @@
   display: flex;
   justify-content: space-between;
   font-size: 13px;
-  color: #495057;
+  color: var(--bkw-blue);
 }
 
 .budget-info .budget-item span:first-child {
-  font-weight: 500;
+  font-weight: var(--font-medium);
 }
 
 .budget-info .budget-item span:last-child {
-  font-weight: 600;
-  color: #1A5276;
+  font-weight: var(--font-semibold);
+  color: var(--bkw-blue);
 }
 
 /* Progress details styling */
@@ -472,52 +492,57 @@
   display: flex;
   justify-content: space-between;
   font-size: 13px;
-  color: #495057;
+  color: var(--bkw-blue);
 }
 
 .progress-item span:first-child {
-  font-weight: 500;
+  font-weight: var(--font-medium);
 }
 
 .progress-item span:last-child {
-  font-weight: 600;
+  font-weight: var(--font-semibold);
 }
 
 /* ===== BUTTON STYLING ===== */
 
-/* Primary and secondary button base styles - matching medical app */
+/* Primary and secondary button base styles - modern clean design */
 .btn-primary, .btn-secondary {
-  padding: 10px 18px;  /* Slightly larger padding for better touch targets */
-  border: none;        /* Remove default button border */
-  border-radius: 6px;  /* Rounded corners */
-  font-size: 14px;     /* Readable font size */
-  font-weight: 600;    /* Semi-bold font weight for better visibility */
-  cursor: pointer;     /* Pointer cursor for clickability */
-  transition: all 0.2s ease;  /* Smooth hover transitions */
-  text-transform: none;  /* No text transformation for medical app style */
+  padding: 12px 24px;               /* Consistent padding */
+  border: none;                     /* Remove default button border */
+  border-radius: 8px;               /* Modern border radius */
+  font-size: 14px;                  /* Consistent font size */
+  font-weight: 600;                 /* Semi-bold font weight */
+  cursor: pointer;                  /* Pointer cursor for clickability */
+  transition: all 0.2s ease;        /* Smooth hover transitions */
+  text-transform: none;             /* No text transformation */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Subtle shadow */
 }
 
-/* Primary button styling (blue background) */
+/* Primary button styling (BKW blue background) */
 .btn-primary {
-  background: #1A5276;  /* Same blue as card header */
-  color: white;        /* White text */
+  background: var(--bkw-blue);  /* BKW blue */
+  color: var(--bkw-white);        /* White text */
 }
 
 /* Primary button hover effect */
 .btn-primary:hover {
-  background: #154360;  /* Darker blue on hover */
+  background: #154360;              /* Darker blue on hover */
+  transform: translateY(-1px);      /* Subtle lift effect */
+  box-shadow: 0 4px 8px rgba(26, 82, 118, 0.3); /* Enhanced shadow */
 }
 
-/* Secondary button styling (gray background) */
+/* Secondary button styling (clean gray background) */
 .btn-secondary {
-  background: #F8F9FA;  /* Light gray background */
-  color: #495057;      /* Dark gray text */
-  border: 1px solid #E9ECEF;  /* Light border */
+  background: #f8f9fa;              /* Light gray background */
+  color: #495057;                   /* Dark gray text */
+  border: none;                     /* Remove border for cleaner look */
 }
 
 /* Secondary button hover effect */
 .btn-secondary:hover {
-  background: #E9ECEF;  /* Slightly darker gray on hover */
+  background: #e9ecef;              /* Slightly darker gray on hover */
+  transform: translateY(-1px);      /* Subtle lift effect */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15); /* Enhanced shadow */
 }
 
 /* ===== RESPONSIVE DESIGN ===== */
@@ -586,43 +611,54 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 12px;
-  background: #F8F9FA;
-  border-radius: 4px;
-  margin-bottom: 4px;
+  padding: 12px 16px;              /* Increased padding for better touch targets */
+  background: var(--background);   /* Clean white background */
+  border-radius: 8px;              /* More modern border radius */
+  margin-bottom: 8px;              /* Increased spacing */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05); /* Subtle shadow instead of border */
+  border: none;                    /* Remove any borders */
 }
 
 .btn-remove-member {
   background: none;
   border: none;
-  color: #dc3545;
-  font-size: 20px;
+  color: #dc3545;                   /* Direct color instead of CSS variable */
+  font-size: 18px;                  /* Slightly smaller for better proportion */
   line-height: 1;
   cursor: pointer;
-  padding: 4px 8px;
-  border-radius: 4px;
+  padding: 6px;                     /* Reduced padding for cleaner look */
+  border-radius: 50%;               /* Circular button */
   transition: all 0.2s ease;
+  width: 28px;                      /* Fixed size for consistency */
+  height: 28px;                     /* Fixed size for consistency */
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .btn-remove-member:hover {
   background: #dc3545;
-  color: white;
+  color: var(--bkw-white);
+  transform: scale(1.1);            /* Subtle scale effect */
 }
 
 .btn-assign-engineer {
-  background: #1A5276;
-  color: white;
+  background: var(--bkw-blue);
+  color: var(--bkw-white);
   border: none;
-  padding: 10px 16px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 600;
+  padding: 12px 20px;               /* Consistent padding */
+  border-radius: 8px;               /* Modern border radius */
+  font-size: 14px;                  /* Consistent font size */
+  font-weight: 600;                 /* Semi-bold */
   cursor: pointer;
   transition: all 0.2s ease;
   width: 100%;
-  margin-top: 8px;
+  margin-top: 12px;                 /* Consistent spacing */
+  box-shadow: 0 2px 4px rgba(26, 82, 118, 0.2); /* Subtle shadow */
 }
 
 .btn-assign-engineer:hover {
-  background: #154360;
+  background: #154360;              /* Darker blue on hover */
+  transform: translateY(-1px);      /* Subtle lift effect */
+  box-shadow: 0 4px 8px rgba(26, 82, 118, 0.3); /* Enhanced shadow */
 }

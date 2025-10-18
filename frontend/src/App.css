@@ -16,11 +16,9 @@
 /* Main application container */
 .App {
   min-height: 100vh;     /* Full viewport height */
-  background: #FFFFFF;   /* Clean white background */
+  background: var(--background);   /* Clean white background */
   display: flex;         /* Flexbox layout for sidebar + main content */
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;         /* Modern system font stack */
+  font-family: var(--font-family);         /* Modern system font stack */
   -webkit-font-smoothing: antialiased;  /* Smooth font rendering on macOS */
   -moz-osx-font-smoothing: grayscale;    /* Smooth font rendering on macOS */
 }
@@ -28,17 +26,19 @@
 /* Main content area that adjusts based on sidebar */
 .main-content {
   flex: 1;              /* Take up remaining space after sidebar */
-  margin-left: 280px;   /* Account for fixed sidebar width */
-  min-height: 100vh;    /* Full viewport height */
-  background: #FFFFFF;  /* White background for content */
-  overflow-x: auto;     /* Allow horizontal scrolling if needed */
+  margin-left: 200px;   /* Account for fixed sidebar width (updated to match new width) */
+  min-height: 100vh;    /* Minimum viewport height */
+  background: var(--background);  /* White background for content */
+  overflow-x: hidden;   /* Prevent horizontal scrolling */
+  overflow-y: visible;  /* Allow content to flow naturally */
   padding: 0;           /* Remove all padding to start content directly next to sidebar */
+  position: relative;   /* Ensure proper positioning context */
 }
 
 /* Responsive Design - Tablet and smaller desktop screens */
 @media (max-width: 1024px) {
   .main-content {
-    margin-left: 240px;  /* Account for narrower sidebar */
+    margin-left: 180px;  /* Account for narrower sidebar (updated to match new width) */
   }
 }
 
@@ -58,11 +58,11 @@
 body {
   margin: 0;            /* Remove default body margin */
   padding: 0;           /* Remove default body padding */
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;         /* Modern system font stack */
+  font-family: var(--font-family);         /* Modern system font stack */
   -webkit-font-smoothing: antialiased;  /* Smooth font rendering */
   -moz-osx-font-smoothing: grayscale;    /* Smooth font rendering */
+  overflow-x: hidden;   /* Prevent horizontal scrolling */
+  overflow-y: auto;     /* Allow vertical scrolling */
 }
 
 /* Ensure consistent styling across all elements */
@@ -85,7 +85,7 @@ button:focus,
 input:focus,
 textarea:focus,
 select:focus {
-  outline: 2px solid #1A5276;  /* Blue outline for focus */
+  outline: 2px solid var(--medium-blue);  /* Blue outline for focus */
   outline-offset: 2px;          /* Space between element and outline */
 }
 
@@ -100,15 +100,15 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: #F8F9FA;  /* Light gray track */
+  background: var(--bg-light);  /* Light gray track */
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #E9ECEF;  /* Gray thumb */
-  border-radius: 4px;  /* Rounded thumb */
+  background: var(--border-color);  /* Gray thumb */
+  border-radius: var(--radius-subtle);  /* Rounded thumb */
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #6C757D; /* Darker gray on hover */
+  background: var(--text-muted); /* Darker gray on hover */
 }
 

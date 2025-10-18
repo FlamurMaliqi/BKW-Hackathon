@@ -15,16 +15,15 @@
 
 .team-detail {
   min-height: 100vh;     /* Full viewport height */
-  background: #FFFFFF;   /* Clean white background */
+  background: var(--background);   /* Clean white background */
   padding: 0;           /* No default padding */
 }
 
 /* Header section with back button and team title */
 .content-header {
-  background: #FFFFFF;   /* White background for header */
-  padding: 32px 40px;    /* Generous padding for breathing room */
-  border-bottom: 1px solid #E9ECEF;  /* Subtle border to separate from content */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* Subtle shadow for depth */
+  background: var(--background);   /* White background for header */
+  padding: var(--spacing-xl) 40px;    /* Generous padding for breathing room */
+  border-bottom: 1px solid var(--bkw-blue);  /* BKW blue border to separate from content */
 }
 
 .header-actions {
@@ -32,68 +31,66 @@
 }
 
 .btn-back {
-  background: #F8F9FA;  /* Light gray background */
-  color: #495057;      /* Dark gray text */
-  border: 1px solid #E9ECEF;  /* Light border */
-  padding: 8px 16px;   /* Internal spacing */
-  border-radius: 6px;  /* Rounded corners */
-  font-size: 14px;     /* Readable font size */
-  font-weight: 500;    /* Medium font weight */
+  background: var(--background);  /* White background */
+  color: var(--bkw-blue);      /* BKW blue text */
+  border: 1px solid var(--bkw-blue);  /* BKW blue border */
+  padding: var(--spacing-sm) var(--spacing-md);   /* Internal spacing */
+  border-radius: var(--radius-rounded);  /* Rounded corners */
+  font-size: var(--text-small);     /* Readable font size */
+  font-weight: var(--font-medium);    /* Medium font weight */
   cursor: pointer;     /* Pointer cursor */
   transition: all 0.2s ease;  /* Smooth transitions */
   text-decoration: none;  /* Remove text decoration */
   display: inline-flex;  /* Inline flex for icon alignment */
   align-items: center;  /* Center icon and text */
-  gap: 8px;           /* Space between icon and text */
+  gap: var(--spacing-sm);           /* Space between icon and text */
 }
 
 .btn-back:hover {
-  background: #E9ECEF;  /* Darker gray on hover */
-  color: #212529;      /* Darker text on hover */
+  background: var(--bkw-blue);  /* BKW blue on hover */
+  color: var(--background);      /* White text on hover */
 }
 
 .team-title h1 {
-  margin: 0 0 8px 0;    /* Remove default margins, add bottom margin */
+  margin: 0 0 var(--spacing-sm) 0;    /* Remove default margins, add bottom margin */
   font-size: 32px;      /* Large font size for team title */
-  font-weight: 700;      /* Bold for emphasis */
-  color: #212529;       /* Dark gray for good contrast */
+  font-weight: var(--font-bold);      /* Bold for emphasis */
+  color: var(--bkw-blue);       /* BKW blue for team title */
   letter-spacing: -0.5px;  /* Tighter letter spacing for modern look */
 }
 
 .team-title p {
   margin: 0;            /* Remove default margins */
   font-size: 18px;      /* Readable font size */
-  color: #6C757D;       /* Muted gray for subtitle */
-  line-height: 1.5;     /* Better line height for readability */
+  color: var(--bkw-blue);       /* BKW blue for subtitle */
+  line-height: var(--line-normal);     /* Better line height for readability */
 }
 
 /* Main content area */
 .content-body {
-  padding: 40px;        /* Generous padding around the content */
+  padding: var(--spacing-2xl);        /* Generous padding around the content */
 }
 
 /* Overview Cards */
 .overview-cards {
   display: grid;         /* CSS Grid for flexible card layout */
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));  /* Responsive grid */
-  gap: 24px;            /* Space between cards */
-  margin-bottom: 40px;  /* Space below overview cards */
+  gap: var(--spacing-lg);            /* Space between cards */
+  margin-bottom: var(--spacing-2xl);  /* Space below overview cards */
 }
 
 .overview-card {
-  background: #FFFFFF;   /* White card background */
-  border: 1px solid #E9ECEF;  /* Subtle border */
-  border-radius: 8px;   /* Rounded corners */
-  padding: 24px;        /* Internal spacing */
+  background: var(--background);   /* White card background */
+  border: 1px solid var(--bkw-blue);  /* BKW blue border */
+  border-radius: var(--radius-medium);   /* Rounded corners */
+  padding: var(--spacing-lg);        /* Internal spacing */
   display: flex;        /* Flexbox for card layout */
   align-items: center;  /* Vertically center card content */
-  gap: 16px;           /* Space between icon and content */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);  /* Subtle shadow */
+  gap: var(--spacing-md);           /* Space between icon and content */
   transition: all 0.2s ease;  /* Smooth hover transitions */
 }
 
 .overview-card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);  /* Enhanced shadow on hover */
   transform: translateY(-2px);  /* Slight lift effect */
 }
 
@@ -103,70 +100,70 @@
 }
 
 .card-content h3 {
-  margin: 0 0 8px 0;   /* Remove default margins, add bottom margin */
-  font-size: 16px;     /* Medium font size for card titles */
-  font-weight: 600;    /* Semi-bold for emphasis */
-  color: #495057;      /* Dark gray color */
+  margin: 0 0 var(--spacing-sm) 0;   /* Remove default margins, add bottom margin */
+  font-size: var(--text-h5);     /* Medium font size for card titles */
+  font-weight: var(--font-semibold);    /* Semi-bold for emphasis */
+  color: var(--bkw-blue);      /* BKW blue color */
   text-transform: uppercase;  /* Uppercase for card titles */
   letter-spacing: 0.5px;  /* Slight letter spacing */
 }
 
 .card-value {
   font-size: 28px;     /* Large font size for values */
-  font-weight: 700;    /* Bold for emphasis */
-  color: #212529;      /* Dark gray for good contrast */
+  font-weight: var(--font-bold);    /* Bold for emphasis */
+  color: var(--bkw-blue);      /* BKW blue for good contrast */
 }
 
 /* Team Projects Section */
 .team-projects {
-  background: #FFFFFF;  /* White background */
-  border: 1px solid #E9ECEF;  /* Subtle border */
-  border-radius: 8px;   /* Rounded corners */
-  padding: 24px;        /* Internal spacing */
-  margin-bottom: 32px;  /* Space below section */
+  background: var(--background);  /* White background */
+  border: 1px solid var(--bkw-blue);  /* BKW blue border */
+  border-radius: var(--radius-medium);   /* Rounded corners */
+  padding: var(--spacing-lg);        /* Internal spacing */
+  margin-bottom: var(--spacing-xl);  /* Space below section */
 }
 
 .team-projects h2 {
   margin: 0 0 20px 0;   /* Remove default margins, add bottom margin */
-  font-size: 20px;      /* Medium font size for section titles */
-  font-weight: 600;     /* Semi-bold for emphasis */
-  color: #212529;       /* Dark gray for good contrast */
+  font-size: var(--text-h3);      /* Medium font size for section titles */
+  font-weight: var(--font-semibold);     /* Semi-bold for emphasis */
+  color: var(--bkw-blue);       /* BKW blue for good contrast */
 }
 
 .projects-list {
   display: flex;        /* Horizontal layout for projects */
   flex-direction: column;  /* Stack projects vertically */
-  gap: 16px;           /* Space between projects */
+  gap: var(--spacing-md);           /* Space between projects */
 }
 
 .project-item {
   display: flex;        /* Flexbox for project layout */
   justify-content: space-between;  /* Space between info and status */
   align-items: center; /* Vertically center project content */
-  padding: 16px;       /* Internal spacing */
-  background: #F8F9FA; /* Light gray background */
-  border-radius: 6px;  /* Rounded corners */
-  border-left: 4px solid #1A5276;  /* Left border for visual separation */
+  padding: var(--spacing-md);       /* Internal spacing */
+  background: var(--background); /* White background */
+  border-radius: var(--radius-rounded);  /* Rounded corners */
+  border: 1px solid var(--bkw-blue);  /* BKW blue border */
 }
 
 .project-info h4 {
-  margin: 0 0 4px 0;   /* Remove default margins, add bottom margin */
-  font-size: 16px;     /* Medium font size for project names */
-  font-weight: 600;    /* Semi-bold for emphasis */
-  color: #212529;      /* Dark gray for good contrast */
+  margin: 0 0 var(--spacing-xs) 0;   /* Remove default margins, add bottom margin */
+  font-size: var(--text-h5);     /* Medium font size for project names */
+  font-weight: var(--font-semibold);    /* Semi-bold for emphasis */
+  color: var(--bkw-blue);      /* BKW blue for good contrast */
 }
 
 .project-info p {
   margin: 0;           /* Remove default margins */
-  font-size: 14px;     /* Smaller font size for descriptions */
-  color: #6C757D;      /* Muted gray color */
+  font-size: var(--text-small);     /* Smaller font size for descriptions */
+  color: var(--bkw-blue);      /* BKW blue color */
 }
 
 .status-badge {
-  padding: 4px 12px;   /* Internal spacing */
-  border-radius: 4px;  /* Rounded corners */
-  font-size: 12px;     /* Small font size */
-  font-weight: 600;    /* Semi-bold for emphasis */
+  padding: var(--spacing-xs) var(--spacing-sm);   /* Internal spacing */
+  border-radius: var(--radius-subtle);  /* Rounded corners */
+  font-size: var(--text-caption);     /* Small font size */
+  font-weight: var(--font-semibold);    /* Semi-bold for emphasis */
   text-transform: uppercase;  /* Uppercase for status */
   letter-spacing: 0.5px;  /* Slight letter spacing */
 }
@@ -178,18 +175,18 @@
 
 /* Team Members Section */
 .team-members {
-  background: #FFFFFF;  /* White background */
-  border: 1px solid #E9ECEF;  /* Subtle border */
-  border-radius: 8px;   /* Rounded corners */
-  padding: 24px;        /* Internal spacing */
-  margin-bottom: 32px;  /* Space below section */
+  background: var(--background);  /* White background */
+  border: 1px solid var(--bkw-blue);  /* BKW blue border */
+  border-radius: var(--radius-medium);   /* Rounded corners */
+  padding: var(--spacing-lg);        /* Internal spacing */
+  margin-bottom: var(--spacing-xl);  /* Space below section */
 }
 
 .team-members h2 {
   margin: 0 0 20px 0;   /* Remove default margins, add bottom margin */
-  font-size: 20px;      /* Medium font size for section titles */
-  font-weight: 600;     /* Semi-bold for emphasis */
-  color: #212529;       /* Dark gray for good contrast */
+  font-size: var(--text-h3);      /* Medium font size for section titles */
+  font-weight: var(--font-semibold);     /* Semi-bold for emphasis */
+  color: var(--bkw-blue);       /* BKW blue for good contrast */
 }
 
 .members-grid {
@@ -199,18 +196,17 @@
 }
 
 .member-card {
-  background: #F8F9FA;  /* Light gray background */
-  border: 1px solid #E9ECEF;  /* Subtle border */
-  border-radius: 8px;   /* Rounded corners */
+  background: var(--background);  /* White background */
+  border: 1px solid var(--bkw-blue);  /* BKW blue border */
+  border-radius: var(--radius-medium);   /* Rounded corners */
   padding: 20px;        /* Internal spacing */
   display: flex;        /* Flexbox for card layout */
   align-items: center;  /* Vertically center card content */
-  gap: 16px;           /* Space between avatar and info */
+  gap: var(--spacing-md);           /* Space between avatar and info */
   transition: all 0.2s ease;  /* Smooth hover transitions */
 }
 
 .member-card:hover {
-  background: #E9ECEF;  /* Darker gray on hover */
   transform: translateY(-2px);  /* Slight lift effect */
 }
 
@@ -221,93 +217,95 @@
   display: flex;        /* Flexbox for centering */
   align-items: center;  /* Center avatar vertically */
   justify-content: center;  /* Center avatar horizontally */
-  background: #FFFFFF;  /* White background for avatar */
+  background: var(--background);  /* White background for avatar */
   border-radius: 50%;   /* Circular avatar */
-  border: 2px solid #E9ECEF;  /* Light border */
+  border: 2px solid var(--bkw-blue);  /* BKW blue border */
 }
 
 .member-info h4 {
-  margin: 0 0 4px 0;   /* Remove default margins, add bottom margin */
-  font-size: 16px;     /* Medium font size for member names */
-  font-weight: 600;    /* Semi-bold for emphasis */
-  color: #212529;      /* Dark gray for good contrast */
+  margin: 0 0 var(--spacing-xs) 0;   /* Remove default margins, add bottom margin */
+  font-size: var(--text-h5);     /* Medium font size for member names */
+  font-weight: var(--font-semibold);    /* Semi-bold for emphasis */
+  color: var(--bkw-blue);      /* BKW blue for good contrast */
 }
 
 .member-info p {
-  margin: 0 0 8px 0;   /* Remove default margins, add bottom margin */
-  font-size: 14px;     /* Smaller font size for roles */
-  color: #6C757D;      /* Muted gray color */
+  margin: 0 0 var(--spacing-sm) 0;   /* Remove default margins, add bottom margin */
+  font-size: var(--text-small);     /* Smaller font size for roles */
+  color: var(--bkw-blue);      /* BKW blue color */
 }
 
 .member-skills {
   display: flex;       /* Horizontal layout for skills */
   flex-wrap: wrap;     /* Wrap skills to new line if needed */
-  gap: 6px;           /* Space between skills */
+  gap: var(--spacing-xs);           /* Space between skills */
 }
 
 .skill-tag {
-  padding: 2px 8px;    /* Internal spacing */
-  background: #1A5276; /* Blue background */
-  color: white;        /* White text */
-  border-radius: 4px;  /* Rounded corners */
+  padding: 2px var(--spacing-sm);    /* Internal spacing */
+  background: var(--background); /* White background */
+  color: var(--bkw-blue);        /* BKW blue text */
+  border: 1px solid var(--bkw-blue);  /* BKW blue border */
+  border-radius: var(--radius-subtle);  /* Rounded corners */
   font-size: 11px;     /* Small font size */
-  font-weight: 500;    /* Medium font weight */
+  font-weight: var(--font-medium);    /* Medium font weight */
 }
 
 /* Team Performance Section */
 .team-performance {
-  background: #FFFFFF;  /* White background */
-  border: 1px solid #E9ECEF;  /* Subtle border */
-  border-radius: 8px;   /* Rounded corners */
-  padding: 24px;        /* Internal spacing */
-  margin-bottom: 32px;  /* Space below section */
+  background: var(--background);  /* White background */
+  border: 1px solid var(--bkw-blue);  /* BKW blue border */
+  border-radius: var(--radius-medium);   /* Rounded corners */
+  padding: var(--spacing-lg);        /* Internal spacing */
+  margin-bottom: var(--spacing-xl);  /* Space below section */
 }
 
 .team-performance h2 {
   margin: 0 0 20px 0;   /* Remove default margins, add bottom margin */
-  font-size: 20px;      /* Medium font size for section titles */
-  font-weight: 600;     /* Semi-bold for emphasis */
-  color: #212529;       /* Dark gray for good contrast */
+  font-size: var(--text-h3);      /* Medium font size for section titles */
+  font-weight: var(--font-semibold);     /* Semi-bold for emphasis */
+  color: var(--bkw-blue);       /* BKW blue for good contrast */
 }
 
 .performance-metrics {
   display: flex;        /* Horizontal layout for metrics */
   flex-direction: column;  /* Stack metrics vertically */
-  gap: 16px;           /* Space between metrics */
+  gap: var(--spacing-md);           /* Space between metrics */
 }
 
 .metric-item {
   display: flex;        /* Flexbox for metric layout */
   align-items: center;  /* Vertically center metric content */
-  gap: 16px;           /* Space between metric elements */
+  gap: var(--spacing-md);           /* Space between metric elements */
 }
 
 .metric-label {
-  font-size: 14px;     /* Readable font size */
-  color: #495057;      /* Dark gray color */
+  font-size: var(--text-small);     /* Readable font size */
+  color: var(--bkw-blue);      /* BKW blue color */
   min-width: 120px;    /* Minimum width for label */
-  font-weight: 500;    /* Medium font weight */
+  font-weight: var(--font-medium);    /* Medium font weight */
 }
 
 .metric-bar {
   flex: 1;            /* Take up remaining space */
   height: 8px;        /* Fixed height for bar */
-  background: #E9ECEF; /* Light gray background */
-  border-radius: 4px;  /* Rounded corners */
+  background: var(--background); /* White background */
+  border: 1px solid var(--bkw-blue); /* BKW blue border */
+  border-radius: var(--radius-subtle);  /* Rounded corners */
   overflow: hidden;   /* Ensure fill doesn't overflow */
 }
 
 .metric-fill {
   height: 100%;       /* Full height of bar */
-  background: #1A5276; /* Blue background */
-  border-radius: 4px;  /* Rounded corners */
+  background: var(--bkw-blue); /* BKW blue background */
+  border-radius: var(--radius-subtle);  /* Rounded corners */
   transition: width 0.3s ease;  /* Smooth width transition */
 }
 
 .metric-value {
-  font-size: 14px;     /* Readable font size */
-  font-weight: 600;    /* Semi-bold for emphasis */
-  color: #495057;      /* Dark gray color */
+  font-size: var(--text-small);     /* Readable font size */
+  font-weight: var(--font-semibold);    /* Semi-bold for emphasis */
+  color: var(--bkw-blue);      /* BKW blue color */
   min-width: 40px;     /* Minimum width for value */
   text-align: right;   /* Right-align value */
 }

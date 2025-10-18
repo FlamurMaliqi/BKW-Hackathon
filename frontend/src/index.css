@@ -1,7 +1,90 @@
 /**
  * BKW Hackathon - AI Project Management Frontend
- * Global styles and CSS reset
+ * Global styles and CSS reset with BKW Design Language
  */
+
+/* BKW Design System CSS Variables */
+:root {
+  /* Primary Colors */
+  --bkw-blue: #004488;
+  --bkw-white: #FFFFFF;
+  
+  /* Extended Color Palette */
+  --dark-blue: #1A2B4C;
+  --medium-blue: #1A5276;
+  --light-blue: #E3F2FD;
+  
+  /* Neutral Colors */
+  --text-primary: #212529;
+  --text-secondary: #495057;
+  --text-muted: #6C757D;
+  --bg-light: #F8F9FA;
+  --border-color: #E9ECEF;
+  --background: #FFFFFF;
+  
+  /* Status Colors */
+  --success: #28A745;
+  --warning: #FFC107;
+  --error: #DC3545;
+  --info: #17A2B8;
+  
+  /* Typography */
+  --font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
+  --font-mono: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    monospace;
+  
+  /* Font Weights */
+  --font-light: 300;
+  --font-regular: 400;
+  --font-medium: 500;
+  --font-semibold: 600;
+  --font-bold: 700;
+  
+  /* Font Sizes */
+  --text-h1: 28px;
+  --text-h2: 24px;
+  --text-h3: 20px;
+  --text-h4: 18px;
+  --text-h5: 16px;
+  --text-h6: 14px;
+  --text-body: 16px;
+  --text-small: 14px;
+  --text-caption: 12px;
+  
+  /* Line Heights */
+  --line-tight: 1.2;
+  --line-normal: 1.5;
+  --line-relaxed: 1.6;
+  
+  /* Spacing System */
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 40px;
+  --spacing-3xl: 48px;
+  
+  /* Border Radius */
+  --radius-sharp: 0px;
+  --radius-subtle: 4px;
+  --radius-rounded: 6px;
+  --radius-medium: 8px;
+  
+  /* Shadows */
+  --shadow-subtle: 0 1px 3px rgba(0, 0, 0, 0.05);
+  --shadow-medium: 0 2px 8px rgba(0, 0, 0, 0.1);
+  --shadow-strong: 0 4px 16px rgba(0, 0, 0, 0.15);
+  
+  /* Container Styles */
+  --container-padding: 24px;
+  --card-padding: 24px;
+  --section-padding: 32px;
+  --button-padding: 10px 18px;
+  --input-padding: 12px 16px;
+}
 
 * {
   box-sizing: border-box;
@@ -9,20 +92,78 @@
 
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: var(--font-family);
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background: #f5f5f5;
+  background: var(--background);
+  color: var(--text-primary);
+  line-height: var(--line-normal);
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
+  font-family: var(--font-mono);
 }
 
 #root {
   min-height: 100vh;
+}
+
+/* Global Typography */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;
+  font-weight: var(--font-semibold);
+  color: var(--text-primary);
+  line-height: var(--line-tight);
+}
+
+h1 { font-size: var(--text-h1); }
+h2 { font-size: var(--text-h2); }
+h3 { font-size: var(--text-h3); }
+h4 { font-size: var(--text-h4); }
+h5 { font-size: var(--text-h5); }
+h6 { font-size: var(--text-h6); }
+
+p {
+  margin: 0;
+  font-size: var(--text-body);
+  color: var(--text-primary);
+  line-height: var(--line-normal);
+}
+
+/* Global Button Styles */
+button {
+  font-family: inherit;
+  cursor: pointer;
+  border: none;
+  border-radius: var(--radius-rounded);
+  font-weight: var(--font-semibold);
+  transition: all 0.2s ease;
+}
+
+/* Global Focus Styles */
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid var(--medium-blue);
+  outline-offset: 2px;
+}
+
+/* Global Scrollbar Styling */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--bg-light);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--border-color);
+  border-radius: var(--radius-subtle);
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--text-muted);
 }
 
