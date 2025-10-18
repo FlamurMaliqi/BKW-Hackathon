@@ -1,4 +1,4 @@
-"""BKW Hackathon - AI Project Management Backend (refactored schema)"""
+"""BKW Hackathon - AI Project Management Backend"""
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 
@@ -43,27 +43,21 @@ def ai_chat():
 
 @app.route('/api/projects', methods=['GET'])
 def get_projects():
-    """Return the current project portfolio enriched with risk metrics."""
+    """Return all projects with assignment summaries."""
     try:
-        projects = db_manager.get_project_portfolio()
+        projects = db_manager.get_all_projects()
         return jsonify({'projects': projects, 'status': 'success'})
     except Exception as exc:  # pragma: no cover - defensive API layer
         return jsonify({'status': 'error', 'error': str(exc)}), 500
 
 @app.route('/api/conflicts', methods=['GET'])
 def get_conflicts():
-    """Run the conflict detection engine using the new schema."""
+    """Run the conflict detection engine using the classic schema."""
     try:
         days_ahead = request.args.get('daysAhead', default=28, type=int)
-        risk_threshold = request.args.get('riskThreshold', default=9.0, type=float)
-        current_threshold = request.args.get('currentThreshold', default=1.0, type=float)
-        future_threshold = request.args.get('futureThreshold', default=1.0, type=float)
 
         conflicts = conflict_detector.get_all_conflicts(
             days_ahead=days_ahead,
-            risk_threshold=risk_threshold,
-            current_threshold=current_threshold,
-            future_threshold=future_threshold,
         )
         return jsonify({'conflicts': conflicts, 'status': 'success'})
     except Exception as exc:  # pragma: no cover - defensive API layer

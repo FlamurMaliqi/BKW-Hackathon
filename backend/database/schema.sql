@@ -1,90 +1,56 @@
+-- BKW Hackathon - AI Project Management Database Schema
+-- PostgreSQL database structure for project management data
 
+-- Create database (run this manually)
+-- CREATE DATABASE bkw_pm;
 
--- BKW Hackathon - Minimal database schema for hackathon prototype
--- Focused on teams, capacity, risks, and availability with only essential fields.
-
--- Delivery structure -------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS delivery_teams (
+-- Projects table
+CREATE TABLE IF NOT EXISTS projects (
     id SERIAL PRIMARY KEY,
-    name VARCHAR(100) NOT NULL
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    deadline DATE NOT NULL,
+    status VARCHAR(50) DEFAULT 'active',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS team_members (
+-- Engineers table
+CREATE TABLE IF NOT EXISTS engineers (
     id SERIAL PRIMARY KEY,
-    full_name VARCHAR(255) NOT NULL,
-    delivery_team_id INTEGER REFERENCES delivery_teams(id) ON DELETE SET NULL,
+    name VARCHAR(255) NOT NULL,
+    email VARCHAR(255) UNIQUE,
+    capacity_hours_per_week INTEGER DEFAULT 40,
     role VARCHAR(100),
-    capacity_percent NUMERIC(5,2) DEFAULT 100
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Capacity tracking --------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS capacity_snapshots (
+-- Project assignments (many-to-many relationship)
+CREATE TABLE IF NOT EXISTS project_assignments (
     id SERIAL PRIMARY KEY,
-    delivery_team_id INTEGER REFERENCES delivery_teams(id) ON DELETE SET NULL,
-    label VARCHAR(100),
-    stand_date DATE
+    engineer_id INTEGER REFERENCES engineers(id) ON DELETE CASCADE,
+    project_id INTEGER REFERENCES projects(id) ON DELETE CASCADE,
+    hours_per_week INTEGER NOT NULL,
+    start_date DATE,
+    end_date DATE,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(engineer_id, project_id)
 );
 
-CREATE TABLE IF NOT EXISTS capacity_entries (
+-- Absences/Holidays table
+CREATE TABLE IF NOT EXISTS absences (
     id SERIAL PRIMARY KEY,
-    capacity_snapshot_id INTEGER REFERENCES capacity_snapshots(id) ON DELETE CASCADE,
-    team_member_id INTEGER REFERENCES team_members(id) ON DELETE SET NULL,
-    project_code VARCHAR(30),
-    project_name TEXT,
-    workstream VARCHAR(100),
-    current_week_load NUMERIC(5,2),
-    four_week_load NUMERIC(5,2),
-    risk_flag VARCHAR(20)
+    engineer_id INTEGER REFERENCES engineers(id) ON DELETE CASCADE,
+    start_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    reason VARCHAR(255),
+    type VARCHAR(50) DEFAULT 'holiday', -- holiday, sick, personal
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
--- Project catalogue and risk profile --------------------------------------
-
-CREATE TABLE IF NOT EXISTS project_catalog (
-    id SERIAL PRIMARY KEY,
-    project_code VARCHAR(30) NOT NULL,
-    name TEXT NOT NULL,
-    customer TEXT,
-    status VARCHAR(50),
-    delivery_team_id INTEGER REFERENCES delivery_teams(id) ON DELETE SET NULL,
-    CONSTRAINT uq_project_catalog_code UNIQUE (project_code)
-);
-
-CREATE TABLE IF NOT EXISTS project_risk_assessments (
-    id SERIAL PRIMARY KEY,
-    project_catalog_id INTEGER REFERENCES project_catalog(id) ON DELETE CASCADE,
-    reporting_year SMALLINT NOT NULL CHECK (reporting_year >= 2000),
-    reporting_quarter SMALLINT NOT NULL CHECK (reporting_quarter BETWEEN 1 AND 4),
-    risk_description TEXT,
-    risk_probability SMALLINT CHECK (risk_probability BETWEEN 0 AND 5),
-    risk_impact SMALLINT CHECK (risk_impact BETWEEN 0 AND 5),
-    risk_score SMALLINT,
-    mitigation_plan TEXT,
-    UNIQUE (project_catalog_id, reporting_year, reporting_quarter)
-);
-
--- Availability -------------------------------------------------------------
-
-CREATE TABLE IF NOT EXISTS availability_status_codes (
-    id SERIAL PRIMARY KEY,
-    code VARCHAR(10) NOT NULL UNIQUE,
-    description TEXT
-);
-
-CREATE TABLE IF NOT EXISTS member_availability_calendar (
-    id SERIAL PRIMARY KEY,
-    team_member_id INTEGER REFERENCES team_members(id) ON DELETE CASCADE,
-    day DATE NOT NULL,
-    status_code_id INTEGER REFERENCES availability_status_codes(id) ON DELETE SET NULL,
-    comment TEXT,
-    UNIQUE (team_member_id, day)
-);
-
--- Indexes ------------------------------------------------------------------
-
-CREATE INDEX IF NOT EXISTS idx_capacity_entries_project ON capacity_entries(project_code);
-CREATE INDEX IF NOT EXISTS idx_project_catalog_code ON project_catalog(project_code);
-CREATE INDEX IF NOT EXISTS idx_project_risk_period ON project_risk_assessments(reporting_year, reporting_quarter);
-CREATE INDEX IF NOT EXISTS idx_member_availability_day ON member_availability_calendar(day);
-
+-- Create indexes for better performance
+CREATE INDEX IF NOT EXISTS idx_projects_deadline ON projects(deadline);
+CREATE INDEX IF NOT EXISTS idx_assignments_engineer ON project_assignments(engineer_id);
+CREATE INDEX IF NOT EXISTS idx_assignments_project ON project_assignments(project_id);
+CREATE INDEX IF NOT EXISTS idx_absences_engineer ON absences(engineer_id);
+CREATE INDEX IF NOT EXISTS idx_absences_dates ON absences(start_date, end_date);
