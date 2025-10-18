@@ -137,6 +137,54 @@ export const getAvailableEngineers = async (projectId) => {
   return apiFetch(`/api/projects/${projectId}/available-engineers`);
 };
 
+/**
+ * Get workload analysis and overwork periods for an engineer
+ * @param {number} engineerId - Engineer ID
+ * @param {number} daysAhead - Number of days ahead to analyze (default: 90)
+ * @returns {Promise<{engineer_id: number, overwork_periods: Array, total_overwork_days: number, is_at_risk: boolean, status: string}>}
+ */
+export const getEngineerWorkload = async (engineerId, daysAhead = 90) => {
+  return apiFetch(`/api/workload/engineer/${engineerId}?days_ahead=${daysAhead}`);
+};
+
+/**
+ * Get detailed daily workload timeline for an engineer
+ * @param {number} engineerId - Engineer ID
+ * @param {number} daysAhead - Number of days ahead to analyze (default: 90)
+ * @returns {Promise<{engineer_id: number, timeline: Array, status: string}>}
+ */
+export const getEngineerTimeline = async (engineerId, daysAhead = 90) => {
+  return apiFetch(`/api/workload/engineer/${engineerId}/timeline?days_ahead=${daysAhead}`);
+};
+
+/**
+ * Get workload forecast for a team
+ * @param {number} teamId - Team ID
+ * @param {number} daysAhead - Number of days ahead to analyze (default: 90)
+ * @returns {Promise<{forecast: Object, status: string}>}
+ */
+export const getTeamWorkload = async (teamId, daysAhead = 90) => {
+  return apiFetch(`/api/workload/team/${teamId}?days_ahead=${daysAhead}`);
+};
+
+/**
+ * Get all workload conflicts across the company
+ * @param {number} daysAhead - Number of days ahead to analyze (default: 90)
+ * @returns {Promise<{conflicts: Array, total_engineers_at_risk: number, status: string}>}
+ */
+export const getWorkloadConflicts = async (daysAhead = 90) => {
+  return apiFetch(`/api/workload/conflicts?days_ahead=${daysAhead}`);
+};
+
+/**
+ * Get company-wide workload forecast
+ * @param {number} daysAhead - Number of days ahead to analyze (default: 90)
+ * @returns {Promise<{forecast: Object, status: string}>}
+ */
+export const getCompanyForecast = async (daysAhead = 90) => {
+  return apiFetch(`/api/workload/forecast?days_ahead=${daysAhead}`);
+};
+
 // Export all API functions as a default object for convenience
 export default {
   getProjects,
@@ -148,4 +196,9 @@ export default {
   assignEngineerToProject,
   unassignEngineerFromProject,
   getAvailableEngineers,
+  getEngineerWorkload,
+  getEngineerTimeline,
+  getTeamWorkload,
+  getWorkloadConflicts,
+  getCompanyForecast,
 };

@@ -7,6 +7,7 @@ from flask_cors import CORS
 
 from conflict_detection import conflict_detector
 from database.connection import db_manager
+from workload_analyzer import WorkloadAnalyzer
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -18,6 +19,9 @@ CORS(app, resources={
         "allow_headers": ["Content-Type", "Authorization"]
     }
 })
+
+# Initialize workload analyzer
+workload_analyzer = WorkloadAnalyzer(db_manager)
 
 @app.route('/')
 def health_check():
@@ -261,6 +265,102 @@ def get_available_engineers_for_project(project_id):
     try:
         engineers = db_manager.get_available_engineers(project_id=project_id)
         return jsonify({'engineers': engineers, 'status': 'success'})
+    except Exception as exc:
+        return jsonify({'status': 'error', 'error': str(exc)}), 500
+
+# ---------------------------------------------------------------------
+# Workload Analysis Endpoints
+# ---------------------------------------------------------------------
+
+@app.route('/api/workload/engineer/<int:engineer_id>', methods=['GET'])
+def get_engineer_workload(engineer_id):
+    """Get workload timeline and overwork periods for an engineer."""
+    try:
+        days_ahead = request.args.get('days_ahead', default=90, type=int)
+        days_ahead = min(max(days_ahead, 7), 365)  # Clamp between 7 and 365 days
+
+        overwork_periods = workload_analyzer.detect_overwork_periods(engineer_id, days_ahead)
+
+        return jsonify({
+            'engineer_id': engineer_id,
+            'days_ahead': days_ahead,
+            'overwork_periods': overwork_periods,
+            'total_overwork_days': sum(p['days_count'] for p in overwork_periods),
+            'is_at_risk': len(overwork_periods) > 0,
+            'status': 'success'
+        })
+    except Exception as exc:
+        return jsonify({'status': 'error', 'error': str(exc)}), 500
+
+@app.route('/api/workload/engineer/<int:engineer_id>/timeline', methods=['GET'])
+def get_engineer_timeline(engineer_id):
+    """Get detailed daily workload timeline for an engineer."""
+    try:
+        days_ahead = request.args.get('days_ahead', default=90, type=int)
+        days_ahead = min(max(days_ahead, 7), 365)
+
+        start_date = date.today()
+        end_date = start_date + __import__('datetime').timedelta(days=days_ahead)
+
+        timeline = workload_analyzer.calculate_engineer_timeline(engineer_id, start_date, end_date)
+
+        return jsonify({
+            'engineer_id': engineer_id,
+            'start_date': start_date.isoformat(),
+            'end_date': end_date.isoformat(),
+            'timeline': timeline,
+            'status': 'success'
+        })
+    except Exception as exc:
+        return jsonify({'status': 'error', 'error': str(exc)}), 500
+
+@app.route('/api/workload/team/<int:team_id>', methods=['GET'])
+def get_team_workload(team_id):
+    """Get workload forecast for entire team."""
+    try:
+        days_ahead = request.args.get('days_ahead', default=90, type=int)
+        days_ahead = min(max(days_ahead, 7), 365)
+
+        forecast = workload_analyzer.get_team_workload_forecast(team_id, days_ahead)
+
+        return jsonify({
+            'forecast': forecast,
+            'status': 'success'
+        })
+    except Exception as exc:
+        return jsonify({'status': 'error', 'error': str(exc)}), 500
+
+@app.route('/api/workload/conflicts', methods=['GET'])
+def get_workload_conflicts():
+    """Get all engineers with workload conflicts."""
+    try:
+        days_ahead = request.args.get('days_ahead', default=90, type=int)
+        days_ahead = min(max(days_ahead, 7), 365)
+
+        conflicts = workload_analyzer.find_workload_conflicts(days_ahead)
+
+        return jsonify({
+            'conflicts': conflicts,
+            'total_engineers_at_risk': len(conflicts),
+            'days_ahead': days_ahead,
+            'status': 'success'
+        })
+    except Exception as exc:
+        return jsonify({'status': 'error', 'error': str(exc)}), 500
+
+@app.route('/api/workload/forecast', methods=['GET'])
+def get_company_forecast():
+    """Get company-wide workload forecast summary."""
+    try:
+        days_ahead = request.args.get('days_ahead', default=90, type=int)
+        days_ahead = min(max(days_ahead, 7), 365)
+
+        forecast = workload_analyzer.get_company_forecast(days_ahead)
+
+        return jsonify({
+            'forecast': forecast,
+            'status': 'success'
+        })
     except Exception as exc:
         return jsonify({'status': 'error', 'error': str(exc)}), 500
 
