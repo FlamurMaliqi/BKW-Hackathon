@@ -71,6 +71,7 @@ const AIIntegration = () => {
     toggleListening,
     resetTranscript
   } = useSpeechToText({
+    continuous: false, // Use non-continuous mode to prevent duplication
     onResult: (finalTranscript) => {
       setInputValue(finalTranscript);
     },
@@ -84,19 +85,12 @@ const AIIntegration = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Handle speech recognition results
+  // Handle speech recognition results - show interim text in real-time
   useEffect(() => {
     if (transcript) {
       setInputValue(transcript);
     }
   }, [transcript]);
-
-  // Handle interim results for real-time feedback
-  useEffect(() => {
-    if (interimTranscript) {
-      setInputValue(transcript + interimTranscript);
-    }
-  }, [interimTranscript, transcript]);
 
   // Mock project data that would come from your backend/API
   const projectData = {
