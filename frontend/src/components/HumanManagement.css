@@ -55,7 +55,6 @@
 }
 
 .human-management {
-  min-height: 100vh;     /* Full viewport height */
   background: var(--bkw-white);   /* Clean white background */
   padding: 0;           /* No default padding */
   padding-bottom: 60px; /* Add bottom padding to ensure content is scrollable */
@@ -90,9 +89,6 @@
 /* Main content area with dashboard cards */
 .content-body {
   padding: var(--spacing-2xl);        /* Generous padding around the content */
-  flex: 1;            /* Take up remaining space */
-  overflow-y: auto;   /* Allow vertical scrolling when content exceeds viewport */
-  overflow-x: hidden; /* Prevent horizontal scrolling */
   display: flex;      /* Flexbox layout */
   flex-direction: column; /* Stack controls and workers vertically */
 }
@@ -186,10 +182,10 @@
   border-radius: var(--radius-medium);   /* Rounded corners */
   border: 1px solid var(--bkw-blue);  /* BKW blue border */
   overflow: hidden;     /* Ensure content doesn't overflow rounded corners */
-  flex: 1;            /* Take up remaining space */
   display: flex;      /* Flexbox layout */
   flex-direction: column; /* Stack header and list vertically */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* Subtle shadow */
+  max-height: fit-content; /* Wrap around content instead of taking all space */
 }
 
 .workers-header {
@@ -268,10 +264,7 @@
 /* Workers List */
 .workers-list {
   padding: 0;          /* Remove default padding */
-  flex: 1;            /* Take up remaining space */
-  overflow-y: auto;    /* Enable vertical scrolling */
-  overflow-x: hidden;  /* Prevent horizontal scrolling */
-  min-height: 0;      /* Allow flex item to shrink below content size */
+  overflow: visible;   /* Allow content to flow naturally */
 }
 
 /* Group Section */

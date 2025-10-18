@@ -3,7 +3,7 @@
  * 
  * This component displays detailed information about a specific team.
  * It shows team members, projects, performance metrics, and team statistics.
- * This is a placeholder component for future team detail page implementation.
+ * Follows the modern BKW Engineering design language and patterns.
  * 
  * Features:
  * - Team member profiles and roles
@@ -17,7 +17,7 @@ import React from 'react';
 import './TeamDetail.css';
 
 const TeamDetail = ({ teamName, onBack }) => {
-  // Placeholder data for team details
+  // Team data with BKW design system colors
   const teamData = {
     'Frontend Team': {
       name: 'Frontend Team',
@@ -25,7 +25,7 @@ const TeamDetail = ({ teamName, onBack }) => {
       members: 3,
       projects: ['E-commerce Platform', 'UI/UX Redesign'],
       performance: 85,
-      color: '#007bff'
+      color: 'var(--bkw-blue)'
     },
     'Backend Team': {
       name: 'Backend Team',
@@ -33,7 +33,7 @@ const TeamDetail = ({ teamName, onBack }) => {
       members: 2,
       projects: ['E-commerce Platform', 'API Integration', 'Analytics Dashboard'],
       performance: 78,
-      color: '#28a745'
+      color: 'var(--medium-blue)'
     },
     'DevOps Team': {
       name: 'DevOps Team',
@@ -41,7 +41,7 @@ const TeamDetail = ({ teamName, onBack }) => {
       members: 1,
       projects: ['E-commerce Platform', 'Mobile App', 'Analytics Dashboard'],
       performance: 92,
-      color: '#ffc107'
+      color: 'var(--info)'
     },
     'Design Team': {
       name: 'Design Team',
@@ -49,7 +49,7 @@ const TeamDetail = ({ teamName, onBack }) => {
       members: 1,
       projects: ['Mobile App', 'UI/UX Redesign'],
       performance: 88,
-      color: '#dc3545'
+      color: 'var(--warning)'
     },
     'QA Team': {
       name: 'QA Team',
@@ -57,7 +57,7 @@ const TeamDetail = ({ teamName, onBack }) => {
       members: 1,
       projects: ['E-commerce Platform', 'Mobile App'],
       performance: 90,
-      color: '#6f42c1'
+      color: 'var(--success)'
     }
   };
 
@@ -117,7 +117,10 @@ const TeamDetail = ({ teamName, onBack }) => {
 
         {/* Team Projects Section */}
         <div className="team-projects">
-          <h2>Team Projects</h2>
+          <div className="section-header">
+            <h2>Team Projects</h2>
+            <span className="section-count">{team.projects.length} projects</span>
+          </div>
           <div className="projects-list">
             {team.projects.map((project, index) => (
               <div key={index} className="project-item">
@@ -135,7 +138,10 @@ const TeamDetail = ({ teamName, onBack }) => {
 
         {/* Team Members Section */}
         <div className="team-members">
-          <h2>Team Members</h2>
+          <div className="section-header">
+            <h2>Team Members</h2>
+            <span className="section-count">{team.members} members</span>
+          </div>
           <div className="members-grid">
             <div className="member-card">
               <div className="member-avatar">👨‍💻</div>
@@ -175,7 +181,10 @@ const TeamDetail = ({ teamName, onBack }) => {
 
         {/* Team Performance Section */}
         <div className="team-performance">
-          <h2>Team Performance</h2>
+          <div className="section-header">
+            <h2>Team Performance</h2>
+            <span className="section-count">Overall: {team.performance}%</span>
+          </div>
           <div className="performance-metrics">
             <div className="metric-item">
               <div className="metric-label">Code Quality</div>
@@ -208,18 +217,33 @@ const TeamDetail = ({ teamName, onBack }) => {
           </div>
         </div>
 
-        {/* Placeholder for future features */}
-        <div className="placeholder-section">
-          <div className="placeholder-content">
-            <div className="placeholder-icon">🚀</div>
-            <h3>Coming Soon</h3>
-            <p>Advanced team management features will be implemented here</p>
-            <ul>
-              <li>Team collaboration tools</li>
-              <li>Performance analytics</li>
-              <li>Skill development planning</li>
-              <li>Team communication hub</li>
-            </ul>
+        {/* Future Features Section */}
+        <div className="future-features">
+          <div className="section-header">
+            <h2>Coming Soon</h2>
+            <span className="section-count">Advanced Features</span>
+          </div>
+          <div className="features-grid">
+            <div className="feature-card">
+              <div className="feature-icon">🤝</div>
+              <h4>Team Collaboration</h4>
+              <p>Enhanced communication and collaboration tools</p>
+            </div>
+            <div className="feature-card">
+              <div className="feature-icon">📈</div>
+              <h4>Performance Analytics</h4>
+              <p>Advanced metrics and insights dashboard</p>
+            </div>
+            <div className="feature-card">
+              <div className="feature-icon">🎓</div>
+              <h4>Skill Development</h4>
+              <p>Personalized learning and growth planning</p>
+            </div>
+            <div className="feature-card">
+              <div className="feature-icon">💬</div>
+              <h4>Communication Hub</h4>
+              <p>Integrated team messaging and updates</p>
+            </div>
           </div>
         </div>
       </div>
