@@ -1,5 +1,5 @@
 """BKW Hackathon - AI Project Management Backend."""
-from datetime import datetime, timezone
+from datetime import datetime, timezone, date
 from typing import Dict, List
 
 from flask import Flask, request, jsonify
@@ -169,19 +169,31 @@ def create_project():
         data = request.get_json(force=True) if request.is_json else {}
         name = data.get('name')
         description = data.get('description', '')
-        deadline = data.get('deadline')
+        deadline_str = data.get('deadline')
         priority = data.get('priority', 'medium')
-        budget_total = data.get('budget_total', 0.0)
+        budget_total_raw = data.get('budget_total', 0.0)
 
-        if not name or not deadline:
+        if not name or not deadline_str:
             return jsonify({'status': 'error', 'error': 'Name and deadline are required'}), 400
+
+        # Parse deadline string to date object
+        try:
+            deadline = date.fromisoformat(deadline_str)
+        except (ValueError, TypeError) as e:
+            return jsonify({'status': 'error', 'error': f'Invalid deadline format. Expected YYYY-MM-DD, got: {deadline_str}'}), 400
+
+        # Parse budget_total, handling empty strings
+        try:
+            budget_total = float(budget_total_raw) if budget_total_raw != '' else 0.0
+        except (ValueError, TypeError):
+            budget_total = 0.0
 
         project = db_manager.create_project(
             name=name,
             description=description,
             deadline=deadline,
             priority=priority,
-            budget_total=float(budget_total)
+            budget_total=budget_total
         )
         return jsonify({'project': project, 'status': 'success'}), 201
     except Exception as exc:
@@ -194,11 +206,22 @@ def assign_engineer(project_id):
         data = request.get_json(force=True) if request.is_json else {}
         engineer_id = data.get('engineer_id')
         hours_per_week = data.get('hours_per_week')
-        start_date = data.get('start_date')
-        end_date = data.get('end_date')
+        start_date_str = data.get('start_date')
+        end_date_str = data.get('end_date')
 
         if not engineer_id or not hours_per_week:
             return jsonify({'status': 'error', 'error': 'engineer_id and hours_per_week are required'}), 400
+
+        # Parse date strings to date objects if provided
+        start_date = None
+        end_date = None
+        try:
+            if start_date_str:
+                start_date = date.fromisoformat(start_date_str)
+            if end_date_str:
+                end_date = date.fromisoformat(end_date_str)
+        except (ValueError, TypeError) as e:
+            return jsonify({'status': 'error', 'error': f'Invalid date format. Expected YYYY-MM-DD'}), 400
 
         assignment = db_manager.assign_engineer_to_project(
             engineer_id=int(engineer_id),
