@@ -14,9 +14,10 @@
  * - Activity tracking and absence management
  */
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import TeamDetail from './TeamDetail';
 import './HumanManagement.css';
+import { getEngineers, getTeams } from '../services/api';
 
 const HumanManagement = () => {
   // State for search and filtering
@@ -28,9 +29,40 @@ const HumanManagement = () => {
   const [expandedTeams, setExpandedTeams] = useState(new Set());
   const [expandedProjects, setExpandedProjects] = useState(new Set());
   const [selectedTeam, setSelectedTeam] = useState(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+  const [engineers, setEngineers] = useState([]);
+  const [teams, setTeams] = useState([]);
 
-  // Dummy data for teams
-  const teams = [
+  // Fetch engineers and teams from backend
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        const [engineersResponse, teamsResponse] = await Promise.all([
+          getEngineers(7),
+          getTeams(7)
+        ]);
+
+        if (engineersResponse.status === 'success' && engineersResponse.engineers) {
+          setEngineers(engineersResponse.engineers);
+        }
+        if (teamsResponse.status === 'success' && teamsResponse.teams) {
+          setTeams(teamsResponse.teams);
+        }
+      } catch (err) {
+        console.error('Error fetching data:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchData();
+  }, []);
+
+  // Dummy data for teams (fallback - removed)
+  const fallbackTeams = [
     { id: 1, name: 'Frontend Team', color: '#007bff' },
     { id: 2, name: 'Backend Team', color: '#28a745' },
     { id: 3, name: 'DevOps Team', color: '#ffc107' },
@@ -38,17 +70,42 @@ const HumanManagement = () => {
     { id: 5, name: 'QA Team', color: '#6f42c1' }
   ];
 
-  // Dummy data for projects
-  const projects = [
-    { id: 1, name: 'E-commerce Platform', status: 'active' },
-    { id: 2, name: 'Mobile App', status: 'active' },
-    { id: 3, name: 'Analytics Dashboard', status: 'planning' },
-    { id: 4, name: 'API Integration', status: 'active' },
-    { id: 5, name: 'UI/UX Redesign', status: 'completed' }
-  ];
+  // Extract unique projects from engineers
+  const projects = useMemo(() => {
+    const projectSet = new Set();
+    engineers.forEach(engineer => {
+      (engineer.project_names || []).forEach(project => projectSet.add(project));
+    });
+    return Array.from(projectSet).map((name, index) => ({
+      id: index + 1,
+      name: name,
+      status: 'active'
+    }));
+  }, [engineers]);
 
-  // Dummy data for workers
-  const workers = [
+  // Map backend engineers to workers format
+  const workers = useMemo(() => {
+    return engineers.map(engineer => ({
+      id: engineer.id,
+      name: engineer.name,
+      role: engineer.role,
+      team: engineer.team_name || 'No Team',
+      teamId: engineer.team_id,
+      projects: engineer.project_names || [],
+      status: engineer.status || 'active',
+      availability: engineer.availability || 'available',
+      workload: engineer.workload_percent || 0,
+      isOverworked: engineer.is_overworked || false,
+      absence: engineer.current_absence || null,
+      activity: (engineer.presence || []).slice(-7).map(p => p.status === 'in_office' ? Math.floor(Math.random() * 5) + 1 : 0),
+      skills: engineer.skills || [],
+      email: engineer.email || '',
+      phone: engineer.phone || ''
+    }));
+  }, [engineers]);
+
+  // Fallback dummy data for workers (removed)
+  const fallbackWorkers = [
     {
       id: 1,
       name: 'Alice Johnson',
@@ -193,14 +250,14 @@ const HumanManagement = () => {
       const matchesSearch = worker.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            worker.role.toLowerCase().includes(searchTerm.toLowerCase()) ||
                            worker.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()));
-      
+
       const matchesTeam = filterTeam === 'all' || worker.team === filterTeam;
       const matchesProject = filterProject === 'all' || worker.projects.includes(filterProject);
       const matchesAvailability = filterAvailability === 'all' || worker.availability === filterAvailability;
-      
+
       return matchesSearch && matchesTeam && matchesProject && matchesAvailability;
     });
-  }, [searchTerm, filterTeam, filterProject, filterAvailability]);
+  }, [workers, searchTerm, filterTeam, filterProject, filterAvailability]);
 
   // Group workers by team or project
   const groupedWorkers = useMemo(() => {
@@ -217,7 +274,7 @@ const HumanManagement = () => {
       });
       return grouped;
     }
-  }, [filteredWorkers, groupBy]);
+  }, [teams, projects, filteredWorkers, groupBy]);
 
   // Toggle team/project expansion
   const toggleExpansion = (name) => {
@@ -275,6 +332,36 @@ const HumanManagement = () => {
     if (workload >= 75) return '#ffc107';
     return '#28a745';
   };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="human-management">
+        <div className="content-header">
+          <h1>Human Management</h1>
+          <p>Manage team members, workload distribution, and collaboration</p>
+        </div>
+        <div className="content-body">
+          <div className="loading-message">Loading engineers and teams...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="human-management">
+        <div className="content-header">
+          <h1>Human Management</h1>
+          <p>Manage team members, workload distribution, and collaboration</p>
+        </div>
+        <div className="content-body">
+          <div className="error-message">Error loading data: {error}</div>
+        </div>
+      </div>
+    );
+  }
 
   // If a team is selected, show team detail view
   if (selectedTeam) {
@@ -358,14 +445,28 @@ const HumanManagement = () => {
             </div>
           </div>
 
+          {/* Debug info */}
+          {workers.length === 0 && (
+            <div style={{padding: '20px', background: '#f0f0f0', margin: '10px 0'}}>
+              <p>No workers found. Engineers: {engineers.length}, Teams: {teams.length}</p>
+            </div>
+          )}
+          {workers.length > 0 && Object.keys(groupedWorkers).length === 0 && (
+            <div style={{padding: '20px', background: '#fff3cd', margin: '10px 0'}}>
+              <p>Workers loaded ({workers.length}) but no groups found. Check team/project names.</p>
+            </div>
+          )}
+
           <div className="workers-list">
             {Object.entries(groupedWorkers).map(([groupName, groupWorkers]) => {
+              // Show all groups in debug
+              console.log(`Group: ${groupName}, Workers: ${groupWorkers.length}`);
               if (groupWorkers.length === 0) return null;
               
               const isExpanded = groupBy === 'team' ? expandedTeams.has(groupName) : expandedProjects.has(groupName);
               const team = teams.find(t => t.name === groupName);
               const project = projects.find(p => p.name === groupName);
-              const groupColor = team?.color || project?.color || '#6c757d';
+              const groupColor = team?.color || '#6c757d';
 
               return (
                 <div key={groupName} className="group-section">

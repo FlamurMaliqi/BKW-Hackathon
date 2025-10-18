@@ -1,6 +1,6 @@
 """Conflict detection tailored to the classic projects/engineers schema."""
 from collections import defaultdict
-from datetime import date, datetime, timedelta
+from datetime import date, datetime, timedelta, timezone
 from typing import Any, Dict, List
 
 from database.connection import db_manager
@@ -123,7 +123,7 @@ class ConflictDetector:
                 }
 
         return {
-            'generated_at': datetime.utcnow().isoformat() + 'Z',
+            'generated_at': datetime.now(timezone.utc).isoformat(),
             'total_engineers': total_engineers,
             'total_projects': total_projects,
             'total_capacity_hours': round(total_capacity, 2),

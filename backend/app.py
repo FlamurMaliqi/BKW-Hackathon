@@ -1,5 +1,5 @@
 """BKW Hackathon - AI Project Management Backend."""
-from datetime import datetime
+from datetime import datetime, timezone
 from typing import Dict, List
 
 from flask import Flask, request, jsonify
@@ -10,7 +10,14 @@ from database.connection import db_manager
 
 # Initialize Flask app
 app = Flask(__name__)
-CORS(app)  # Enable CORS for frontend communication
+# Enable CORS for frontend communication with explicit configuration
+CORS(app, resources={
+    r"/api/*": {
+        "origins": ["http://localhost:3000", "http://127.0.0.1:3000"],
+        "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        "allow_headers": ["Content-Type", "Authorization"]
+    }
+})
 
 @app.route('/')
 def health_check():
@@ -89,7 +96,7 @@ def _build_insight(query: str) -> Dict[str, str]:
 
     return {
         'primary': primary,
-        'generated_at': datetime.utcnow().isoformat() + 'Z',
+        'generated_at': datetime.now(timezone.utc).isoformat(),
     }
 
 

@@ -13,15 +13,41 @@
  * - Multiple chart visualizations
  */
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import './ProjectOverview.css';
+import { getProjects } from '../services/api';
 
 const ProjectOverview = () => {
   // State for managing expanded project items
   const [expandedProjects, setExpandedProjects] = useState(new Set());
+  const [projects, setProjects] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
 
-  // Dummy data for projects
-  const projects = [
+  // Fetch projects from backend on component mount
+  useEffect(() => {
+    const fetchProjects = async () => {
+      try {
+        setLoading(true);
+        const response = await getProjects();
+        if (response.status === 'success' && response.projects) {
+          setProjects(response.projects);
+        } else {
+          throw new Error('Failed to fetch projects');
+        }
+      } catch (err) {
+        console.error('Error fetching projects:', err);
+        setError(err.message);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchProjects();
+  }, []);
+
+  // Dummy data for projects (fallback - removed)
+  const fallbackProjects = [
     {
       id: 1,
       name: "E-commerce Platform Redesign",
@@ -109,6 +135,36 @@ const ProjectOverview = () => {
     }
   };
 
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="project-overview">
+        <div className="content-header">
+          <h1>Project Overview</h1>
+          <p>Monitor project status, deadlines, and resource allocation</p>
+        </div>
+        <div className="content-body">
+          <div className="loading-message">Loading projects...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="project-overview">
+        <div className="content-header">
+          <h1>Project Overview</h1>
+          <p>Monitor project status, deadlines, and resource allocation</p>
+        </div>
+        <div className="content-body">
+          <div className="error-message">Error loading projects: {error}</div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="project-overview">
       {/* Header section with page title */}
@@ -139,10 +195,10 @@ const ProjectOverview = () => {
                     <div key={project.id} className="gantt-bar">
                       <div className="gantt-label">{project.name}</div>
                       <div className="gantt-progress">
-                        <div 
-                          className="gantt-fill" 
-                          style={{ 
-                            width: `${project.completion}%`,
+                        <div
+                          className="gantt-fill"
+                          style={{
+                            width: `${project.completion_percent || 0}%`,
                             backgroundColor: getPriorityColor(project.priority)
                           }}
                         ></div>
@@ -163,8 +219,8 @@ const ProjectOverview = () => {
               <div className="graph-content">
                 <div className="budget-chart">
                   {projects.map(project => {
-                    const totalBudget = projects.reduce((sum, p) => sum + p.budget, 0);
-                    const percentage = (project.budget / totalBudget) * 100;
+                    const totalBudget = projects.reduce((sum, p) => sum + (p.budget_total || 0), 0);
+                    const percentage = ((project.budget_total || 0) / totalBudget) * 100;
                     return (
                       <div key={project.id} className="budget-item">
                         <div className="budget-label">{project.name}</div>
@@ -174,7 +230,7 @@ const ProjectOverview = () => {
                             style={{ width: `${percentage}%` }}
                           ></div>
                         </div>
-                        <div className="budget-amount">${project.budget.toLocaleString()}</div>
+                        <div className="budget-amount">${(project.budget_total || 0).toLocaleString()}</div>
                       </div>
                     );
                   })}
@@ -194,11 +250,11 @@ const ProjectOverview = () => {
                     <div key={project.id} className="resource-item">
                       <div className="resource-label">{project.name}</div>
                       <div className="resource-team">
-                        {project.team.map((member, index) => (
+                        {(project.team_members || []).map((member, index) => (
                           <span key={index} className="team-member">{member}</span>
                         ))}
                       </div>
-                      <div className="resource-count">{project.team.length} members</div>
+                      <div className="resource-count">{(project.team_members || []).length} members</div>
                     </div>
                   ))}
                 </div>
@@ -244,12 +300,12 @@ const ProjectOverview = () => {
                   </div>
                   <div className="project-progress">
                     <div className="progress-bar">
-                      <div 
-                        className="progress-fill" 
-                        style={{ width: `${project.completion}%` }}
+                      <div
+                        className="progress-fill"
+                        style={{ width: `${project.completion_percent || 0}%` }}
                       ></div>
                     </div>
-                    <div className="progress-text">{project.completion}%</div>
+                    <div className="progress-text">{project.completion_percent || 0}%</div>
                   </div>
                   <div className="project-actions">
                     <button 
@@ -277,7 +333,7 @@ const ProjectOverview = () => {
                       <div className="detail-section">
                         <h4>Team Members</h4>
                         <div className="team-list">
-                          {project.team.map((member, index) => (
+                          {(project.team_members || []).map((member, index) => (
                             <span key={index} className="team-member">{member}</span>
                           ))}
                         </div>
@@ -287,15 +343,15 @@ const ProjectOverview = () => {
                         <div className="budget-info">
                           <div className="budget-item">
                             <span>Total Budget:</span>
-                            <span>${project.budget.toLocaleString()}</span>
+                            <span>${(project.budget_total || 0).toLocaleString()}</span>
                           </div>
                           <div className="budget-item">
                             <span>Amount Spent:</span>
-                            <span>${project.spent.toLocaleString()}</span>
+                            <span>${(project.budget_spent || 0).toLocaleString()}</span>
                           </div>
                           <div className="budget-item">
                             <span>Remaining:</span>
-                            <span>${(project.budget - project.spent).toLocaleString()}</span>
+                            <span>${(project.budget_remaining || 0).toLocaleString()}</span>
                           </div>
                         </div>
                       </div>
@@ -304,7 +360,7 @@ const ProjectOverview = () => {
                         <div className="progress-details">
                           <div className="progress-item">
                             <span>Completion:</span>
-                            <span>{project.completion}%</span>
+                            <span>{project.completion_percent || 0}%</span>
                           </div>
                           <div className="progress-item">
                             <span>Status:</span>
