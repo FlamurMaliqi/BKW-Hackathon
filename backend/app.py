@@ -169,6 +169,7 @@ def create_project():
         data = request.get_json(force=True) if request.is_json else {}
         name = data.get('name')
         description = data.get('description', '')
+        start_date_str = data.get('start_date')
         deadline_str = data.get('deadline')
         priority = data.get('priority', 'medium')
         budget_total_raw = data.get('budget_total', 0.0)
@@ -176,10 +177,18 @@ def create_project():
         if not name or not deadline_str:
             return jsonify({'status': 'error', 'error': 'Name and deadline are required'}), 400
 
+        # Parse start_date string to date object if provided
+        start_date = None
+        if start_date_str:
+            try:
+                start_date = date.fromisoformat(start_date_str)
+            except (ValueError, TypeError):
+                return jsonify({'status': 'error', 'error': f'Invalid start_date format. Expected YYYY-MM-DD, got: {start_date_str}'}), 400
+
         # Parse deadline string to date object
         try:
             deadline = date.fromisoformat(deadline_str)
-        except (ValueError, TypeError) as e:
+        except (ValueError, TypeError):
             return jsonify({'status': 'error', 'error': f'Invalid deadline format. Expected YYYY-MM-DD, got: {deadline_str}'}), 400
 
         # Parse budget_total, handling empty strings
@@ -193,7 +202,8 @@ def create_project():
             description=description,
             deadline=deadline,
             priority=priority,
-            budget_total=budget_total
+            budget_total=budget_total,
+            start_date=start_date
         )
         return jsonify({'project': project, 'status': 'success'}), 201
     except Exception as exc:

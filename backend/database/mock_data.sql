@@ -2,12 +2,12 @@
 -- Inserts sample projects, teams, engineers, assignments, absences, and presence
 
 -- ---------------------------------------------------------------------
-INSERT INTO projects (name, description, deadline, status, priority, completion_percent, budget_total, budget_spent) VALUES
-    ('Solar Roof Expansion', 'PV capacity increase across municipal buildings', '2026-03-15', 'active', 'high', 62.50, 1250000, 775000),
-    ('District Heating Retrofit', 'Modernise district heating control loops for downtown grid', '2025-12-01', 'active', 'medium', 48.00, 890000, 432000),
-    ('Battery Storage Pilot', 'Pilot-scale storage system for peak shaving', '2026-01-20', 'active', 'medium', 35.25, 640000, 210000),
-    ('Hydro Plant Modernization', 'Turbine control upgrade and monitoring rollout', '2025-11-15', 'active', 'high', 78.90, 1560000, 1215000),
-    ('HVAC Optimization Program', 'Energy efficiency improvements for office portfolio', '2026-02-10', 'planning', 'low', 18.00, 540000, 62000);
+INSERT INTO projects (name, description, start_date, deadline, status, priority, completion_percent, budget_total, budget_spent) VALUES
+    ('Solar Roof Expansion', 'PV capacity increase across municipal buildings', '2025-09-01', '2026-03-15', 'active', 'high', 62.50, 1250000, 775000),
+    ('District Heating Retrofit', 'Modernise district heating control loops for downtown grid', '2025-07-15', '2025-12-01', 'active', 'medium', 48.00, 890000, 432000),
+    ('Battery Storage Pilot', 'Pilot-scale storage system for peak shaving', '2025-08-01', '2026-01-20', 'active', 'medium', 35.25, 640000, 210000),
+    ('Hydro Plant Modernization', 'Turbine control upgrade and monitoring rollout', '2025-05-01', '2025-11-15', 'active', 'high', 78.90, 1560000, 1215000),
+    ('HVAC Optimization Program', 'Energy efficiency improvements for office portfolio', '2025-10-15', '2026-02-10', 'planning', 'low', 18.00, 540000, 62000);
 
 -- ---------------------------------------------------------------------
 -- Teams

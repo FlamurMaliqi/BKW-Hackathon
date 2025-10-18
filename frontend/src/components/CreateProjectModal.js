@@ -11,6 +11,7 @@ const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
+    start_date: '',
     deadline: '',
     priority: 'medium',
     budget_total: ''
@@ -53,6 +54,7 @@ const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
       setFormData({
         name: '',
         description: '',
+        start_date: '',
         deadline: '',
         priority: 'medium',
         budget_total: ''
@@ -71,6 +73,7 @@ const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
       setFormData({
         name: '',
         description: '',
+        start_date: '',
         deadline: '',
         priority: 'medium',
         budget_total: ''
@@ -131,6 +134,18 @@ const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
 
             <div className="form-row">
               <div className="form-group">
+                <label htmlFor="start_date">Start Date</label>
+                <input
+                  type="date"
+                  id="start_date"
+                  name="start_date"
+                  value={formData.start_date}
+                  onChange={handleChange}
+                  disabled={loading}
+                />
+              </div>
+
+              <div className="form-group">
                 <label htmlFor="deadline">
                   Deadline <span className="required">*</span>
                 </label>
@@ -144,7 +159,9 @@ const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
                   required
                 />
               </div>
+            </div>
 
+            <div className="form-row">
               <div className="form-group">
                 <label htmlFor="priority">Priority</label>
                 <select
@@ -159,21 +176,21 @@ const CreateProjectModal = ({ isOpen, onClose, onProjectCreated }) => {
                   <option value="high">High</option>
                 </select>
               </div>
-            </div>
 
-            <div className="form-group">
-              <label htmlFor="budget_total">Total Budget (CHF)</label>
-              <input
-                type="number"
-                id="budget_total"
-                name="budget_total"
-                value={formData.budget_total}
-                onChange={handleChange}
-                placeholder="0"
-                min="0"
-                step="0.01"
-                disabled={loading}
-              />
+              <div className="form-group">
+                <label htmlFor="budget_total">Total Budget (CHF)</label>
+                <input
+                  type="number"
+                  id="budget_total"
+                  name="budget_total"
+                  value={formData.budget_total}
+                  onChange={handleChange}
+                  placeholder="0"
+                  min="0"
+                  step="0.01"
+                  disabled={loading}
+                />
+              </div>
             </div>
           </div>
 

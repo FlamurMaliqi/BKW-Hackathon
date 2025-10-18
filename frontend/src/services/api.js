@@ -86,6 +86,7 @@ export const sendAIChat = async (query) => {
  * @param {Object} projectData - Project information
  * @param {string} projectData.name - Project name
  * @param {string} projectData.description - Project description
+ * @param {string} projectData.start_date - Project start date (YYYY-MM-DD, optional)
  * @param {string} projectData.deadline - Project deadline (YYYY-MM-DD)
  * @param {string} projectData.priority - Project priority (high, medium, low)
  * @param {number} projectData.budget_total - Total budget

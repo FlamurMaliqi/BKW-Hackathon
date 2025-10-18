@@ -8,6 +8,7 @@ CREATE TABLE IF NOT EXISTS projects (
     id SERIAL PRIMARY KEY,
     name VARCHAR(255) NOT NULL,
     description TEXT,
+    start_date DATE,
     deadline DATE NOT NULL,
     status VARCHAR(50) DEFAULT 'active',
     priority VARCHAR(50) DEFAULT 'medium', -- high, medium, low
