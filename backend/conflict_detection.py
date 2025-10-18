@@ -21,15 +21,26 @@ class ConflictDetector:
         for engineer in engineers:
             capacity = float(engineer.get('capacity_hours_per_week') or 0)
             current_hours = float(engineer.get('current_hours') or 0)
+            workload_percent = float(engineer.get('workload_percent') or 0)
+            flagged = engineer.get('is_overworked')
             if capacity and current_hours > capacity:
-                overload = {
+                overloaded.append({
                     'engineer_id': engineer.get('id'),
                     'engineer_name': engineer.get('name'),
                     'capacity_hours_per_week': capacity,
                     'assigned_hours_per_week': current_hours,
                     'overload_hours': round(current_hours - capacity, 2),
-                }
-                overloaded.append(overload)
+                    'workload_percent': round((current_hours / capacity) * 100, 1)
+                })
+            elif flagged or workload_percent >= 95:
+                overloaded.append({
+                    'engineer_id': engineer.get('id'),
+                    'engineer_name': engineer.get('name'),
+                    'capacity_hours_per_week': capacity,
+                    'assigned_hours_per_week': current_hours,
+                    'overload_hours': round(max(current_hours - capacity, 0), 2),
+                    'workload_percent': workload_percent
+                })
 
         overloaded.sort(key=lambda item: item['overload_hours'], reverse=True)
         return overloaded
@@ -107,6 +118,8 @@ class ConflictDetector:
                     'capacity_hours_per_week': capacity,
                     'assigned_hours_per_week': current,
                     'utilisation': round(ratio, 2),
+                    'availability': engineer.get('availability'),
+                    'team_name': engineer.get('team_name'),
                 }
 
         return {

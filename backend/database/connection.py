@@ -1,7 +1,7 @@
-"""Database helpers tailored to the legacy projects/engineers schema."""
+"""Database helpers for the AI project management backend."""
 import os
 from contextlib import contextmanager
-from datetime import date, datetime
+from datetime import date, datetime, timedelta
 from decimal import Decimal
 from typing import Any, Dict, List, Optional, Sequence
 
@@ -38,6 +38,12 @@ class DatabaseManager:
             return float(value)
         if isinstance(value, (datetime, date)):
             return value.isoformat()
+        if isinstance(value, list):
+            return [self._normalize_value(item) for item in value]
+        if isinstance(value, tuple):
+            return [self._normalize_value(item) for item in value]
+        if isinstance(value, dict):
+            return {key: self._normalize_value(val) for key, val in value.items()}
         return value
 
     def _normalize_row(self, row: Dict[str, Any]) -> Dict[str, Any]:
@@ -65,7 +71,7 @@ class DatabaseManager:
     # Domain-specific accessors aligned with the classic schema
     # ------------------------------------------------------------------
     def get_all_projects(self) -> List[Dict[str, Any]]:
-        """Return all projects with their assignment summary."""
+        """Return all projects enriched with allocation metrics."""
         query = """
         SELECT
             p.id,
@@ -73,35 +79,69 @@ class DatabaseManager:
             p.description,
             p.deadline,
             p.status,
+            p.priority,
+            p.completion_percent,
+            p.budget_total,
+            p.budget_spent,
             p.created_at,
             p.updated_at,
-            COUNT(pa.id) AS assigned_engineers,
-            COALESCE(SUM(pa.hours_per_week), 0) AS total_hours
+            COUNT(DISTINCT pa.engineer_id) AS assigned_engineers,
+            COALESCE(SUM(pa.hours_per_week), 0) AS total_hours,
+            COALESCE(array_agg(DISTINCT e.name) FILTER (WHERE e.id IS NOT NULL), '{}') AS team_members
         FROM projects p
         LEFT JOIN project_assignments pa ON pa.project_id = p.id
-        GROUP BY p.id, p.name, p.description, p.deadline, p.status, p.created_at, p.updated_at
+        LEFT JOIN engineers e ON e.id = pa.engineer_id
+        GROUP BY p.id, p.name, p.description, p.deadline, p.status, p.priority,
+                 p.completion_percent, p.budget_total, p.budget_spent, p.created_at, p.updated_at
         ORDER BY p.deadline
         """
-        return self.execute_query(query)
+        projects = self.execute_query(query)
+        for project in projects:
+            budget_total = project.get('budget_total') or 0.0
+            budget_spent = project.get('budget_spent') or 0.0
+            project['budget_remaining'] = round(budget_total - budget_spent, 2)
+            project['budget_utilisation'] = round(
+                (budget_spent / budget_total), 2
+            ) if budget_total else 0.0
+            project['team_members'] = sorted(project.get('team_members', []))
+        return projects
 
     def get_all_engineers(self) -> List[Dict[str, Any]]:
-        """Return engineers along with their current workload."""
+        """Return engineers with allocation and team context."""
         query = """
         SELECT
             e.id,
             e.name,
             e.email,
+            e.phone,
             e.capacity_hours_per_week,
             e.role,
+            e.team_id,
+            t.name AS team_name,
+            t.color AS team_color,
+            t.performance_score,
+            e.status,
+            e.availability,
+            e.workload_percent,
+            e.is_overworked,
+            e.skills,
             e.created_at,
             COALESCE(SUM(pa.hours_per_week), 0) AS current_hours,
-            e.capacity_hours_per_week - COALESCE(SUM(pa.hours_per_week), 0) AS available_hours
+            e.capacity_hours_per_week - COALESCE(SUM(pa.hours_per_week), 0) AS available_hours,
+            COALESCE(array_agg(DISTINCT pr.name) FILTER (WHERE pr.id IS NOT NULL), '{}') AS project_names
         FROM engineers e
+        LEFT JOIN teams t ON t.id = e.team_id
         LEFT JOIN project_assignments pa ON pa.engineer_id = e.id
-        GROUP BY e.id, e.name, e.email, e.capacity_hours_per_week, e.role, e.created_at
+        LEFT JOIN projects pr ON pr.id = pa.project_id
+        GROUP BY e.id, e.name, e.email, e.phone, e.capacity_hours_per_week, e.role,
+                 e.team_id, t.name, t.color, t.performance_score, e.status,
+                 e.availability, e.workload_percent, e.is_overworked, e.skills, e.created_at
         ORDER BY e.name
         """
-        return self.execute_query(query)
+        engineers = self.execute_query(query)
+        for engineer in engineers:
+            engineer['project_names'] = sorted(engineer.get('project_names', []))
+        return engineers
 
     def get_projects_without_assignments(self) -> List[Dict[str, Any]]:
         """Return projects that currently have no engineer assignments."""
@@ -138,6 +178,99 @@ class DatabaseManager:
         ORDER BY e.name, p.deadline
         """
         return self.execute_query(query)
+
+    # ------------------------------------------------------------------
+    # Extended helpers for enriched API payloads
+    # ------------------------------------------------------------------
+    def get_recent_presence_map(self, *, days: int = 7) -> Dict[int, List[Dict[str, Any]]]:
+        """Return recent presence entries keyed by engineer id."""
+        days = max(days, 1)
+        start_date = date.today() - timedelta(days=days - 1)
+        query = """
+        SELECT engineer_id, presence_date, status
+        FROM engineer_presence
+        WHERE presence_date >= %s
+        ORDER BY engineer_id, presence_date
+        """
+        rows = self.execute_query(query, (start_date,))
+        presence_map: Dict[int, List[Dict[str, Any]]] = {}
+        for row in rows:
+            engineer_id = row.get('engineer_id')
+            if engineer_id is None:
+                continue
+            presence_map.setdefault(engineer_id, []).append({
+                'date': row.get('presence_date'),
+                'status': row.get('status')
+            })
+        return presence_map
+
+    def get_current_absence_map(self) -> Dict[int, Dict[str, Any]]:
+        """Return absences that overlap with the current day keyed by engineer."""
+        query = """
+        SELECT
+            a.engineer_id,
+            a.start_date,
+            a.end_date,
+            a.type,
+            a.reason
+        FROM absences a
+        WHERE CURRENT_DATE BETWEEN a.start_date AND a.end_date
+        """
+        rows = self.execute_query(query)
+        absence_map: Dict[int, Dict[str, Any]] = {}
+        for row in rows:
+            engineer_id = row.get('engineer_id')
+            if engineer_id is None:
+                continue
+            absence_map[engineer_id] = row
+        return absence_map
+
+    def get_engineers_with_presence(self, *, presence_days: int = 7) -> List[Dict[str, Any]]:
+        """Return engineers enriched with presence and current absence data."""
+        engineers = self.get_all_engineers()
+        presence_map = self.get_recent_presence_map(days=presence_days)
+        absence_map = self.get_current_absence_map()
+
+        for engineer in engineers:
+            engineer_id = engineer.get('id')
+            engineer['presence'] = presence_map.get(engineer_id, [])
+            engineer['current_absence'] = absence_map.get(engineer_id)
+        return engineers
+
+    def get_team_directory(self, *, presence_days: int = 7) -> List[Dict[str, Any]]:
+        """Return teams with their members and project coverage."""
+        teams = self.execute_query(
+            """
+            SELECT id, name, description, color, performance_score, created_at
+            FROM teams
+            ORDER BY name
+            """
+        )
+        team_map: Dict[int, Dict[str, Any]] = {
+            team['id']: {
+                **team,
+                'member_count': 0,
+                'projects': [],
+                'members': []
+            }
+            for team in teams
+        }
+
+        engineers = self.get_engineers_with_presence(presence_days=presence_days)
+        for engineer in engineers:
+            team_id = engineer.get('team_id')
+            if team_id is None or team_id not in team_map:
+                continue
+            team_entry = team_map[team_id]
+            team_entry['members'].append(engineer)
+            team_entry['member_count'] = len(team_entry['members'])
+            project_names = engineer.get('project_names', []) or []
+            if project_names:
+                combined = set(team_entry['projects'])
+                combined.update(project_names)
+                team_entry['projects'] = sorted(combined)
+
+        return list(team_map.values())
 
     def get_absences_between(self, start: date, end: date) -> List[Dict[str, Any]]:
         """Return absences that overlap with the provided window."""
