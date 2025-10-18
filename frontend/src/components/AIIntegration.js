@@ -18,12 +18,67 @@ import './AIIntegration.css';
 import { sendAIChat } from '../services/api';
 import useSpeechToText from '../hooks/useSpeechToText';
 
+// Function to parse markdown-like formatting in AI responses
+const parseMarkdown = (text) => {
+  if (!text) return '';
+  
+  // Split text into lines for processing
+  const lines = text.split('\n');
+  const processedLines = [];
+  let inBulletList = false;
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmedLine = line.trim();
+    
+    // Handle bullet points (lines starting with *)
+    if (trimmedLine.startsWith('*') && !trimmedLine.startsWith('**')) {
+      const bulletText = trimmedLine.substring(1).trim();
+      if (!inBulletList) {
+        processedLines.push('<ul>');
+        inBulletList = true;
+      }
+      processedLines.push(`<li>${bulletText}</li>`);
+    } else {
+      // Close bullet list if we were in one
+      if (inBulletList) {
+        processedLines.push('</ul>');
+        inBulletList = false;
+      }
+      
+      // Handle empty lines - skip them to reduce spacing
+      if (trimmedLine !== '') {
+        processedLines.push(line);
+      }
+    }
+  }
+  
+  // Close bullet list if we ended in one
+  if (inBulletList) {
+    processedLines.push('</ul>');
+  }
+  
+  // Join lines and process bold text
+  let result = processedLines.join('\n');
+  
+  // Convert **text** to <strong>text</strong>
+  result = result.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  
+  return result;
+};
+
 // Chat bubble component for individual messages
 const ChatBubble = ({ message, isUser, timestamp }) => {
+  // Parse markdown for AI messages, keep user messages as plain text
+  const formattedMessage = isUser ? message : parseMarkdown(message);
+  
   return (
     <div className={`chat-bubble ${isUser ? 'user' : 'ai'}`}>
       <div className="bubble-content">
-        <div className="bubble-text">{message}</div>
+        <div 
+          className="bubble-text"
+          dangerouslySetInnerHTML={{ __html: formattedMessage }}
+        />
         <div className="bubble-timestamp">{timestamp}</div>
       </div>
     </div>

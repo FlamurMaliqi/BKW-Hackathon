@@ -247,10 +247,27 @@
 
 .bubble-text {
   font-size: 15px;
-  line-height: 1.6;
+  line-height: 1.4;
   white-space: pre-wrap;
   word-wrap: break-word;
   font-weight: 400;
+}
+
+/* Styles for formatted content in AI responses */
+.bubble-text strong {
+  font-weight: 600;
+  color: var(--bkw-blue);
+}
+
+.bubble-text ul {
+  margin: 2px 0;
+  padding-left: 18px;
+}
+
+.bubble-text li {
+  margin: 0;
+  list-style-type: disc;
+  line-height: 1.3;
 }
 
 .bubble-timestamp {
@@ -705,6 +722,23 @@
   
   .bubble-text {
     font-size: 14px;
+    line-height: 1.3;
+  }
+  
+  .bubble-text strong {
+    font-weight: 600;
+    color: var(--bkw-blue);
+  }
+  
+  .bubble-text ul {
+    margin: 1px 0;
+    padding-left: 16px;
+  }
+  
+  .bubble-text li {
+    margin: 0;
+    list-style-type: disc;
+    line-height: 1.2;
   }
   
   .mic-button {
