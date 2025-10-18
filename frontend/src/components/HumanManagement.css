@@ -2,13 +2,12 @@
  * Human Management Component Styles
  * 
  * This CSS file styles the Human Management dashboard page.
- * It creates a professional layout with cards for different
- * human resource management features, following the design language
- * from the reference medical application.
+ * It creates a professional layout with search, filtering, and worker management
+ * features, following the design language from the reference medical application.
  * 
  * Layout:
  * - Fixed sidebar navigation (280px wide)
- * - Main content area with header and cards grid
+ * - Main content area with header and controls
  * - Responsive design for different screen sizes
  */
 
@@ -25,7 +24,6 @@
   border-bottom: 1px solid #E9ECEF;  /* Subtle border to separate from content */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* Subtle shadow for depth */
 }
-
 
 /* Main page title styling - matching medical app typography */
 .content-header h1 {
@@ -48,55 +46,116 @@
   padding: 40px;        /* Generous padding around the content */
 }
 
-/* Grid layout for dashboard cards */
-.cards-grid {
-  display: grid;         /* CSS Grid for flexible card layout */
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));  /* Responsive grid */
-  gap: 24px;            /* Space between cards */
-}
-
-/* Individual dashboard card styling - matching medical app cards */
-.card {
-  background: #FFFFFF;   /* White card background */
+/* Controls Section */
+.controls-section {
+  background: #F8F9FA;  /* Light gray background */
+  border-radius: 8px;   /* Rounded corners */
+  padding: 24px;        /* Internal spacing */
+  margin-bottom: 32px;  /* Space below controls */
   border: 1px solid #E9ECEF;  /* Subtle border */
-  border-radius: 8px;   /* Less rounded corners for medical app style */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);  /* Slightly more prominent shadow */
+}
+
+/* Search Controls */
+.search-controls {
+  margin-bottom: 20px;  /* Space below search */
+}
+
+.search-box {
+  position: relative;   /* For absolute positioning of icon */
+  max-width: 400px;    /* Limit search box width */
+}
+
+.search-input {
+  width: 100%;          /* Full width of container */
+  padding: 12px 40px 12px 16px;  /* Padding with space for icon */
+  border: 1px solid #E9ECEF;     /* Light border */
+  border-radius: 6px;   /* Rounded corners */
+  font-size: 16px;      /* Readable font size */
+  background: #FFFFFF;  /* White background */
+  transition: border-color 0.2s ease;  /* Smooth border transition */
+}
+
+.search-input:focus {
+  outline: none;        /* Remove default focus outline */
+  border-color: #1A5276;  /* Blue border on focus */
+  box-shadow: 0 0 0 3px rgba(26, 82, 118, 0.1);  /* Blue glow effect */
+}
+
+.search-icon {
+  position: absolute;   /* Position absolutely */
+  right: 12px;         /* Position from right */
+  top: 50%;            /* Center vertically */
+  transform: translateY(-50%);  /* Perfect vertical centering */
+  color: #6C757D;      /* Muted gray color */
+  font-size: 16px;     /* Icon size */
+}
+
+/* Filter Controls */
+.filter-controls {
+  display: flex;        /* Horizontal layout */
+  gap: 24px;           /* Space between filter groups */
+  flex-wrap: wrap;     /* Wrap on smaller screens */
+}
+
+.filter-group {
+  display: flex;        /* Horizontal layout for label and select */
+  flex-direction: column;  /* Stack label above select */
+  gap: 8px;            /* Space between label and select */
+  min-width: 150px;    /* Minimum width for filter groups */
+}
+
+.filter-group label {
+  font-size: 14px;     /* Smaller font size for labels */
+  font-weight: 600;    /* Semi-bold for emphasis */
+  color: #495057;      /* Dark gray color */
+}
+
+.filter-select {
+  padding: 8px 12px;   /* Internal spacing */
+  border: 1px solid #E9ECEF;  /* Light border */
+  border-radius: 6px;  /* Rounded corners */
+  font-size: 14px;     /* Readable font size */
+  background: #FFFFFF; /* White background */
+  color: #495057;      /* Dark gray text */
+  cursor: pointer;     /* Pointer cursor */
+  transition: border-color 0.2s ease;  /* Smooth border transition */
+}
+
+.filter-select:focus {
+  outline: none;        /* Remove default focus outline */
+  border-color: #1A5276;  /* Blue border on focus */
+}
+
+/* Workers Section */
+.workers-section {
+  background: #FFFFFF;  /* White background */
+  border-radius: 8px;   /* Rounded corners */
+  border: 1px solid #E9ECEF;  /* Subtle border */
   overflow: hidden;     /* Ensure content doesn't overflow rounded corners */
-  transition: all 0.2s ease;  /* Smooth hover transitions */
 }
 
-/* Card hover effect for better interactivity */
-.card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);  /* Enhanced shadow on hover */
-  transform: translateY(-1px);  /* Slight lift effect */
-}
-
-/* Card header with blue background - matching medical app style */
-.card-header {
-  background: #1A5276;  /* Professional blue background matching medical app */
-  color: white;        /* White text for contrast */
+.workers-header {
+  background: #1A5276;  /* Blue background matching medical app */
+  color: white;        /* White text */
   padding: 20px 24px;   /* Internal spacing */
   display: flex;       /* Flexbox for header layout */
   justify-content: space-between;  /* Space between title and actions */
   align-items: center; /* Vertically center header content */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);  /* Subtle separator */
 }
 
-/* Card title styling */
-.card-header h3 {
+.workers-header h2 {
   margin: 0;           /* Remove default margins */
-  font-size: 18px;     /* Medium font size for card titles */
+  font-size: 20px;     /* Medium font size for section titles */
   font-weight: 600;    /* Semi-bold for emphasis */
 }
 
-/* Container for action buttons in card header */
-.card-actions {
+.workers-actions {
   display: flex;       /* Horizontal layout for buttons */
   gap: 12px;          /* Space between buttons */
 }
 
 /* Primary and secondary button base styles - matching medical app */
-.btn-primary, .btn-secondary {
+.btn-primary, .btn-secondary, .btn-details {
   padding: 10px 18px;  /* Slightly larger padding for better touch targets */
   border: none;        /* Remove default button border */
   border-radius: 6px;  /* Rounded corners */
@@ -130,74 +189,260 @@
   background: #E9ECEF;  /* Slightly darker gray on hover */
 }
 
-/* Card content area */
-.card-content {
-  padding: 24px;       /* Internal spacing for card content */
+/* Details button styling */
+.btn-details {
+  background: transparent;  /* Transparent background */
+  color: white;           /* White text */
+  border: 1px solid rgba(255, 255, 255, 0.3);  /* Semi-transparent border */
 }
 
-/* Placeholder content styling - refined for medical app aesthetic */
-.placeholder-content {
-  text-align: center;   /* Center the placeholder content */
-  padding: 48px 24px;   /* More generous padding for better spacing */
-  background: #FAFBFC;  /* Very light background for subtle contrast */
-  border-radius: 6px;   /* Rounded corners for modern look */
-  margin: 16px;         /* Margin from card edges */
+.btn-details:hover {
+  background: rgba(255, 255, 255, 0.1);  /* Light background on hover */
 }
 
-/* Large emoji icons for visual appeal - refined styling */
-.placeholder-icon {
-  font-size: 56px;     /* Larger emoji size for better visibility */
-  margin-bottom: 20px; /* More space below icon */
-  opacity: 0.8;        /* Slightly transparent for subtle effect */
-}
-
-/* Placeholder description text - improved typography */
-.placeholder-content p {
-  font-size: 16px;     /* Readable font size */
-  color: #6C757D;     /* Muted gray color */
-  margin-bottom: 28px; /* More space below description */
-  line-height: 1.5;    /* Better line height for readability */
-  font-weight: 500;    /* Medium font weight for better visibility */
-}
-
-/* Feature list styling - refined for medical app */
-.placeholder-content ul {
-  text-align: left;    /* Left-align the list */
-  max-width: 320px;    /* Slightly wider for better readability */
-  margin: 0 auto;      /* Center the list */
+/* Workers List */
+.workers-list {
   padding: 0;          /* Remove default padding */
-  list-style: none;   /* Remove default list bullets */
 }
 
-/* Individual list item styling - improved spacing */
-.placeholder-content li {
-  padding: 10px 0;     /* More vertical spacing between items */
+/* Group Section */
+.group-section {
+  border-bottom: 1px solid #E9ECEF;  /* Border between groups */
+}
+
+.group-section:last-child {
+  border-bottom: none; /* Remove border from last group */
+}
+
+/* Group Header */
+.group-header {
+  background: #F8F9FA;  /* Light gray background */
+  padding: 16px 24px;   /* Internal spacing */
+  display: flex;       /* Flexbox for header layout */
+  justify-content: space-between;  /* Space between info and actions */
+  align-items: center; /* Vertically center header content */
+  cursor: pointer;     /* Pointer cursor for clickability */
+  border-left: 4px solid #1A5276;  /* Left border for visual separation */
+  transition: background-color 0.2s ease;  /* Smooth background transition */
+}
+
+.group-header:hover {
+  background: #E9ECEF;  /* Darker background on hover */
+}
+
+.group-info h3 {
+  margin: 0 0 4px 0;   /* Remove default margins, add bottom margin */
+  font-size: 18px;     /* Medium font size for group titles */
+  font-weight: 600;    /* Semi-bold for emphasis */
+  color: #212529;      /* Dark gray for good contrast */
+}
+
+.group-count {
+  font-size: 14px;     /* Smaller font size for count */
+  color: #6C757D;      /* Muted gray color */
+}
+
+.group-actions {
+  display: flex;       /* Horizontal layout for actions */
+  align-items: center; /* Vertically center actions */
+  gap: 16px;          /* Space between actions */
+}
+
+.expand-icon {
+  font-size: 16px;     /* Icon size */
+  color: #6C757D;      /* Muted gray color */
+  transition: transform 0.2s ease;  /* Smooth rotation transition */
+}
+
+.group-header:hover .expand-icon {
+  color: #495057;      /* Darker gray on hover */
+}
+
+/* Group Content */
+.group-content {
+  padding: 0;          /* Remove default padding */
+}
+
+/* Worker Card */
+.worker-card {
+  background: #FFFFFF;  /* White background */
+  border-bottom: 1px solid #F8F9FA;  /* Light border between cards */
+  padding: 24px;       /* Internal spacing */
+  transition: all 0.2s ease;  /* Smooth transitions */
+}
+
+.worker-card:last-child {
+  border-bottom: none; /* Remove border from last card */
+}
+
+.worker-card:hover {
+  background: #F8F9FA; /* Light gray background on hover */
+}
+
+.worker-card.overworked {
+  border-left: 4px solid #dc3545;  /* Red left border for overworked */
+  background: #fff5f5;  /* Very light red background */
+}
+
+/* Worker Header */
+.worker-header {
+  display: flex;       /* Flexbox for header layout */
+  justify-content: space-between;  /* Space between info and status */
+  align-items: flex-start;  /* Align to top */
+  margin-bottom: 16px; /* Space below header */
+}
+
+.worker-info h4 {
+  margin: 0 0 4px 0;   /* Remove default margins, add bottom margin */
+  font-size: 18px;     /* Medium font size for worker names */
+  font-weight: 600;    /* Semi-bold for emphasis */
+  color: #212529;      /* Dark gray for good contrast */
+}
+
+.worker-role {
+  margin: 0;           /* Remove default margins */
+  font-size: 14px;     /* Smaller font size for roles */
+  color: #6C757D;      /* Muted gray color */
+}
+
+.worker-status {
+  display: flex;       /* Horizontal layout for status badges */
+  flex-direction: column;  /* Stack badges vertically */
+  gap: 8px;           /* Space between badges */
+  align-items: flex-end;  /* Align to right */
+}
+
+/* Status Badges */
+.availability-badge, .overworked-badge, .absence-badge {
+  padding: 4px 8px;    /* Internal spacing */
+  border-radius: 4px;  /* Rounded corners */
+  font-size: 12px;     /* Small font size */
+  font-weight: 600;    /* Semi-bold for emphasis */
+  color: white;        /* White text */
+  text-transform: capitalize;  /* Capitalize text */
+}
+
+.overworked-badge {
+  background: #dc3545;  /* Red background */
+  color: white;        /* White text */
+}
+
+.absence-badge {
+  background: #17a2b8;  /* Teal background */
+  color: white;        /* White text */
+}
+
+/* Worker Details */
+.worker-details {
+  display: grid;       /* CSS Grid for details layout */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));  /* Responsive grid */
+  gap: 20px;          /* Space between detail sections */
+}
+
+.worker-details h5 {
+  margin: 0 0 8px 0;   /* Remove default margins, add bottom margin */
+  font-size: 14px;     /* Smaller font size for section titles */
+  font-weight: 600;    /* Semi-bold for emphasis */
+  color: #495057;      /* Dark gray color */
+  text-transform: uppercase;  /* Uppercase for section titles */
+  letter-spacing: 0.5px;  /* Slight letter spacing */
+}
+
+/* Project Tags */
+.project-tags, .skill-tags {
+  display: flex;       /* Horizontal layout for tags */
+  flex-wrap: wrap;     /* Wrap tags to new line if needed */
+  gap: 8px;           /* Space between tags */
+}
+
+.project-tag, .skill-tag {
+  padding: 4px 8px;    /* Internal spacing */
+  background: #E9ECEF; /* Light gray background */
   color: #495057;      /* Dark gray text */
-  position: relative; /* For custom bullet positioning */
-  padding-left: 24px;  /* More space for custom bullet */
-  font-size: 15px;     /* Slightly larger font size */
-  line-height: 1.4;    /* Better line height for readability */
+  border-radius: 4px;  /* Rounded corners */
+  font-size: 12px;     /* Small font size */
+  font-weight: 500;    /* Medium font weight */
 }
 
-/* Custom bullet styling using CSS pseudo-element - refined */
-.placeholder-content li:before {
-  content: "•";       /* Custom bullet character */
-  color: #1A5276;     /* Blue color to match theme */
-  font-weight: bold;   /* Bold bullet */
-  position: absolute;  /* Position absolutely */
-  left: 0;           /* Align to the left */
-  font-size: 16px;    /* Slightly larger bullet */
+/* Activity Grid */
+.activity-grid {
+  display: flex;       /* Horizontal layout for activity days */
+  gap: 2px;           /* Small space between days */
+}
+
+.activity-day {
+  width: 12px;         /* Fixed width for each day */
+  height: 12px;        /* Fixed height for each day */
+  border-radius: 2px;  /* Slightly rounded corners */
+  border: 1px solid rgba(0, 0, 0, 0.1);  /* Subtle border */
+}
+
+/* Worker Metrics */
+.worker-metrics {
+  display: flex;       /* Horizontal layout for metrics */
+  flex-direction: column;  /* Stack metrics vertically */
+  gap: 12px;          /* Space between metrics */
+}
+
+.metric {
+  display: flex;       /* Horizontal layout for metric */
+  align-items: center; /* Vertically center metric content */
+  gap: 12px;          /* Space between metric elements */
+}
+
+.metric-label {
+  font-size: 14px;     /* Readable font size */
+  color: #495057;      /* Dark gray color */
+  min-width: 80px;     /* Minimum width for label */
+}
+
+.workload-bar {
+  flex: 1;            /* Take up remaining space */
+  height: 8px;        /* Fixed height for bar */
+  background: #E9ECEF; /* Light gray background */
+  border-radius: 4px;  /* Rounded corners */
+  overflow: hidden;   /* Ensure fill doesn't overflow */
+}
+
+.workload-fill {
+  height: 100%;       /* Full height of bar */
+  border-radius: 4px;  /* Rounded corners */
+  transition: width 0.3s ease;  /* Smooth width transition */
+}
+
+.metric-value {
+  font-size: 14px;     /* Readable font size */
+  font-weight: 600;    /* Semi-bold for emphasis */
+  color: #495057;      /* Dark gray color */
+  min-width: 40px;     /* Minimum width for value */
+  text-align: right;   /* Right-align value */
+}
+
+/* Worker Contact */
+.worker-contact {
+  display: flex;       /* Horizontal layout for contact info */
+  flex-direction: column;  /* Stack contact info vertically */
+  gap: 4px;           /* Small space between contact items */
+}
+
+.worker-contact p {
+  margin: 0;           /* Remove default margins */
+  font-size: 14px;     /* Readable font size */
+  color: #6C757D;      /* Muted gray color */
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .cards-grid {
-    grid-template-columns: 1fr;
+  .filter-controls {
+    gap: 16px;         /* Reduce gap between filter groups */
+  }
+  
+  .worker-details {
+    grid-template-columns: 1fr;  /* Single column on smaller screens */
   }
 }
 
 @media (max-width: 768px) {
-  
   .content-header {
     padding: 24px 20px;
   }
@@ -210,13 +455,49 @@
     font-size: 24px;
   }
   
-  .card-header {
-    flex-direction: column;
-    gap: 16px;
-    align-items: stretch;
+  .controls-section {
+    padding: 16px;     /* Reduce padding on mobile */
   }
   
-  .card-actions {
-    justify-content: center;
+  .filter-controls {
+    flex-direction: column;  /* Stack filters vertically on mobile */
+    gap: 12px;         /* Reduce gap between filter groups */
+  }
+  
+  .filter-group {
+    min-width: auto;   /* Remove minimum width on mobile */
+  }
+  
+  .workers-header {
+    flex-direction: column;  /* Stack header content vertically */
+    gap: 16px;         /* Space between header elements */
+    align-items: stretch;  /* Stretch elements to full width */
+  }
+  
+  .workers-actions {
+    justify-content: center;  /* Center actions on mobile */
+  }
+  
+  .group-header {
+    padding: 12px 16px;  /* Reduce padding on mobile */
+  }
+  
+  .worker-card {
+    padding: 16px;     /* Reduce padding on mobile */
+  }
+  
+  .worker-header {
+    flex-direction: column;  /* Stack worker info vertically */
+    gap: 12px;         /* Space between worker info and status */
+    align-items: flex-start;  /* Align to left */
+  }
+  
+  .worker-status {
+    align-items: flex-start;  /* Align status to left */
+  }
+  
+  .worker-details {
+    grid-template-columns: 1fr;  /* Single column on mobile */
+    gap: 16px;         /* Reduce gap between detail sections */
   }
 }
