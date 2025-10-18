@@ -1,0 +1,31 @@
+services:
+  postgres:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_DB: bkw_pm
+      POSTGRES_USER: bkw_user
+      POSTGRES_PASSWORD: bkw_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./backend/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./backend/database/mock_data.sql:/docker-entrypoint-initdb.d/02-mock_data.sql
+
+  backend:
+    build: ./backend
+    ports:
+      - "5001:5000"
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - postgres
+
+  frontend:
+    build: ./frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    depends_on:
+      - backend
