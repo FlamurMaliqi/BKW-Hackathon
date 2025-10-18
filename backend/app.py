@@ -7,6 +7,7 @@ from flask_cors import CORS
 
 from conflict_detection import conflict_detector
 from database.connection import db_manager
+from ai_service import ai_service
 
 # Initialize Flask app
 app = Flask(__name__)
@@ -102,17 +103,31 @@ def _build_insight(query: str) -> Dict[str, str]:
 
 @app.route('/api/ai/chat', methods=['POST'])
 def ai_chat():
-    """Simple rule-based AI assistant for the hackathon demo."""
+    """AI-powered assistant using Gemini for project management insights."""
     try:
         data = request.get_json(force=True) if request.is_json else {}
         query = (data or {}).get('query', '')
-        insight = _build_insight(query or '')
+        
+        if not query.strip():
+            return jsonify({
+                'response': 'Please provide a question about your projects, team, or workload.',
+                'status': 'error'
+            }), 400
+        
+        # Use Gemini AI service
+        result = ai_service.chat_with_ai(query)
+        
+        if result['status'] == 'error':
+            return jsonify(result), 500
+            
         return jsonify({
-            'response': insight['primary'],
-            'generated_at': insight['generated_at'],
+            'response': result['response'],
+            'generated_at': datetime.now(timezone.utc).isoformat(),
+            'model': result.get('model', 'gemini-1.5-flash'),
             'status': 'success'
         })
-    except Exception as exc:  # pragma: no cover
+        
+    except Exception as exc:
         return jsonify({
             'error': str(exc),
             'status': 'error'
