@@ -25,18 +25,14 @@ const ChatBubble = ({ message, isUser, timestamp }) => {
         <div className="bubble-text">{message}</div>
         <div className="bubble-timestamp">{timestamp}</div>
       </div>
-      <div className="bubble-avatar">
-        {isUser ? '👤' : '🤖'}
-      </div>
     </div>
   );
 };
 
 // Quick action button component
-const QuickActionButton = ({ text, onClick, icon }) => {
+const QuickActionButton = ({ text, onClick }) => {
   return (
     <button className="quick-action-btn" onClick={onClick}>
-      {icon && <span className="action-icon">{icon}</span>}
       {text}
     </button>
   );
@@ -213,7 +209,6 @@ const AIIntegration = () => {
           {/* Chat header */}
           <div className="chat-header">
             <div className="chat-title">
-              <span className="chat-icon">🤖</span>
               <h3>AI Project Assistant</h3>
             </div>
             <div className="chat-actions">
@@ -227,22 +222,18 @@ const AIIntegration = () => {
             <QuickActionButton 
               text="Show Project Deadlines" 
               onClick={() => handleQuickAction("Show me all project deadlines")}
-              icon="📅"
             />
             <QuickActionButton 
               text="Who is overworked?" 
               onClick={() => handleQuickAction("Who is overworked?")}
-              icon="👥"
             />
             <QuickActionButton 
               text="General Status" 
               onClick={() => handleQuickAction("What's the general project status?")}
-              icon="📊"
             />
             <QuickActionButton 
               text="Budget Overview" 
               onClick={() => handleQuickAction("Show me the budget overview")}
-              icon="💰"
             />
           </div>
 
@@ -268,7 +259,6 @@ const AIIntegration = () => {
                       </div>
                     </div>
                   </div>
-                  <div className="bubble-avatar">🤖</div>
                 </div>
               )}
               <div ref={messagesEndRef} />
