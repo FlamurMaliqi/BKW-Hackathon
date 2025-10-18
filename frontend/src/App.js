@@ -1,91 +1,74 @@
 /**
- * BKW Hackathon - AI Project Management Frontend
- * Main React application component
+ * Main App Component - BKW Hackathon AI Project Management Frontend
+ * 
+ * This is the root component that orchestrates the entire application.
+ * It manages the main navigation state and renders the appropriate
+ * content based on the selected tab.
+ * 
+ * Application Structure:
+ * - Fixed sidebar navigation with 3 main tabs
+ * - Dynamic content area that changes based on selected tab
+ * - Responsive design for desktop, tablet, and mobile
+ * 
+ * Main Tabs:
+ * 1. Project Overview - Project status, timelines, resource allocation
+ * 2. Human Management - Team management, workload, collaboration
+ * 3. AI Integration - AI assistant, automation, analytics, ML models
  */
-import React, { useState, useEffect } from 'react';
+
+import React, { useState } from 'react';
 import './App.css';
 
+// Import the main navigation component
+import Navigation from './components/Navigation';
+
+// Import the three main content components
+import ProjectOverview from './components/ProjectOverview';
+import HumanManagement from './components/HumanManagement';
+import AIIntegration from './components/AIIntegration';
+
 function App() {
-  const [query, setQuery] = useState('');
-  const [response, setResponse] = useState('');
-  const [isLoading, setIsLoading] = useState(false);
+  // State management for the currently active tab
+  // 'overview' is the default tab when the app loads
+  const [activeTab, setActiveTab] = useState('overview');
 
-  // AI Chat functionality
-  const handleAIQuery = async (e) => {
-    e.preventDefault();
-    if (!query.trim()) return;
+  /**
+   * Handle tab changes when user clicks on navigation items
+   * @param {string} tabId - The ID of the tab to switch to
+   */
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
+  };
 
-    setIsLoading(true);
-    try {
-      const res = await fetch('/api/ai/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ query }),
-      });
-      
-      const data = await res.json();
-      setResponse(data.response);
-    } catch (error) {
-      setResponse('Error: Could not connect to AI assistant');
-    } finally {
-      setIsLoading(false);
+  /**
+   * Render the appropriate content component based on the active tab
+   * @returns {JSX.Element} The component to render
+   */
+  const renderActiveTab = () => {
+    switch (activeTab) {
+      case 'overview':
+        return <ProjectOverview />;
+      case 'management':
+        return <HumanManagement />;
+      case 'ai':
+        return <AIIntegration />;
+      default:
+        return <ProjectOverview />; // Fallback to overview
     }
   };
 
   return (
     <div className="App">
-      <header className="App-header">
-        <h1>🤖 BKW AI Project Management Assistant</h1>
-        <p>Ask me anything about your projects, deadlines, and team workload</p>
-      </header>
-
-      <main className="App-main">
-        {/* AI Chat Interface */}
-        <section className="ai-chat">
-          <h2>AI Assistant</h2>
-          <form onSubmit={handleAIQuery} className="chat-form">
-            <div className="input-group">
-              <input
-                type="text"
-                value={query}
-                onChange={(e) => setQuery(e.target.value)}
-                placeholder="Ask me: 'How are we doing this month?' or 'Which deadlines overlap?'"
-                className="chat-input"
-                disabled={isLoading}
-              />
-              <button 
-                type="submit" 
-                className="chat-button"
-                disabled={isLoading || !query.trim()}
-              >
-                {isLoading ? 'Thinking...' : 'Ask AI'}
-              </button>
-            </div>
-          </form>
-
-          {response && (
-            <div className="ai-response">
-              <h3>AI Response:</h3>
-              <p>{response}</p>
-            </div>
-          )}
-        </section>
-
-        {/* Dashboard Placeholder */}
-        <section className="dashboard">
-          <h2>Project Dashboard</h2>
-          <div className="dashboard-placeholder">
-            <p>Dashboard will show project conflicts, workload heatmaps, and Gantt charts</p>
-            <p>This serves as a fallback to the AI assistant</p>
-          </div>
-        </section>
+      {/* Fixed sidebar navigation - always visible */}
+      <Navigation 
+        activeTab={activeTab} 
+        onTabChange={handleTabChange} 
+      />
+      
+      {/* Main content area - changes based on selected tab */}
+      <main className="main-content">
+        {renderActiveTab()}
       </main>
-
-      <footer className="App-footer">
-        <p>BKW Hackathon 2024 - AI-Centric Project Management</p>
-      </footer>
     </div>
   );
 }

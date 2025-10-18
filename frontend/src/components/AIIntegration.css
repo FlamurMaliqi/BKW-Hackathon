@@ -1,0 +1,244 @@
+/**
+ * AI Integration Component Styles
+ * 
+ * This CSS file styles the AI Integration dashboard page.
+ * It creates a professional layout with cards for different
+ * AI-powered features, following the design language
+ * from the reference medical application.
+ * 
+ * Layout:
+ * - Fixed sidebar navigation (280px wide)
+ * - Main content area with header and cards grid
+ * - Responsive design for different screen sizes
+ */
+
+.ai-integration {
+  margin-left: 280px;    /* Account for fixed sidebar width */
+  min-height: 100vh;     /* Full viewport height */
+  background: #FFFFFF;   /* Clean white background */
+  padding: 0;           /* No default padding */
+}
+
+/* Header section with breadcrumbs and page title - matching medical app */
+.content-header {
+  background: #FFFFFF;   /* White background for header */
+  padding: 32px 40px;    /* Generous padding for breathing room */
+  border-bottom: 1px solid #E9ECEF;  /* Subtle border to separate from content */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* Subtle shadow for depth */
+}
+
+/* Breadcrumb navigation styling */
+.breadcrumbs {
+  display: flex;         /* Horizontal layout for breadcrumb items */
+  align-items: center;   /* Vertically center the items */
+  gap: 8px;             /* Small gap between breadcrumb items */
+  margin-bottom: 16px;  /* Space below breadcrumbs */
+  font-size: 14px;       /* Smaller font size for navigation */
+  color: #6C757D;       /* Muted gray color */
+}
+
+/* All breadcrumb spans have the same muted color */
+.breadcrumbs span:not(:last-child) {
+  color: #6C757D;
+}
+
+/* Main page title styling - matching medical app typography */
+.content-header h1 {
+  margin: 0 0 8px 0;    /* Remove default margins, add bottom margin */
+  font-size: 28px;      /* Slightly smaller for medical app style */
+  font-weight: 700;      /* Bold for emphasis */
+  color: #212529;       /* Dark gray for good contrast */
+  letter-spacing: -0.5px;  /* Tighter letter spacing for modern look */
+}
+
+/* Page subtitle/description styling */
+.content-header p {
+  margin: 0;            /* Remove default margins */
+  font-size: 16px;      /* Readable font size */
+  color: #6C757D;       /* Muted gray for subtitle */
+}
+
+/* Main content area with dashboard cards */
+.content-body {
+  padding: 40px;        /* Generous padding around the content */
+}
+
+/* Grid layout for dashboard cards */
+.cards-grid {
+  display: grid;         /* CSS Grid for flexible card layout */
+  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));  /* Responsive grid */
+  gap: 24px;            /* Space between cards */
+}
+
+/* Individual dashboard card styling - matching medical app cards */
+.card {
+  background: #FFFFFF;   /* White card background */
+  border: 1px solid #E9ECEF;  /* Subtle border */
+  border-radius: 8px;   /* Less rounded corners for medical app style */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);  /* Slightly more prominent shadow */
+  overflow: hidden;     /* Ensure content doesn't overflow rounded corners */
+  transition: all 0.2s ease;  /* Smooth hover transitions */
+}
+
+/* Card hover effect for better interactivity */
+.card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);  /* Enhanced shadow on hover */
+  transform: translateY(-1px);  /* Slight lift effect */
+}
+
+/* Card header with blue background - matching medical app style */
+.card-header {
+  background: #1A5276;  /* Professional blue background matching medical app */
+  color: white;        /* White text for contrast */
+  padding: 20px 24px;   /* Internal spacing */
+  display: flex;       /* Flexbox for header layout */
+  justify-content: space-between;  /* Space between title and actions */
+  align-items: center; /* Vertically center header content */
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);  /* Subtle separator */
+}
+
+/* Card title styling */
+.card-header h3 {
+  margin: 0;           /* Remove default margins */
+  font-size: 18px;     /* Medium font size for card titles */
+  font-weight: 600;    /* Semi-bold for emphasis */
+}
+
+/* Container for action buttons in card header */
+.card-actions {
+  display: flex;       /* Horizontal layout for buttons */
+  gap: 12px;          /* Space between buttons */
+}
+
+/* Primary and secondary button base styles - matching medical app */
+.btn-primary, .btn-secondary {
+  padding: 10px 18px;  /* Slightly larger padding for better touch targets */
+  border: none;        /* Remove default button border */
+  border-radius: 6px;  /* Rounded corners */
+  font-size: 14px;     /* Readable font size */
+  font-weight: 600;    /* Semi-bold font weight for better visibility */
+  cursor: pointer;     /* Pointer cursor for clickability */
+  transition: all 0.2s ease;  /* Smooth hover transitions */
+  text-transform: none;  /* No text transformation for medical app style */
+}
+
+/* Primary button styling (blue background) */
+.btn-primary {
+  background: #1A5276;  /* Same blue as card header */
+  color: white;        /* White text */
+}
+
+/* Primary button hover effect */
+.btn-primary:hover {
+  background: #154360;  /* Darker blue on hover */
+}
+
+/* Secondary button styling (gray background) */
+.btn-secondary {
+  background: #F8F9FA;  /* Light gray background */
+  color: #495057;      /* Dark gray text */
+  border: 1px solid #E9ECEF;  /* Light border */
+}
+
+/* Secondary button hover effect */
+.btn-secondary:hover {
+  background: #E9ECEF;  /* Slightly darker gray on hover */
+}
+
+/* Card content area */
+.card-content {
+  padding: 24px;       /* Internal spacing for card content */
+}
+
+/* Placeholder content styling - refined for medical app aesthetic */
+.placeholder-content {
+  text-align: center;   /* Center the placeholder content */
+  padding: 48px 24px;   /* More generous padding for better spacing */
+  background: #FAFBFC;  /* Very light background for subtle contrast */
+  border-radius: 6px;   /* Rounded corners for modern look */
+  margin: 16px;         /* Margin from card edges */
+}
+
+/* Large emoji icons for visual appeal - refined styling */
+.placeholder-icon {
+  font-size: 56px;     /* Larger emoji size for better visibility */
+  margin-bottom: 20px; /* More space below icon */
+  opacity: 0.8;        /* Slightly transparent for subtle effect */
+}
+
+/* Placeholder description text - improved typography */
+.placeholder-content p {
+  font-size: 16px;     /* Readable font size */
+  color: #6C757D;     /* Muted gray color */
+  margin-bottom: 28px; /* More space below description */
+  line-height: 1.5;    /* Better line height for readability */
+  font-weight: 500;    /* Medium font weight for better visibility */
+}
+
+/* Feature list styling - refined for medical app */
+.placeholder-content ul {
+  text-align: left;    /* Left-align the list */
+  max-width: 320px;    /* Slightly wider for better readability */
+  margin: 0 auto;      /* Center the list */
+  padding: 0;          /* Remove default padding */
+  list-style: none;   /* Remove default list bullets */
+}
+
+/* Individual list item styling - improved spacing */
+.placeholder-content li {
+  padding: 10px 0;     /* More vertical spacing between items */
+  color: #495057;      /* Dark gray text */
+  position: relative; /* For custom bullet positioning */
+  padding-left: 24px;  /* More space for custom bullet */
+  font-size: 15px;     /* Slightly larger font size */
+  line-height: 1.4;    /* Better line height for readability */
+}
+
+/* Custom bullet styling using CSS pseudo-element - refined */
+.placeholder-content li:before {
+  content: "•";       /* Custom bullet character */
+  color: #1A5276;     /* Blue color to match theme */
+  font-weight: bold;   /* Bold bullet */
+  position: absolute;  /* Position absolutely */
+  left: 0;           /* Align to the left */
+  font-size: 16px;    /* Slightly larger bullet */
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .ai-integration {
+    margin-left: 240px;
+  }
+  
+  .cards-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .ai-integration {
+    margin-left: 0;
+  }
+  
+  .content-header {
+    padding: 24px 20px;
+  }
+  
+  .content-body {
+    padding: 24px 20px;
+  }
+  
+  .content-header h1 {
+    font-size: 24px;
+  }
+  
+  .card-header {
+    flex-direction: column;
+    gap: 16px;
+    align-items: stretch;
+  }
+  
+  .card-actions {
+    justify-content: center;
+  }
+}

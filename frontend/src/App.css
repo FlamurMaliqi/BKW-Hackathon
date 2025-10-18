@@ -1,146 +1,113 @@
 /**
- * BKW Hackathon - AI Project Management Frontend Styles
- * Clean, modern UI for AI assistant interface
+ * Main App Component Styles
+ * 
+ * This CSS file contains the global styles for the main App component.
+ * It sets up the overall layout structure with a fixed sidebar navigation
+ * and a dynamic main content area that changes based on the selected tab.
+ * 
+ * Layout Structure:
+ * - Fixed sidebar navigation (280px wide on desktop)
+ * - Main content area that adjusts based on sidebar width
+ * - Responsive design for different screen sizes
+ * - Clean, professional design matching the reference medical application
  */
 
+
+/* Main application container */
 .App {
-  text-align: center;
-  min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: white;
+  min-height: 100vh;     /* Full viewport height */
+  background: #FFFFFF;   /* Clean white background */
+  display: flex;         /* Flexbox layout for sidebar + main content */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;         /* Modern system font stack */
+  -webkit-font-smoothing: antialiased;  /* Smooth font rendering on macOS */
+  -moz-osx-font-smoothing: grayscale;    /* Smooth font rendering on macOS */
 }
 
-.App-header {
-  padding: 2rem;
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
+/* Main content area that adjusts based on sidebar */
+.main-content {
+  flex: 1;              /* Take up remaining space after sidebar */
+  margin-left: 280px;   /* Account for fixed sidebar width */
+  min-height: 100vh;    /* Full viewport height */
+  background: #FFFFFF;  /* White background for content */
+  overflow-x: auto;     /* Allow horizontal scrolling if needed */
 }
 
-.App-header h1 {
-  margin: 0 0 1rem 0;
-  font-size: 2.5rem;
-  font-weight: 300;
+/* Responsive Design - Tablet and smaller desktop screens */
+@media (max-width: 1024px) {
+  .main-content {
+    margin-left: 240px;  /* Account for narrower sidebar */
+  }
 }
 
-.App-header p {
-  margin: 0;
-  font-size: 1.2rem;
-  opacity: 0.9;
-}
-
-.App-main {
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 2rem;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-}
-
-.ai-chat, .dashboard {
-  background: rgba(255, 255, 255, 0.1);
-  backdrop-filter: blur(10px);
-  border-radius: 15px;
-  padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
-}
-
-.ai-chat h2, .dashboard h2 {
-  margin: 0 0 1.5rem 0;
-  font-size: 1.8rem;
-  font-weight: 400;
-}
-
-.chat-form {
-  margin-bottom: 2rem;
-}
-
-.input-group {
-  display: flex;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.chat-input {
-  flex: 1;
-  padding: 1rem;
-  border: none;
-  border-radius: 8px;
-  font-size: 1rem;
-  background: rgba(255, 255, 255, 0.9);
-  color: #333;
-}
-
-.chat-input:focus {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(255, 255, 255, 0.3);
-}
-
-.chat-button {
-  padding: 1rem 2rem;
-  border: none;
-  border-radius: 8px;
-  background: #4CAF50;
-  color: white;
-  font-size: 1rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.3s ease;
-}
-
-.chat-button:hover:not(:disabled) {
-  background: #45a049;
-  transform: translateY(-2px);
-}
-
-.chat-button:disabled {
-  background: #666;
-  cursor: not-allowed;
-  transform: none;
-}
-
-.ai-response {
-  background: rgba(255, 255, 255, 0.1);
-  border-radius: 8px;
-  padding: 1.5rem;
-  text-align: left;
-}
-
-.ai-response h3 {
-  margin: 0 0 1rem 0;
-  color: #4CAF50;
-}
-
-.dashboard-placeholder {
-  text-align: center;
-  padding: 2rem;
-  opacity: 0.8;
-}
-
-.App-footer {
-  padding: 2rem;
-  background: rgba(0, 0, 0, 0.2);
-  margin-top: 2rem;
-}
-
-.App-footer p {
-  margin: 0;
-  opacity: 0.8;
-}
-
-/* Responsive design */
+/* Responsive Design - Mobile screens */
 @media (max-width: 768px) {
-  .App-main {
-    grid-template-columns: 1fr;
-    padding: 1rem;
+  .main-content {
+    margin-left: 0;     /* No sidebar margin on mobile */
+    padding-top: 0;     /* No top padding needed */
   }
-  
-  .input-group {
-    flex-direction: column;
-  }
-  
-  .App-header h1 {
-    font-size: 2rem;
-  }
+}
+
+/* Global reset and base styles */
+* {
+  box-sizing: border-box;  /* Include padding and border in element width */
+}
+
+body {
+  margin: 0;            /* Remove default body margin */
+  padding: 0;           /* Remove default body padding */
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;         /* Modern system font stack */
+  -webkit-font-smoothing: antialiased;  /* Smooth font rendering */
+  -moz-osx-font-smoothing: grayscale;    /* Smooth font rendering */
+}
+
+/* Ensure consistent styling across all elements */
+h1, h2, h3, h4, h5, h6 {
+  margin: 0;            /* Remove default heading margins */
+  font-weight: 600;     /* Semi-bold for headings */
+}
+
+p {
+  margin: 0;            /* Remove default paragraph margins */
+}
+
+button {
+  font-family: inherit; /* Inherit font family from parent */
+  cursor: pointer;      /* Pointer cursor for all buttons */
+}
+
+/* Focus styles for accessibility */
+button:focus,
+input:focus,
+textarea:focus,
+select:focus {
+  outline: 2px solid #1A5276;  /* Blue outline for focus */
+  outline-offset: 2px;          /* Space between element and outline */
+}
+
+/* Smooth scrolling for better user experience */
+html {
+  scroll-behavior: smooth;
+}
+
+/* Custom scrollbar styling for webkit browsers */
+::-webkit-scrollbar {
+  width: 8px;           /* Thin scrollbar */
+}
+
+::-webkit-scrollbar-track {
+  background: #F8F9FA;  /* Light gray track */
+}
+
+::-webkit-scrollbar-thumb {
+  background: #E9ECEF;  /* Gray thumb */
+  border-radius: 4px;  /* Rounded thumb */
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #6C757D; /* Darker gray on hover */
 }
 
