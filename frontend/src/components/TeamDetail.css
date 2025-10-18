@@ -1,0 +1,445 @@
+/**
+ * Team Detail Component Styles
+ * 
+ * This CSS file styles the Team Detail page.
+ * It creates a professional layout for displaying team information,
+ * performance metrics, and team management features.
+ * 
+ * Layout:
+ * - Header with back button and team title
+ * - Overview cards with key metrics
+ * - Team projects and members sections
+ * - Performance metrics and analytics
+ * - Responsive design for different screen sizes
+ */
+
+.team-detail {
+  min-height: 100vh;     /* Full viewport height */
+  background: #FFFFFF;   /* Clean white background */
+  padding: 0;           /* No default padding */
+}
+
+/* Header section with back button and team title */
+.content-header {
+  background: #FFFFFF;   /* White background for header */
+  padding: 32px 40px;    /* Generous padding for breathing room */
+  border-bottom: 1px solid #E9ECEF;  /* Subtle border to separate from content */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* Subtle shadow for depth */
+}
+
+.header-actions {
+  margin-bottom: 20px;   /* Space below back button */
+}
+
+.btn-back {
+  background: #F8F9FA;  /* Light gray background */
+  color: #495057;      /* Dark gray text */
+  border: 1px solid #E9ECEF;  /* Light border */
+  padding: 8px 16px;   /* Internal spacing */
+  border-radius: 6px;  /* Rounded corners */
+  font-size: 14px;     /* Readable font size */
+  font-weight: 500;    /* Medium font weight */
+  cursor: pointer;     /* Pointer cursor */
+  transition: all 0.2s ease;  /* Smooth transitions */
+  text-decoration: none;  /* Remove text decoration */
+  display: inline-flex;  /* Inline flex for icon alignment */
+  align-items: center;  /* Center icon and text */
+  gap: 8px;           /* Space between icon and text */
+}
+
+.btn-back:hover {
+  background: #E9ECEF;  /* Darker gray on hover */
+  color: #212529;      /* Darker text on hover */
+}
+
+.team-title h1 {
+  margin: 0 0 8px 0;    /* Remove default margins, add bottom margin */
+  font-size: 32px;      /* Large font size for team title */
+  font-weight: 700;      /* Bold for emphasis */
+  color: #212529;       /* Dark gray for good contrast */
+  letter-spacing: -0.5px;  /* Tighter letter spacing for modern look */
+}
+
+.team-title p {
+  margin: 0;            /* Remove default margins */
+  font-size: 18px;      /* Readable font size */
+  color: #6C757D;       /* Muted gray for subtitle */
+  line-height: 1.5;     /* Better line height for readability */
+}
+
+/* Main content area */
+.content-body {
+  padding: 40px;        /* Generous padding around the content */
+}
+
+/* Overview Cards */
+.overview-cards {
+  display: grid;         /* CSS Grid for flexible card layout */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));  /* Responsive grid */
+  gap: 24px;            /* Space between cards */
+  margin-bottom: 40px;  /* Space below overview cards */
+}
+
+.overview-card {
+  background: #FFFFFF;   /* White card background */
+  border: 1px solid #E9ECEF;  /* Subtle border */
+  border-radius: 8px;   /* Rounded corners */
+  padding: 24px;        /* Internal spacing */
+  display: flex;        /* Flexbox for card layout */
+  align-items: center;  /* Vertically center card content */
+  gap: 16px;           /* Space between icon and content */
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);  /* Subtle shadow */
+  transition: all 0.2s ease;  /* Smooth hover transitions */
+}
+
+.overview-card:hover {
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);  /* Enhanced shadow on hover */
+  transform: translateY(-2px);  /* Slight lift effect */
+}
+
+.card-icon {
+  font-size: 32px;      /* Large icon size */
+  opacity: 0.8;         /* Slightly transparent for subtle effect */
+}
+
+.card-content h3 {
+  margin: 0 0 8px 0;   /* Remove default margins, add bottom margin */
+  font-size: 16px;     /* Medium font size for card titles */
+  font-weight: 600;    /* Semi-bold for emphasis */
+  color: #495057;      /* Dark gray color */
+  text-transform: uppercase;  /* Uppercase for card titles */
+  letter-spacing: 0.5px;  /* Slight letter spacing */
+}
+
+.card-value {
+  font-size: 28px;     /* Large font size for values */
+  font-weight: 700;    /* Bold for emphasis */
+  color: #212529;      /* Dark gray for good contrast */
+}
+
+/* Team Projects Section */
+.team-projects {
+  background: #FFFFFF;  /* White background */
+  border: 1px solid #E9ECEF;  /* Subtle border */
+  border-radius: 8px;   /* Rounded corners */
+  padding: 24px;        /* Internal spacing */
+  margin-bottom: 32px;  /* Space below section */
+}
+
+.team-projects h2 {
+  margin: 0 0 20px 0;   /* Remove default margins, add bottom margin */
+  font-size: 20px;      /* Medium font size for section titles */
+  font-weight: 600;     /* Semi-bold for emphasis */
+  color: #212529;       /* Dark gray for good contrast */
+}
+
+.projects-list {
+  display: flex;        /* Horizontal layout for projects */
+  flex-direction: column;  /* Stack projects vertically */
+  gap: 16px;           /* Space between projects */
+}
+
+.project-item {
+  display: flex;        /* Flexbox for project layout */
+  justify-content: space-between;  /* Space between info and status */
+  align-items: center; /* Vertically center project content */
+  padding: 16px;       /* Internal spacing */
+  background: #F8F9FA; /* Light gray background */
+  border-radius: 6px;  /* Rounded corners */
+  border-left: 4px solid #1A5276;  /* Left border for visual separation */
+}
+
+.project-info h4 {
+  margin: 0 0 4px 0;   /* Remove default margins, add bottom margin */
+  font-size: 16px;     /* Medium font size for project names */
+  font-weight: 600;    /* Semi-bold for emphasis */
+  color: #212529;      /* Dark gray for good contrast */
+}
+
+.project-info p {
+  margin: 0;           /* Remove default margins */
+  font-size: 14px;     /* Smaller font size for descriptions */
+  color: #6C757D;      /* Muted gray color */
+}
+
+.status-badge {
+  padding: 4px 12px;   /* Internal spacing */
+  border-radius: 4px;  /* Rounded corners */
+  font-size: 12px;     /* Small font size */
+  font-weight: 600;    /* Semi-bold for emphasis */
+  text-transform: uppercase;  /* Uppercase for status */
+  letter-spacing: 0.5px;  /* Slight letter spacing */
+}
+
+.status-badge.active {
+  background: #d4edda; /* Light green background */
+  color: #155724;      /* Dark green text */
+}
+
+/* Team Members Section */
+.team-members {
+  background: #FFFFFF;  /* White background */
+  border: 1px solid #E9ECEF;  /* Subtle border */
+  border-radius: 8px;   /* Rounded corners */
+  padding: 24px;        /* Internal spacing */
+  margin-bottom: 32px;  /* Space below section */
+}
+
+.team-members h2 {
+  margin: 0 0 20px 0;   /* Remove default margins, add bottom margin */
+  font-size: 20px;      /* Medium font size for section titles */
+  font-weight: 600;     /* Semi-bold for emphasis */
+  color: #212529;       /* Dark gray for good contrast */
+}
+
+.members-grid {
+  display: grid;         /* CSS Grid for member cards */
+  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));  /* Responsive grid */
+  gap: 20px;            /* Space between member cards */
+}
+
+.member-card {
+  background: #F8F9FA;  /* Light gray background */
+  border: 1px solid #E9ECEF;  /* Subtle border */
+  border-radius: 8px;   /* Rounded corners */
+  padding: 20px;        /* Internal spacing */
+  display: flex;        /* Flexbox for card layout */
+  align-items: center;  /* Vertically center card content */
+  gap: 16px;           /* Space between avatar and info */
+  transition: all 0.2s ease;  /* Smooth hover transitions */
+}
+
+.member-card:hover {
+  background: #E9ECEF;  /* Darker gray on hover */
+  transform: translateY(-2px);  /* Slight lift effect */
+}
+
+.member-avatar {
+  font-size: 40px;      /* Large avatar size */
+  width: 60px;          /* Fixed width for avatar */
+  height: 60px;         /* Fixed height for avatar */
+  display: flex;        /* Flexbox for centering */
+  align-items: center;  /* Center avatar vertically */
+  justify-content: center;  /* Center avatar horizontally */
+  background: #FFFFFF;  /* White background for avatar */
+  border-radius: 50%;   /* Circular avatar */
+  border: 2px solid #E9ECEF;  /* Light border */
+}
+
+.member-info h4 {
+  margin: 0 0 4px 0;   /* Remove default margins, add bottom margin */
+  font-size: 16px;     /* Medium font size for member names */
+  font-weight: 600;    /* Semi-bold for emphasis */
+  color: #212529;      /* Dark gray for good contrast */
+}
+
+.member-info p {
+  margin: 0 0 8px 0;   /* Remove default margins, add bottom margin */
+  font-size: 14px;     /* Smaller font size for roles */
+  color: #6C757D;      /* Muted gray color */
+}
+
+.member-skills {
+  display: flex;       /* Horizontal layout for skills */
+  flex-wrap: wrap;     /* Wrap skills to new line if needed */
+  gap: 6px;           /* Space between skills */
+}
+
+.skill-tag {
+  padding: 2px 8px;    /* Internal spacing */
+  background: #1A5276; /* Blue background */
+  color: white;        /* White text */
+  border-radius: 4px;  /* Rounded corners */
+  font-size: 11px;     /* Small font size */
+  font-weight: 500;    /* Medium font weight */
+}
+
+/* Team Performance Section */
+.team-performance {
+  background: #FFFFFF;  /* White background */
+  border: 1px solid #E9ECEF;  /* Subtle border */
+  border-radius: 8px;   /* Rounded corners */
+  padding: 24px;        /* Internal spacing */
+  margin-bottom: 32px;  /* Space below section */
+}
+
+.team-performance h2 {
+  margin: 0 0 20px 0;   /* Remove default margins, add bottom margin */
+  font-size: 20px;      /* Medium font size for section titles */
+  font-weight: 600;     /* Semi-bold for emphasis */
+  color: #212529;       /* Dark gray for good contrast */
+}
+
+.performance-metrics {
+  display: flex;        /* Horizontal layout for metrics */
+  flex-direction: column;  /* Stack metrics vertically */
+  gap: 16px;           /* Space between metrics */
+}
+
+.metric-item {
+  display: flex;        /* Flexbox for metric layout */
+  align-items: center;  /* Vertically center metric content */
+  gap: 16px;           /* Space between metric elements */
+}
+
+.metric-label {
+  font-size: 14px;     /* Readable font size */
+  color: #495057;      /* Dark gray color */
+  min-width: 120px;    /* Minimum width for label */
+  font-weight: 500;    /* Medium font weight */
+}
+
+.metric-bar {
+  flex: 1;            /* Take up remaining space */
+  height: 8px;        /* Fixed height for bar */
+  background: #E9ECEF; /* Light gray background */
+  border-radius: 4px;  /* Rounded corners */
+  overflow: hidden;   /* Ensure fill doesn't overflow */
+}
+
+.metric-fill {
+  height: 100%;       /* Full height of bar */
+  background: #1A5276; /* Blue background */
+  border-radius: 4px;  /* Rounded corners */
+  transition: width 0.3s ease;  /* Smooth width transition */
+}
+
+.metric-value {
+  font-size: 14px;     /* Readable font size */
+  font-weight: 600;    /* Semi-bold for emphasis */
+  color: #495057;      /* Dark gray color */
+  min-width: 40px;     /* Minimum width for value */
+  text-align: right;   /* Right-align value */
+}
+
+/* Placeholder Section */
+.placeholder-section {
+  background: #F8F9FA;  /* Light gray background */
+  border: 1px solid #E9ECEF;  /* Subtle border */
+  border-radius: 8px;   /* Rounded corners */
+  padding: 40px;        /* Internal spacing */
+  text-align: center;   /* Center the placeholder content */
+}
+
+.placeholder-content {
+  max-width: 500px;    /* Limit content width */
+  margin: 0 auto;      /* Center the content */
+}
+
+.placeholder-icon {
+  font-size: 48px;     /* Large icon size */
+  margin-bottom: 16px; /* Space below icon */
+  opacity: 0.8;        /* Slightly transparent for subtle effect */
+}
+
+.placeholder-content h3 {
+  margin: 0 0 12px 0;   /* Remove default margins, add bottom margin */
+  font-size: 20px;      /* Medium font size for title */
+  font-weight: 600;     /* Semi-bold for emphasis */
+  color: #495057;       /* Dark gray color */
+}
+
+.placeholder-content p {
+  margin: 0 0 20px 0;   /* Remove default margins, add bottom margin */
+  font-size: 16px;      /* Readable font size */
+  color: #6C757D;       /* Muted gray color */
+  line-height: 1.5;     /* Better line height for readability */
+}
+
+.placeholder-content ul {
+  text-align: left;    /* Left-align the list */
+  max-width: 300px;    /* Limit list width */
+  margin: 0 auto;      /* Center the list */
+  padding: 0;          /* Remove default padding */
+  list-style: none;   /* Remove default list bullets */
+}
+
+.placeholder-content li {
+  padding: 8px 0;      /* Vertical spacing between items */
+  color: #495057;      /* Dark gray text */
+  position: relative; /* For custom bullet positioning */
+  padding-left: 20px;  /* Space for custom bullet */
+  font-size: 14px;     /* Readable font size */
+  line-height: 1.4;    /* Better line height for readability */
+}
+
+.placeholder-content li:before {
+  content: "•";       /* Custom bullet character */
+  color: #1A5276;     /* Blue color to match theme */
+  font-weight: bold;   /* Bold bullet */
+  position: absolute;  /* Position absolutely */
+  left: 0;           /* Align to the left */
+  font-size: 16px;    /* Slightly larger bullet */
+}
+
+/* Responsive Design */
+@media (max-width: 1024px) {
+  .overview-cards {
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));  /* Smaller cards on tablet */
+  }
+  
+  .members-grid {
+    grid-template-columns: 1fr;  /* Single column on tablet */
+  }
+}
+
+@media (max-width: 768px) {
+  .content-header {
+    padding: 24px 20px;
+  }
+  
+  .content-body {
+    padding: 24px 20px;
+  }
+  
+  .team-title h1 {
+    font-size: 28px;
+  }
+  
+  .team-title p {
+    font-size: 16px;
+  }
+  
+  .overview-cards {
+    grid-template-columns: 1fr;  /* Single column on mobile */
+    gap: 16px;         /* Reduce gap between cards */
+  }
+  
+  .overview-card {
+    padding: 16px;     /* Reduce padding on mobile */
+  }
+  
+  .card-value {
+    font-size: 24px;   /* Smaller font size on mobile */
+  }
+  
+  .project-item {
+    flex-direction: column;  /* Stack project info vertically */
+    gap: 12px;         /* Space between project info and status */
+    align-items: flex-start;  /* Align to left */
+  }
+  
+  .member-card {
+    padding: 16px;     /* Reduce padding on mobile */
+  }
+  
+  .member-avatar {
+    width: 50px;       /* Smaller avatar on mobile */
+    height: 50px;      /* Smaller avatar on mobile */
+    font-size: 32px;   /* Smaller icon on mobile */
+  }
+  
+  .metric-item {
+    flex-direction: column;  /* Stack metric elements vertically */
+    gap: 8px;          /* Space between metric elements */
+    align-items: flex-start;  /* Align to left */
+  }
+  
+  .metric-label {
+    min-width: auto;   /* Remove minimum width on mobile */
+  }
+  
+  .metric-value {
+    text-align: left;  /* Left-align value on mobile */
+  }
+}
