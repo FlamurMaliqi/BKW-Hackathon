@@ -568,3 +568,46 @@
     gap: var(--spacing-md);         /* Reduce gap between detail sections */
   }
 }
+
+/* Switch Member Button Styles */
+.worker-actions {
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
+  border-top: 1px solid var(--border-color);
+  display: flex;
+  justify-content: center;
+}
+
+.btn-switch-member {
+  background: linear-gradient(135deg, var(--bkw-blue), var(--medium-blue));
+  color: var(--bkw-white);
+  border: none;
+  padding: var(--spacing-sm) var(--spacing-md);
+  border-radius: var(--radius-rounded);
+  font-size: var(--text-small);
+  font-weight: var(--font-medium);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-xs);
+  box-shadow: 0 2px 4px rgba(0, 68, 136, 0.1);
+}
+
+.btn-switch-member:hover {
+  background: linear-gradient(135deg, var(--medium-blue), var(--dark-blue));
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 68, 136, 0.2);
+}
+
+.btn-switch-member:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 4px rgba(0, 68, 136, 0.1);
+}
+
+.btn-switch-member:disabled {
+  background: var(--text-muted);
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}

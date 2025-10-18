@@ -159,6 +159,19 @@ export const createEngineer = async (engineerData) => {
 };
 
 /**
+ * Switch an engineer to a different team
+ * @param {number} engineerId - Engineer ID
+ * @param {number} teamId - New team ID
+ * @returns {Promise<{engineer: Object, status: string}>}
+ */
+export const switchEngineerTeam = async (engineerId, teamId) => {
+  return apiFetch(`/api/engineers/${engineerId}/team`, {
+    method: 'PUT',
+    body: JSON.stringify({ team_id: teamId }),
+  });
+};
+
+/**
  * Get workload analysis and overwork periods for an engineer
  * @param {number} engineerId - Engineer ID
  * @param {number} daysAhead - Number of days ahead to analyze (default: 90)
@@ -218,6 +231,7 @@ export default {
   unassignEngineerFromProject,
   getAvailableEngineers,
   createEngineer,
+  switchEngineerTeam,
   getEngineerWorkload,
   getEngineerTimeline,
   getTeamWorkload,

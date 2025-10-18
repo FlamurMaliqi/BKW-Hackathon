@@ -17,6 +17,7 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import TeamDetail from './TeamDetail';
 import AddMemberModal from './AddMemberModal';
+import SwitchMemberModal from './SwitchMemberModal';
 import './HumanManagement.css';
 import { getEngineers, getTeams, createEngineer } from '../services/api';
 
@@ -35,6 +36,8 @@ const HumanManagement = () => {
   const [engineers, setEngineers] = useState([]);
   const [teams, setTeams] = useState([]);
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
+  const [showSwitchMemberModal, setShowSwitchMemberModal] = useState(false);
+  const [selectedMember, setSelectedMember] = useState(null);
 
   // Fetch engineers and teams from backend
   useEffect(() => {
@@ -326,6 +329,25 @@ const HumanManagement = () => {
     }
   };
 
+  // Handle switching a member to a different team
+  const handleSwitchMember = (member) => {
+    setSelectedMember(member);
+    setShowSwitchMemberModal(true);
+  };
+
+  // Handle member switched successfully
+  const handleMemberSwitched = async (updatedEngineer) => {
+    // Refresh the engineers list
+    try {
+      const engineersResponse = await getEngineers(7);
+      if (engineersResponse.status === 'success' && engineersResponse.engineers) {
+        setEngineers(engineersResponse.engineers);
+      }
+    } catch (err) {
+      console.error('Error refreshing engineers after team switch:', err);
+    }
+  };
+
   // Get activity level color
   const getActivityColor = (level) => {
     if (level === 0) return '#ebedf0';
@@ -599,6 +621,16 @@ const HumanManagement = () => {
                               <p>📧 {worker.email}</p>
                               <p>📞 {worker.phone}</p>
                             </div>
+
+                            <div className="worker-actions">
+                              <button
+                                className="btn-switch-member"
+                                onClick={() => handleSwitchMember(worker)}
+                                title="Switch to another team"
+                              >
+                                🔄 Switch Member
+                              </button>
+                            </div>
                           </div>
                         </div>
                       ))}
@@ -616,6 +648,14 @@ const HumanManagement = () => {
         isOpen={showAddMemberModal}
         onClose={() => setShowAddMemberModal(false)}
         onMemberAdded={handleAddMember}
+      />
+
+      {/* Switch Member Modal */}
+      <SwitchMemberModal
+        isOpen={showSwitchMemberModal}
+        onClose={() => setShowSwitchMemberModal(false)}
+        member={selectedMember}
+        onMemberSwitched={handleMemberSwitched}
       />
     </div>
   );

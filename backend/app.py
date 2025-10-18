@@ -316,6 +316,36 @@ def create_engineer():
     except Exception as exc:
         return jsonify({'status': 'error', 'error': str(exc)}), 500
 
+@app.route('/api/engineers/<int:engineer_id>/team', methods=['PUT'])
+def switch_engineer_team(engineer_id):
+    """Switch an engineer to a different team."""
+    try:
+        data = request.get_json(force=True) if request.is_json else {}
+        new_team_id = data.get('team_id')
+        
+        print(f"Switching engineer {engineer_id} to team {new_team_id}")  # Debug logging
+
+        if not new_team_id:
+            return jsonify({'status': 'error', 'error': 'team_id is required'}), 400
+
+        # Validate that the team exists
+        teams = db_manager.execute_query("SELECT id FROM teams WHERE id = %s", (int(new_team_id),))
+        print(f"Teams found: {teams}")  # Debug logging
+        if not teams:
+            return jsonify({'status': 'error', 'error': f'Team with id {new_team_id} not found'}), 404
+
+        engineer = db_manager.update_engineer_team(
+            engineer_id=int(engineer_id),
+            new_team_id=int(new_team_id)
+        )
+        print(f"Updated engineer: {engineer}")  # Debug logging
+        return jsonify({'engineer': engineer, 'status': 'success'}), 200
+    except ValueError as ve:
+        return jsonify({'status': 'error', 'error': str(ve)}), 404
+    except Exception as exc:
+        print(f"Error switching engineer team: {exc}")  # Debug logging
+        return jsonify({'status': 'error', 'error': str(exc)}), 500
+
 # ---------------------------------------------------------------------
 # Workload Analysis Endpoints
 # ---------------------------------------------------------------------

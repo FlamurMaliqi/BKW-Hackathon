@@ -472,6 +472,24 @@ class DatabaseManager:
                     return self._normalize_row(dict(result))
         raise ValueError('Failed to create engineer')
 
+    def update_engineer_team(self, engineer_id: int, new_team_id: int) -> Dict[str, Any]:
+        """Update an engineer's team assignment."""
+        query = """
+        UPDATE engineers 
+        SET team_id = %s
+        WHERE id = %s
+        RETURNING id, name, email, phone, capacity_hours_per_week, role, team_id, 
+                  status, availability, workload_percent, is_overworked, skills, created_at
+        """
+        with self.get_connection() as conn:
+            with conn.cursor(cursor_factory=RealDictCursor) as cursor:
+                cursor.execute(query, (new_team_id, engineer_id))
+                conn.commit()
+                result = cursor.fetchone()
+                if result:
+                    return self._normalize_row(dict(result))
+        raise ValueError(f'Engineer with id {engineer_id} not found')
+
 
 # Global database manager instance
 db_manager = DatabaseManager()
