@@ -224,6 +224,19 @@ const AIIntegration = () => {
     }
   };
 
+  // Handle clear chat button
+  const handleClearChat = () => {
+    setMessages([
+      {
+        id: 1,
+        text: "Hello! I'm your AI project assistant. How can I help you today? You can type or speak your questions!",
+        isUser: false,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+    ]);
+    setInputValue('');
+  };
+
   return (
     <div className="ai-integration">
       {/* Header section with page title */}
@@ -241,8 +254,7 @@ const AIIntegration = () => {
               <h3>AI Project Assistant</h3>
             </div>
             <div className="chat-actions">
-              <button className="btn-secondary">Clear Chat</button>
-              <button className="btn-primary">Export Chat</button>
+              <button className="btn-secondary" onClick={handleClearChat}>Clear Chat</button>
             </div>
           </div>
 
