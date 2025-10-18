@@ -1,14 +1,13 @@
 /**
  * AI Integration Component Styles
  * 
- * This CSS file styles the AI Integration dashboard page.
- * It creates a professional layout with cards for different
- * AI-powered features, following the design language
+ * This CSS file styles the AI Integration chat interface.
+ * It creates a professional chat UI following the design language
  * from the reference medical application.
  * 
  * Layout:
  * - Fixed sidebar navigation (280px wide)
- * - Main content area with header and cards grid
+ * - Main content area with chat interface
  * - Responsive design for different screen sizes
  */
 
@@ -26,7 +25,6 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* Subtle shadow for depth */
 }
 
-
 /* Main page title styling - matching medical app typography */
 .content-header h1 {
   margin: 0 0 8px 0;    /* Remove default margins, add bottom margin */
@@ -43,180 +41,384 @@
   color: #6C757D;       /* Muted gray for subtitle */
 }
 
-/* Main content area with dashboard cards */
+/* Main content area with chat interface */
 .content-body {
   padding: 40px;        /* Generous padding around the content */
+  height: calc(100vh - 120px); /* Full height minus header */
+  display: flex;
+  flex-direction: column;
 }
 
-/* Grid layout for dashboard cards */
-.cards-grid {
-  display: grid;         /* CSS Grid for flexible card layout */
-  grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));  /* Responsive grid */
-  gap: 24px;            /* Space between cards */
+/* Chat container */
+.chat-container {
+  background: #FFFFFF;
+  border: 1px solid #E9ECEF;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  overflow: hidden;
 }
 
-/* Individual dashboard card styling - matching medical app cards */
-.card {
-  background: #FFFFFF;   /* White card background */
-  border: 1px solid #E9ECEF;  /* Subtle border */
-  border-radius: 8px;   /* Less rounded corners for medical app style */
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);  /* Slightly more prominent shadow */
-  overflow: hidden;     /* Ensure content doesn't overflow rounded corners */
-  transition: all 0.2s ease;  /* Smooth hover transitions */
+/* Chat header */
+.chat-header {
+  background: #1A5276;
+  color: white;
+  padding: 20px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
 }
 
-/* Card hover effect for better interactivity */
-.card:hover {
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12);  /* Enhanced shadow on hover */
-  transform: translateY(-1px);  /* Slight lift effect */
+.chat-title {
+  display: flex;
+  align-items: center;
+  gap: 12px;
 }
 
-/* Card header with blue background - matching medical app style */
-.card-header {
-  background: #1A5276;  /* Professional blue background matching medical app */
-  color: white;        /* White text for contrast */
-  padding: 20px 24px;   /* Internal spacing */
-  display: flex;       /* Flexbox for header layout */
-  justify-content: space-between;  /* Space between title and actions */
-  align-items: center; /* Vertically center header content */
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);  /* Subtle separator */
+.chat-icon {
+  font-size: 24px;
 }
 
-/* Card title styling */
-.card-header h3 {
-  margin: 0;           /* Remove default margins */
-  font-size: 18px;     /* Medium font size for card titles */
-  font-weight: 600;    /* Semi-bold for emphasis */
+.chat-title h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
 }
 
-/* Container for action buttons in card header */
-.card-actions {
-  display: flex;       /* Horizontal layout for buttons */
-  gap: 12px;          /* Space between buttons */
+.chat-actions {
+  display: flex;
+  gap: 12px;
 }
 
-/* Primary and secondary button base styles - matching medical app */
+/* Quick action buttons */
+.quick-actions {
+  padding: 20px 24px;
+  background: #F8F9FA;
+  border-bottom: 1px solid #E9ECEF;
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.quick-action-btn {
+  background: #FFFFFF;
+  border: 1px solid #E9ECEF;
+  border-radius: 20px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #495057;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.quick-action-btn:hover {
+  background: #1A5276;
+  color: white;
+  border-color: #1A5276;
+  transform: translateY(-1px);
+}
+
+.action-icon {
+  font-size: 16px;
+}
+
+/* Messages container */
+.messages-container {
+  flex: 1;
+  overflow-y: auto;
+  padding: 20px 24px;
+  background: #FAFBFC;
+}
+
+.messages-list {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+/* Chat bubble styles */
+.chat-bubble {
+  display: flex;
+  gap: 12px;
+  max-width: 80%;
+  animation: fadeInUp 0.3s ease;
+}
+
+.chat-bubble.user {
+  align-self: flex-end;
+  flex-direction: row-reverse;
+}
+
+.chat-bubble.ai {
+  align-self: flex-start;
+}
+
+.bubble-content {
+  background: white;
+  border-radius: 18px;
+  padding: 16px 20px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  position: relative;
+}
+
+.chat-bubble.user .bubble-content {
+  background: #1A5276;
+  color: white;
+}
+
+.chat-bubble.ai .bubble-content {
+  background: white;
+  color: #212529;
+  border: 1px solid #E9ECEF;
+}
+
+.bubble-text {
+  font-size: 15px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.bubble-timestamp {
+  font-size: 12px;
+  color: #6C757D;
+  margin-top: 8px;
+  opacity: 0.7;
+}
+
+.chat-bubble.user .bubble-timestamp {
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.bubble-avatar {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: #F8F9FA;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 20px;
+  flex-shrink: 0;
+  border: 2px solid #E9ECEF;
+}
+
+.chat-bubble.user .bubble-avatar {
+  background: #154360;
+  border-color: #1A5276;
+}
+
+/* Typing indicator */
+.typing-indicator {
+  display: flex;
+  gap: 4px;
+  align-items: center;
+}
+
+.typing-indicator span {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #6C757D;
+  animation: typing 1.4s infinite ease-in-out;
+}
+
+.typing-indicator span:nth-child(2) {
+  animation-delay: 0.2s;
+}
+
+.typing-indicator span:nth-child(3) {
+  animation-delay: 0.4s;
+}
+
+/* Chat input container */
+.chat-input-container {
+  padding: 20px 24px;
+  background: white;
+  border-top: 1px solid #E9ECEF;
+}
+
+.input-wrapper {
+  display: flex;
+  gap: 12px;
+  align-items: flex-end;
+}
+
+.chat-input {
+  flex: 1;
+  border: 1px solid #E9ECEF;
+  border-radius: 20px;
+  padding: 12px 20px;
+  font-size: 15px;
+  font-family: inherit;
+  resize: none;
+  max-height: 120px;
+  min-height: 44px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.chat-input:focus {
+  border-color: #1A5276;
+  box-shadow: 0 0 0 3px rgba(26, 82, 118, 0.1);
+}
+
+.send-button {
+  background: #1A5276;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+
+.send-button:hover:not(:disabled) {
+  background: #154360;
+  transform: scale(1.05);
+}
+
+.send-button:disabled {
+  background: #E9ECEF;
+  color: #6C757D;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.send-icon {
+  font-size: 18px;
+  transform: rotate(-45deg);
+}
+
+/* Button styles - matching medical app */
 .btn-primary, .btn-secondary {
-  padding: 10px 18px;  /* Slightly larger padding for better touch targets */
-  border: none;        /* Remove default button border */
-  border-radius: 6px;  /* Rounded corners */
-  font-size: 14px;     /* Readable font size */
-  font-weight: 600;    /* Semi-bold font weight for better visibility */
-  cursor: pointer;     /* Pointer cursor for clickability */
-  transition: all 0.2s ease;  /* Smooth hover transitions */
-  text-transform: none;  /* No text transformation for medical app style */
+  padding: 10px 18px;
+  border: none;
+  border-radius: 6px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: none;
 }
 
-/* Primary button styling (blue background) */
 .btn-primary {
-  background: #1A5276;  /* Same blue as card header */
-  color: white;        /* White text */
+  background: #1A5276;
+  color: white;
 }
 
-/* Primary button hover effect */
 .btn-primary:hover {
-  background: #154360;  /* Darker blue on hover */
+  background: #154360;
 }
 
-/* Secondary button styling (gray background) */
 .btn-secondary {
-  background: #F8F9FA;  /* Light gray background */
-  color: #495057;      /* Dark gray text */
-  border: 1px solid #E9ECEF;  /* Light border */
+  background: #F8F9FA;
+  color: #495057;
+  border: 1px solid #E9ECEF;
 }
 
-/* Secondary button hover effect */
 .btn-secondary:hover {
-  background: #E9ECEF;  /* Slightly darker gray on hover */
+  background: #E9ECEF;
 }
 
-/* Card content area */
-.card-content {
-  padding: 24px;       /* Internal spacing for card content */
+/* Animations */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-/* Placeholder content styling - refined for medical app aesthetic */
-.placeholder-content {
-  text-align: center;   /* Center the placeholder content */
-  padding: 48px 24px;   /* More generous padding for better spacing */
-  background: #FAFBFC;  /* Very light background for subtle contrast */
-  border-radius: 6px;   /* Rounded corners for modern look */
-  margin: 16px;         /* Margin from card edges */
-}
-
-/* Large emoji icons for visual appeal - refined styling */
-.placeholder-icon {
-  font-size: 56px;     /* Larger emoji size for better visibility */
-  margin-bottom: 20px; /* More space below icon */
-  opacity: 0.8;        /* Slightly transparent for subtle effect */
-}
-
-/* Placeholder description text - improved typography */
-.placeholder-content p {
-  font-size: 16px;     /* Readable font size */
-  color: #6C757D;     /* Muted gray color */
-  margin-bottom: 28px; /* More space below description */
-  line-height: 1.5;    /* Better line height for readability */
-  font-weight: 500;    /* Medium font weight for better visibility */
-}
-
-/* Feature list styling - refined for medical app */
-.placeholder-content ul {
-  text-align: left;    /* Left-align the list */
-  max-width: 320px;    /* Slightly wider for better readability */
-  margin: 0 auto;      /* Center the list */
-  padding: 0;          /* Remove default padding */
-  list-style: none;   /* Remove default list bullets */
-}
-
-/* Individual list item styling - improved spacing */
-.placeholder-content li {
-  padding: 10px 0;     /* More vertical spacing between items */
-  color: #495057;      /* Dark gray text */
-  position: relative; /* For custom bullet positioning */
-  padding-left: 24px;  /* More space for custom bullet */
-  font-size: 15px;     /* Slightly larger font size */
-  line-height: 1.4;    /* Better line height for readability */
-}
-
-/* Custom bullet styling using CSS pseudo-element - refined */
-.placeholder-content li:before {
-  content: "•";       /* Custom bullet character */
-  color: #1A5276;     /* Blue color to match theme */
-  font-weight: bold;   /* Bold bullet */
-  position: absolute;  /* Position absolutely */
-  left: 0;           /* Align to the left */
-  font-size: 16px;    /* Slightly larger bullet */
+@keyframes typing {
+  0%, 60%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  30% {
+    transform: translateY(-10px);
+    opacity: 1;
+  }
 }
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .cards-grid {
-    grid-template-columns: 1fr;
+  .content-body {
+    padding: 24px;
+  }
+  
+  .chat-bubble {
+    max-width: 90%;
   }
 }
 
 @media (max-width: 768px) {
-  
   .content-header {
     padding: 24px 20px;
   }
   
   .content-body {
-    padding: 24px 20px;
+    padding: 20px;
+    height: calc(100vh - 100px);
   }
   
   .content-header h1 {
     font-size: 24px;
   }
   
-  .card-header {
+  .chat-header {
+    padding: 16px 20px;
     flex-direction: column;
     gap: 16px;
     align-items: stretch;
   }
   
-  .card-actions {
+  .chat-actions {
     justify-content: center;
+  }
+  
+  .quick-actions {
+    padding: 16px 20px;
+    gap: 8px;
+  }
+  
+  .quick-action-btn {
+    font-size: 13px;
+    padding: 6px 12px;
+  }
+  
+  .messages-container {
+    padding: 16px 20px;
+  }
+  
+  .chat-input-container {
+    padding: 16px 20px;
+  }
+  
+  .chat-bubble {
+    max-width: 95%;
+  }
+  
+  .bubble-content {
+    padding: 12px 16px;
+  }
+  
+  .bubble-text {
+    font-size: 14px;
   }
 }
