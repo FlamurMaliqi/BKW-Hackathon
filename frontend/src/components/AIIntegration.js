@@ -18,12 +18,67 @@ import './AIIntegration.css';
 import { sendAIChat } from '../services/api';
 import useSpeechToText from '../hooks/useSpeechToText';
 
+// Function to parse markdown-like formatting in AI responses
+const parseMarkdown = (text) => {
+  if (!text) return '';
+  
+  // Split text into lines for processing
+  const lines = text.split('\n');
+  const processedLines = [];
+  let inBulletList = false;
+  
+  for (let i = 0; i < lines.length; i++) {
+    const line = lines[i];
+    const trimmedLine = line.trim();
+    
+    // Handle bullet points (lines starting with *)
+    if (trimmedLine.startsWith('*') && !trimmedLine.startsWith('**')) {
+      const bulletText = trimmedLine.substring(1).trim();
+      if (!inBulletList) {
+        processedLines.push('<ul>');
+        inBulletList = true;
+      }
+      processedLines.push(`<li>${bulletText}</li>`);
+    } else {
+      // Close bullet list if we were in one
+      if (inBulletList) {
+        processedLines.push('</ul>');
+        inBulletList = false;
+      }
+      
+      // Handle empty lines - skip them to reduce spacing
+      if (trimmedLine !== '') {
+        processedLines.push(line);
+      }
+    }
+  }
+  
+  // Close bullet list if we ended in one
+  if (inBulletList) {
+    processedLines.push('</ul>');
+  }
+  
+  // Join lines and process bold text
+  let result = processedLines.join('\n');
+  
+  // Convert **text** to <strong>text</strong>
+  result = result.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  
+  return result;
+};
+
 // Chat bubble component for individual messages
 const ChatBubble = ({ message, isUser, timestamp }) => {
+  // Parse markdown for AI messages, keep user messages as plain text
+  const formattedMessage = isUser ? message : parseMarkdown(message);
+  
   return (
     <div className={`chat-bubble ${isUser ? 'user' : 'ai'}`}>
       <div className="bubble-content">
-        <div className="bubble-text">{message}</div>
+        <div 
+          className="bubble-text"
+          dangerouslySetInnerHTML={{ __html: formattedMessage }}
+        />
         <div className="bubble-timestamp">{timestamp}</div>
       </div>
     </div>
@@ -71,6 +126,7 @@ const AIIntegration = () => {
     toggleListening,
     resetTranscript
   } = useSpeechToText({
+    continuous: false, // Use non-continuous mode to prevent duplication
     onResult: (finalTranscript) => {
       setInputValue(finalTranscript);
     },
@@ -84,19 +140,12 @@ const AIIntegration = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages]);
 
-  // Handle speech recognition results
+  // Handle speech recognition results - show interim text in real-time
   useEffect(() => {
     if (transcript) {
       setInputValue(transcript);
     }
   }, [transcript]);
-
-  // Handle interim results for real-time feedback
-  useEffect(() => {
-    if (interimTranscript) {
-      setInputValue(transcript + interimTranscript);
-    }
-  }, [interimTranscript, transcript]);
 
   // Mock project data that would come from your backend/API
   const projectData = {
@@ -230,6 +279,19 @@ const AIIntegration = () => {
     }
   };
 
+  // Handle clear chat button
+  const handleClearChat = () => {
+    setMessages([
+      {
+        id: 1,
+        text: "Hello! I'm your AI project assistant. How can I help you today? You can type or speak your questions!",
+        isUser: false,
+        timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+      }
+    ]);
+    setInputValue('');
+  };
+
   return (
     <div className="ai-integration">
       {/* Header section with page title */}
@@ -247,8 +309,7 @@ const AIIntegration = () => {
               <h3>AI Project Assistant</h3>
             </div>
             <div className="chat-actions">
-              <button className="btn-secondary">Clear Chat</button>
-              <button className="btn-primary">Export Chat</button>
+              <button className="btn-secondary" onClick={handleClearChat}>Clear Chat</button>
             </div>
           </div>
 

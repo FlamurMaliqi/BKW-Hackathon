@@ -92,25 +92,19 @@ const useSpeechToText = (options = {}) => {
 
     recognition.onresult = (event) => {
       let interim = '';
-      let final = '';
 
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
-        if (event.results[i].isFinal) {
-          final += transcript;
-        } else {
+        if (!event.results[i].isFinal) {
           interim += transcript;
         }
       }
 
-      if (final) {
-        finalTranscriptRef.current += final;
-        setTranscript(finalTranscriptRef.current);
-        onResult(finalTranscriptRef.current, final);
-      }
-
+      // Only show interim results (real-time feedback)
       if (interim) {
         setInterimTranscript(interim);
+        // Show interim text in the input field
+        setTranscript(interim);
       }
     };
 
@@ -122,6 +116,7 @@ const useSpeechToText = (options = {}) => {
 
     recognition.onend = () => {
       setIsListening(false);
+      setInterimTranscript('');
     };
 
     return recognition;
@@ -130,6 +125,11 @@ const useSpeechToText = (options = {}) => {
   // Start listening
   const startListening = useCallback(() => {
     if (isListening) return;
+
+    // Clear previous transcript when starting new session
+    finalTranscriptRef.current = '';
+    setTranscript('');
+    setInterimTranscript('');
 
     const recognition = initializeRecognition();
     if (recognition) {
