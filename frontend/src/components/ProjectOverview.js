@@ -18,16 +18,8 @@ import './ProjectOverview.css';
 const ProjectOverview = () => {
   return (
     <div className="project-overview">
-      {/* Header section with breadcrumb navigation and page title */}
+      {/* Header section with page title */}
       <div className="content-header">
-        {/* Breadcrumb navigation showing current location in the app */}
-        <div className="breadcrumbs">
-          <span>Home</span>
-          <span>/</span>
-          <span>Projects</span>
-          <span>/</span>
-          <span>Overview</span>
-        </div>
         {/* Main page title */}
         <h1>Project Overview</h1>
         {/* Descriptive subtitle explaining what this section does */}

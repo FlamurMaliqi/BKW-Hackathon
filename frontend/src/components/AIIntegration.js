@@ -19,16 +19,8 @@ import './AIIntegration.css';
 const AIIntegration = () => {
   return (
     <div className="ai-integration">
-      {/* Header section with breadcrumb navigation and page title */}
+      {/* Header section with page title */}
       <div className="content-header">
-        {/* Breadcrumb navigation showing current location in the app */}
-        <div className="breadcrumbs">
-          <span>Home</span>
-          <span>/</span>
-          <span>AI</span>
-          <span>/</span>
-          <span>AI Integration</span>
-        </div>
         {/* Main page title */}
         <h1>AI Integration</h1>
         {/* Descriptive subtitle explaining what this section does */}

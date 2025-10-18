@@ -13,7 +13,6 @@
  */
 
 .ai-integration {
-  margin-left: 280px;    /* Account for fixed sidebar width */
   min-height: 100vh;     /* Full viewport height */
   background: #FFFFFF;   /* Clean white background */
   padding: 0;           /* No default padding */
@@ -27,20 +26,6 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* Subtle shadow for depth */
 }
 
-/* Breadcrumb navigation styling */
-.breadcrumbs {
-  display: flex;         /* Horizontal layout for breadcrumb items */
-  align-items: center;   /* Vertically center the items */
-  gap: 8px;             /* Small gap between breadcrumb items */
-  margin-bottom: 16px;  /* Space below breadcrumbs */
-  font-size: 14px;       /* Smaller font size for navigation */
-  color: #6C757D;       /* Muted gray color */
-}
-
-/* All breadcrumb spans have the same muted color */
-.breadcrumbs span:not(:last-child) {
-  color: #6C757D;
-}
 
 /* Main page title styling - matching medical app typography */
 .content-header h1 {
@@ -206,19 +191,12 @@
 
 /* Responsive Design */
 @media (max-width: 1024px) {
-  .ai-integration {
-    margin-left: 240px;
-  }
-  
   .cards-grid {
     grid-template-columns: 1fr;
   }
 }
 
 @media (max-width: 768px) {
-  .ai-integration {
-    margin-left: 0;
-  }
   
   .content-header {
     padding: 24px 20px;

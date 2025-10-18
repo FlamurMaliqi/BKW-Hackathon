@@ -18,16 +18,8 @@ import './HumanManagement.css';
 const HumanManagement = () => {
   return (
     <div className="human-management">
-      {/* Header section with breadcrumb navigation and page title */}
+      {/* Header section with page title */}
       <div className="content-header">
-        {/* Breadcrumb navigation showing current location in the app */}
-        <div className="breadcrumbs">
-          <span>Home</span>
-          <span>/</span>
-          <span>Team</span>
-          <span>/</span>
-          <span>Human Management</span>
-        </div>
         {/* Main page title */}
         <h1>Human Management</h1>
         {/* Descriptive subtitle explaining what this section does */}
