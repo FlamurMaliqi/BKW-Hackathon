@@ -26,6 +26,7 @@ import Navigation from './components/Navigation';
 import ProjectOverview from './components/ProjectOverview';
 import HumanManagement from './components/HumanManagement';
 import AIIntegration from './components/AIIntegration';
+import OverviewDashboard from './components/OverviewDashboard';
 
 function App() {
   // State management for the currently active tab
@@ -47,13 +48,15 @@ function App() {
   const renderActiveTab = () => {
     switch (activeTab) {
       case 'overview':
+        return <OverviewDashboard />;
+      case 'projects':
         return <ProjectOverview />;
       case 'management':
         return <HumanManagement />;
       case 'ai':
         return <AIIntegration />;
       default:
-        return <ProjectOverview />; // Fallback to overview
+        return <OverviewDashboard />; // Fallback to overview dashboard
     }
   };
 

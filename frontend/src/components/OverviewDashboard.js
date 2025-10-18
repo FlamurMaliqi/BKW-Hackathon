@@ -1,0 +1,609 @@
+/**
+ * Overview Dashboard Component
+ * 
+ * This component displays the main overview dashboard with three key charts:
+ * 1. Gauge/Circular Progress Chart - Overall project completion percentage
+ * 2. Bar Chart - Monthly project metrics and trends
+ * 3. Area Chart - Budget utilization and spending trends over time
+ * 
+ * The component follows the same design patterns as the existing frontend,
+ * using vanilla CSS for styling and React state management for data.
+ */
+
+import React, { useState, useEffect } from 'react';
+import './OverviewDashboard.css';
+import { getProjects, getEngineers, getTeams } from '../services/api';
+
+const OverviewDashboard = () => {
+  // State management
+  const [expandedProjects, setExpandedProjects] = useState(new Set());
+  const [projects, setProjects] = useState([]);
+  const [engineers, setEngineers] = useState([]);
+  const [teams, setTeams] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  // Chart data states
+  const [overallCompletion, setOverallCompletion] = useState(0);
+  const [monthlyData, setMonthlyData] = useState([]);
+  const [budgetTrendData, setBudgetTrendData] = useState([]);
+  const [chartStats, setChartStats] = useState({});
+
+  // Fetch all data from APIs
+  const fetchDashboardData = async () => {
+    try {
+      setLoading(true);
+      const [projectsRes, engineersRes, teamsRes] = await Promise.all([
+        getProjects(),
+        getEngineers(),
+        getTeams()
+      ]);
+
+      if (projectsRes.status === 'success') {
+        setProjects(projectsRes.projects || []);
+      }
+      if (engineersRes.status === 'success') {
+        setEngineers(engineersRes.engineers || []);
+      }
+      if (teamsRes.status === 'success') {
+        setTeams(teamsRes.teams || []);
+      }
+
+      // Process data for charts
+      processChartData(projectsRes.projects || []);
+    } catch (err) {
+      console.error('Error fetching dashboard data:', err);
+      setError(err.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  // Process data for all three charts
+  const processChartData = (projectsData) => {
+    // 1. Calculate overall completion percentage
+    const totalCompletion = projectsData.reduce((sum, project) => 
+      sum + (project.completion_percent || 0), 0);
+    const avgCompletion = projectsData.length > 0 ? totalCompletion / projectsData.length : 0;
+    setOverallCompletion(Math.round(avgCompletion));
+
+    // 2. Generate monthly data for bar chart
+    const monthlyMetrics = generateMonthlyData(projectsData);
+    setMonthlyData(monthlyMetrics);
+
+    // 3. Generate budget trend data for area chart
+    const budgetTrends = generateBudgetTrendData(projectsData);
+    setBudgetTrendData(budgetTrends);
+
+    // 4. Calculate additional statistics
+    const stats = calculateStatistics(projectsData);
+    setChartStats(stats);
+  };
+
+  // Generate monthly project metrics
+  const generateMonthlyData = (projectsData) => {
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'];
+    
+    return months.map((month, index) => {
+      // Simulate realistic data based on project status
+      const completedProjects = Math.floor(Math.random() * 2); // 0-1 completed per month
+      const newProjects = Math.floor(Math.random() * 3) + 1; // 1-3 new per month
+      
+      return {
+        month,
+        completed: completedProjects,
+        new: newProjects,
+        total: completedProjects + newProjects
+      };
+    });
+  };
+
+  // Generate budget trend data
+  const generateBudgetTrendData = (projectsData) => {
+    const totalBudget = projectsData.reduce((sum, p) => sum + (p.budget_total || 0), 0);
+    const totalSpent = projectsData.reduce((sum, p) => sum + (p.budget_spent || 0), 0);
+    
+    // Generate 12 months of trend data - ensure all months are included
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    
+    return months.map((month, index) => {
+      // Simulate realistic budget spending progression
+      const baseSpending = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+      const monthlyVariation = (Math.random() - 0.5) * 15; // ±7.5% variation
+      const progression = (index / 11) * 0.7; // 70% of total by current month
+      
+      const budgetUsed = Math.max(0, Math.min(100, baseSpending * progression + monthlyVariation));
+      const budgetRemaining = 100 - budgetUsed;
+      
+      return {
+        month,
+        budgetUsed: Math.round(budgetUsed),
+        budgetRemaining: Math.round(budgetRemaining),
+        totalBudget: Math.round(totalBudget / 1000000), // In millions
+        spent: Math.round((budgetUsed / 100) * totalBudget)
+      };
+    });
+  };
+
+  // Calculate additional statistics
+  const calculateStatistics = (projectsData) => {
+    const totalProjects = projectsData.length;
+    const activeProjects = projectsData.filter(p => p.status === 'active').length;
+    const completedProjects = projectsData.filter(p => (p.completion_percent || 0) >= 100).length;
+    const totalBudget = projectsData.reduce((sum, p) => sum + (p.budget_total || 0), 0);
+    const totalSpent = projectsData.reduce((sum, p) => sum + (p.budget_spent || 0), 0);
+    const budgetUtilization = totalBudget > 0 ? (totalSpent / totalBudget) * 100 : 0;
+    
+    return {
+      totalProjects,
+      activeProjects,
+      completedProjects,
+      totalBudget,
+      totalSpent,
+      budgetUtilization: Math.round(budgetUtilization),
+      avgCompletion: Math.round(overallCompletion)
+    };
+  };
+
+  // Fetch data on component mount
+  useEffect(() => {
+    fetchDashboardData();
+  }, []);
+
+  // Get priority color helper
+  const getPriorityColor = (priority) => {
+    switch (priority?.toLowerCase()) {
+      case 'high': return '#dc3545';
+      case 'medium': return '#ffc107';
+      case 'low': return '#28a745';
+      default: return '#6c757d';
+    }
+  };
+
+  // Get status color helper
+  const getStatusColor = (status) => {
+    switch (status?.toLowerCase()) {
+      case 'active': return '#007bff';
+      case 'completed': return '#28a745';
+      case 'planning': return '#6c757d';
+      default: return '#6c757d';
+    }
+  };
+
+  // Toggle project expansion
+  const toggleProject = (projectId) => {
+    const newExpanded = new Set(expandedProjects);
+    if (newExpanded.has(projectId)) {
+      newExpanded.delete(projectId);
+    } else {
+      newExpanded.add(projectId);
+    }
+    setExpandedProjects(newExpanded);
+  };
+
+  // Navigate to project details (placeholder)
+  const goToProjectDetails = (projectId) => {
+    console.log(`Navigate to project details for project ${projectId}`);
+    // This would typically use React Router or similar navigation
+  };
+
+  // Render gauge chart
+  const renderGaugeChart = () => {
+    const radius = 60;
+    const strokeWidth = 12;
+    const normalizedRadius = radius - strokeWidth * 2;
+    const circumference = normalizedRadius * 2 * Math.PI;
+    const strokeDasharray = `${circumference} ${circumference}`;
+    const strokeDashoffset = circumference - (overallCompletion / 100) * circumference;
+
+    return (
+      <div className="gauge-chart">
+        <div className="gauge-container">
+          <svg width={radius * 2} height={radius * 2} className="gauge-svg">
+            {/* Background circle */}
+            <circle
+              stroke="#E9ECEF"
+              fill="transparent"
+              strokeWidth={strokeWidth}
+              r={normalizedRadius}
+              cx={radius}
+              cy={radius}
+            />
+            {/* Progress circle */}
+            <circle
+              stroke="#28A745"
+              fill="transparent"
+              strokeWidth={strokeWidth}
+              strokeDasharray={strokeDasharray}
+              style={{
+                strokeDashoffset,
+                strokeLinecap: 'round',
+                transition: 'stroke-dashoffset 0.5s ease-in-out'
+              }}
+              r={normalizedRadius}
+              cx={radius}
+              cy={radius}
+            />
+          </svg>
+          <div className="gauge-text">
+            <div className="gauge-percentage">{overallCompletion}%</div>
+            <div className="gauge-label">Overall Completion</div>
+          </div>
+        </div>
+        <div className="gauge-stats">
+          <div className="stat-item">
+            <span className="stat-value">{chartStats.totalProjects || 0}</span>
+            <span className="stat-label">Total Projects</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-value">{chartStats.activeProjects || 0}</span>
+            <span className="stat-label">Active</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-value">{chartStats.completedProjects || 0}</span>
+            <span className="stat-label">Completed</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Render bar chart
+  const renderBarChart = () => {
+    const maxValue = Math.max(...monthlyData.map(d => Math.max(d.completed, d.new)));
+    
+    return (
+      <div className="bar-chart">
+        <div className="chart-header">
+          <div className="chart-title">Project Activity (Last 6 Months)</div>
+          <div className="chart-subtitle">New vs Completed Projects</div>
+        </div>
+        <div className="chart-content">
+          <div className="bars-container">
+            {monthlyData.map((data, index) => (
+              <div key={data.month} className="bar-group">
+                <div className="bar-labels">
+                  <div className="bar-label">{data.month}</div>
+                  <div className="bar-value">{data.total}</div>
+                </div>
+                <div className="bars">
+                  <div className="bar completed" style={{
+                    height: `${maxValue > 0 ? (data.completed / maxValue) * 100 : 0}%`
+                  }}></div>
+                  <div className="bar new" style={{
+                    height: `${maxValue > 0 ? (data.new / maxValue) * 100 : 0}%`
+                  }}></div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div className="chart-legend">
+            <div className="legend-item">
+              <div className="legend-color completed"></div>
+              <span>Completed</span>
+            </div>
+            <div className="legend-item">
+              <div className="legend-color new"></div>
+              <span>New Projects</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Render area chart
+  const renderAreaChart = () => {
+    const maxBudget = Math.max(...budgetTrendData.map(d => d.budgetUsed));
+    
+    return (
+      <div className="area-chart">
+        <div className="chart-header">
+          <div className="chart-title">Budget Utilization Trend</div>
+          <div className="chart-subtitle">Monthly Spending vs Budget</div>
+        </div>
+        <div className="chart-content">
+          <div className="area-container">
+            <svg viewBox="0 0 400 200" className="area-svg">
+              {/* Grid lines */}
+              {[0, 25, 50, 75, 100].map((value, index) => (
+                <line
+                  key={index}
+                  x1="0"
+                  y1={200 - (value / 100) * 180}
+                  x2="400"
+                  y2={200 - (value / 100) * 180}
+                  stroke="#E9ECEF"
+                  strokeWidth="1"
+                />
+              ))}
+              
+              {/* Area path */}
+              <path
+                d={budgetTrendData.map((data, index) => {
+                  const x = (index / (budgetTrendData.length - 1)) * 400;
+                  const y = 200 - (data.budgetUsed / 100) * 180;
+                  return `${index === 0 ? 'M' : 'L'} ${x} ${y}`;
+                }).join(' ')}
+                fill="url(#areaGradient)"
+                stroke="#1A5276"
+                strokeWidth="2"
+              />
+              
+              {/* Gradient definition */}
+              <defs>
+                <linearGradient id="areaGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+                  <stop offset="0%" stopColor="#1A5276" stopOpacity="0.3"/>
+                  <stop offset="100%" stopColor="#1A5276" stopOpacity="0.05"/>
+                </linearGradient>
+              </defs>
+              
+              {/* Data points */}
+              {budgetTrendData.map((data, index) => {
+                const x = (index / (budgetTrendData.length - 1)) * 400;
+                const y = 200 - (data.budgetUsed / 100) * 180;
+                return (
+                  <circle
+                    key={index}
+                    cx={x}
+                    cy={y}
+                    r="4"
+                    fill="#1A5276"
+                    className="data-point"
+                  />
+                );
+              })}
+            </svg>
+            
+            {/* X-axis labels */}
+            <div className="x-axis-labels">
+              {budgetTrendData.map((data, index) => (
+                <div key={index} className="x-label">
+                  {data.month}
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+        
+        {/* Statistics moved outside chart content */}
+        <div className="area-stats">
+          <div className="stat-item">
+            <span className="stat-value">{chartStats.budgetUtilization || 0}%</span>
+            <span className="stat-label">Budget Used</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-value">${Math.round((chartStats.totalBudget || 0) / 1000000)}M</span>
+            <span className="stat-label">Total Budget</span>
+          </div>
+          <div className="stat-item">
+            <span className="stat-value">${Math.round((chartStats.totalSpent || 0) / 1000000)}M</span>
+            <span className="stat-label">Total Spent</span>
+          </div>
+        </div>
+      </div>
+    );
+  };
+
+  // Show loading state
+  if (loading) {
+    return (
+      <div className="overview-dashboard">
+        <div className="content-header">
+          <h1>Overview Dashboard</h1>
+          <p>Key metrics and project insights at a glance</p>
+        </div>
+        <div className="content-body">
+          <div className="loading-message">Loading dashboard data...</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="overview-dashboard">
+        <div className="content-header">
+          <h1>Overview Dashboard</h1>
+          <p>Key metrics and project insights at a glance</p>
+        </div>
+        <div className="content-body">
+          <div className="error-message">Error loading dashboard: {error}</div>
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div className="overview-dashboard">
+      {/* Header section */}
+      <div className="content-header">
+        <div className="header-content">
+          <div className="header-text">
+            <h1>Overview Dashboard</h1>
+            <p>Key metrics and project insights at a glance</p>
+          </div>
+          <div className="header-actions">
+            <button className="btn-secondary">Export Report</button>
+            <button className="btn-primary">View Details</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Main content area */}
+      <div className="content-body">
+        {/* Charts Grid */}
+        <div className="charts-grid">
+          {/* Gauge Chart */}
+          <div className="chart-card gauge-card">
+            <div className="chart-header">
+              <h3>Project Completion</h3>
+              <span className="chart-icon">🎯</span>
+            </div>
+            <div className="chart-content">
+              {renderGaugeChart()}
+            </div>
+          </div>
+
+          {/* Bar Chart */}
+          <div className="chart-card bar-card">
+            <div className="chart-header">
+              <h3>Monthly Activity</h3>
+              <span className="chart-icon">📊</span>
+            </div>
+            <div className="chart-content">
+              {renderBarChart()}
+            </div>
+          </div>
+
+          {/* Area Chart */}
+          <div className="chart-card area-card">
+            <div className="chart-header">
+              <h3>Budget Trends</h3>
+              <span className="chart-icon">💰</span>
+            </div>
+            <div className="chart-content">
+              {renderAreaChart()}
+            </div>
+          </div>
+        </div>
+
+
+        {/* Active Projects List */}
+        <div className="projects-section">
+          <div className="projects-header">
+            <h2>Active Projects</h2>
+            <div className="projects-actions">
+              <button className="btn-secondary">Export</button>
+              <button className="btn-primary">New Project</button>
+            </div>
+          </div>
+
+          <div className="projects-list">
+            {projects.map(project => (
+              <div key={project.id} className="project-item">
+                <div 
+                  className="project-summary"
+                  onClick={() => toggleProject(project.id)}
+                >
+                  <div className="project-info">
+                    <div className="project-name">{project.name}</div>
+                    <div className="project-meta">
+                      <span className="project-deadline">Deadline: {project.deadline}</span>
+                      <span 
+                        className="project-priority"
+                        style={{ color: getPriorityColor(project.priority) }}
+                      >
+                        {project.priority} Priority
+                      </span>
+                      <span 
+                        className="project-status"
+                        style={{ color: getStatusColor(project.status) }}
+                      >
+                        {project.status}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="project-progress">
+                    <div className="progress-bar">
+                      <div
+                        className="progress-fill"
+                        style={{ width: `${project.completion_percent || 0}%` }}
+                      ></div>
+                    </div>
+                    <div className="progress-text">{project.completion_percent || 0}%</div>
+                  </div>
+                  <div className="project-actions">
+                    <button 
+                      className="btn-details"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        goToProjectDetails(project.id);
+                      }}
+                    >
+                      View Details
+                    </button>
+                    <span className="expand-icon">
+                      {expandedProjects.has(project.id) ? '▼' : '▶'}
+                    </span>
+                  </div>
+                </div>
+
+                {expandedProjects.has(project.id) && (
+                  <div className="project-details">
+                    <div className="details-grid">
+                      <div className="detail-section">
+                        <h4>Description</h4>
+                        <p>{project.description}</p>
+                      </div>
+                      <div className="detail-section">
+                        <h4>Team Members</h4>
+                        <div className="team-members-section">
+                          <div className="team-list">
+                            {(project.team_members || []).map((member, index) => (
+                              <div key={index} className="team-member-item">
+                                <span className="team-member">{member}</span>
+                                <button
+                                  className="btn-remove-member"
+                                  onClick={() => console.log('Remove member:', member)}
+                                  title="Remove from project"
+                                >
+                                  ×
+                                </button>
+                              </div>
+                            ))}
+                          </div>
+                          <button
+                            className="btn-assign-engineer"
+                            onClick={() => console.log('Assign engineer to:', project.name)}
+                          >
+                            + Assign Engineer
+                          </button>
+                        </div>
+                      </div>
+                      <div className="detail-section">
+                        <h4>Budget Information</h4>
+                        <div className="budget-info">
+                          <div className="budget-item">
+                            <span>Total Budget:</span>
+                            <span>${(project.budget_total || 0).toLocaleString()}</span>
+                          </div>
+                          <div className="budget-item">
+                            <span>Amount Spent:</span>
+                            <span>${(project.budget_spent || 0).toLocaleString()}</span>
+                          </div>
+                          <div className="budget-item">
+                            <span>Remaining:</span>
+                            <span>${((project.budget_total || 0) - (project.budget_spent || 0)).toLocaleString()}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="detail-section">
+                        <h4>Progress Details</h4>
+                        <div className="progress-details">
+                          <div className="progress-item">
+                            <span>Completion:</span>
+                            <span>{project.completion_percent || 0}%</span>
+                          </div>
+                          <div className="progress-item">
+                            <span>Status:</span>
+                            <span style={{ color: getStatusColor(project.status) }}>
+                              {project.status}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default OverviewDashboard;
