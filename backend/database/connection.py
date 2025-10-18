@@ -77,6 +77,7 @@ class DatabaseManager:
             p.id,
             p.name,
             p.description,
+            p.start_date,
             p.deadline,
             p.status,
             p.priority,
@@ -91,7 +92,7 @@ class DatabaseManager:
         FROM projects p
         LEFT JOIN project_assignments pa ON pa.project_id = p.id
         LEFT JOIN engineers e ON e.id = pa.engineer_id
-        GROUP BY p.id, p.name, p.description, p.deadline, p.status, p.priority,
+        GROUP BY p.id, p.name, p.description, p.start_date, p.deadline, p.status, p.priority,
                  p.completion_percent, p.budget_total, p.budget_spent, p.created_at, p.updated_at
         ORDER BY p.deadline
         """
@@ -337,17 +338,18 @@ class DatabaseManager:
         description: str,
         deadline: date,
         priority: str = 'medium',
-        budget_total: float = 0.0
+        budget_total: float = 0.0,
+        start_date: Optional[date] = None
     ) -> Dict[str, Any]:
         """Create a new project and return it."""
         query = """
-        INSERT INTO projects (name, description, deadline, priority, budget_total, status, completion_percent, budget_spent)
-        VALUES (%s, %s, %s, %s, %s, 'active', 0, 0)
-        RETURNING id, name, description, deadline, status, priority, completion_percent, budget_total, budget_spent, created_at, updated_at
+        INSERT INTO projects (name, description, start_date, deadline, priority, budget_total, status, completion_percent, budget_spent)
+        VALUES (%s, %s, %s, %s, %s, %s, 'active', 0, 0)
+        RETURNING id, name, description, start_date, deadline, status, priority, completion_percent, budget_total, budget_spent, created_at, updated_at
         """
         with self.get_connection() as conn:
             with conn.cursor(cursor_factory=RealDictCursor) as cursor:
-                cursor.execute(query, (name, description, deadline, priority, budget_total))
+                cursor.execute(query, (name, description, start_date, deadline, priority, budget_total))
                 conn.commit()
                 result = cursor.fetchone()
                 if result:
