@@ -58,6 +58,7 @@
   min-height: 100vh;     /* Full viewport height */
   background: var(--bkw-white);   /* Clean white background */
   padding: 0;           /* No default padding */
+  padding-bottom: 60px; /* Add bottom padding to ensure content is scrollable */
   display: flex;        /* Flexbox layout */
   flex-direction: column; /* Stack header and content vertically */
 }
@@ -90,7 +91,8 @@
 .content-body {
   padding: var(--spacing-2xl);        /* Generous padding around the content */
   flex: 1;            /* Take up remaining space */
-  overflow: hidden;   /* Prevent content from overflowing */
+  overflow-y: auto;   /* Allow vertical scrolling when content exceeds viewport */
+  overflow-x: hidden; /* Prevent horizontal scrolling */
   display: flex;      /* Flexbox layout */
   flex-direction: column; /* Stack controls and workers vertically */
 }

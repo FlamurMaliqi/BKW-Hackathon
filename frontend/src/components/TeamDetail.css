@@ -17,6 +17,7 @@
   min-height: 100vh;     /* Full viewport height */
   background: var(--background);   /* Clean white background */
   padding: 0;           /* No default padding */
+  padding-bottom: 60px; /* Add bottom padding to ensure content is scrollable */
 }
 
 /* Header section with back button and team title */

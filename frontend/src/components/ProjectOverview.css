@@ -23,6 +23,7 @@
   width: 100%;          /* Full width */
   overflow: visible;    /* Let parent handle scrolling */
   position: relative;   /* Ensure proper positioning */
+  padding-bottom: 60px; /* Add bottom padding to ensure content is scrollable */
 }
 
 /* Header section with breadcrumbs and page title - matching BKW design */
