@@ -464,6 +464,98 @@ def get_company_forecast():
     except Exception as exc:
         return jsonify({'status': 'error', 'error': str(exc)}), 500
 
+@app.route('/api/workload/weekly', methods=['GET'])
+def get_weekly_workload():
+    """Get weekly workload for all engineers for the next 8 weeks."""
+    try:
+        from datetime import timedelta
+
+        # Get all engineers
+        engineers_data = db_manager.get_all_engineers()
+
+        # Calculate workload for next 8 weeks
+        today = date.today()
+        result = []
+
+        for engineer in engineers_data:
+            engineer_id = engineer['id']
+            capacity = engineer['capacity_hours_per_week'] or 40
+            weekly_workload = []
+
+            # Get all assignments for this engineer
+            assignments_query = """
+            SELECT hours_per_week, start_date, end_date, project_id
+            FROM project_assignments
+            WHERE engineer_id = %s
+            """
+            assignments = db_manager.execute_query(assignments_query, (engineer_id,))
+
+            # Get project names for assignments
+            projects_query = """
+            SELECT pa.project_id, pa.hours_per_week, pa.start_date, pa.end_date, p.name as project_name
+            FROM project_assignments pa
+            JOIN projects p ON p.id = pa.project_id
+            WHERE pa.engineer_id = %s
+            """
+            projects_assignments = db_manager.execute_query(projects_query, (engineer_id,))
+
+            # Calculate workload for each of the next 8 weeks
+            weekly_projects = []
+            for week_offset in range(8):
+                week_start = today + timedelta(days=week_offset * 7)
+                week_end = week_start + timedelta(days=6)
+
+                # Sum hours and collect projects active during this week
+                total_hours = 0
+                active_projects = []
+                for assignment in projects_assignments:
+                    # Parse dates (they come as ISO strings from the database)
+                    start_val = assignment['start_date']
+                    end_val = assignment['end_date']
+
+                    if start_val:
+                        assign_start = date.fromisoformat(start_val) if isinstance(start_val, str) else start_val
+                    else:
+                        assign_start = date(1970, 1, 1)
+
+                    if end_val:
+                        assign_end = date.fromisoformat(end_val) if isinstance(end_val, str) else end_val
+                    else:
+                        assign_end = date(2099, 12, 31)
+
+                    # Check if assignment overlaps with this week
+                    if assign_start <= week_end and assign_end >= week_start:
+                        hours = assignment['hours_per_week'] or 0
+                        total_hours += hours
+                        active_projects.append({
+                            'name': assignment['project_name'],
+                            'hours': hours
+                        })
+
+                # Calculate percentage
+                workload_percent = round((total_hours / capacity) * 100, 1) if capacity > 0 else 0
+                weekly_workload.append(workload_percent)
+                weekly_projects.append(active_projects)
+
+            result.append({
+                'id': engineer['id'],
+                'name': engineer['name'],
+                'role': engineer['role'],
+                'team_name': engineer.get('team_name'),
+                'capacity_hours_per_week': capacity,
+                'availability': engineer.get('availability'),
+                'weekly_workload': weekly_workload,
+                'weekly_projects': weekly_projects
+            })
+
+        return jsonify({
+            'status': 'success',
+            'engineers': result,
+            'weeks_count': 8
+        })
+    except Exception as exc:
+        return jsonify({'status': 'error', 'error': str(exc)}), 500
+
 # ---------------------------------------------------------------------
 # CSV Import Endpoint
 # ---------------------------------------------------------------------

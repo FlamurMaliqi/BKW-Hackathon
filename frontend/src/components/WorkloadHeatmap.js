@@ -20,20 +20,20 @@ const WorkloadHeatmap = () => {
   const [error, setError] = useState(null);
   const [hoveredCell, setHoveredCell] = useState(null);
 
-  // Fetch engineers data
+  // Fetch engineers workload data
   const fetchEngineers = async () => {
     try {
       setLoading(true);
-      const response = await fetch(`${API_BASE_URL}/api/engineers`);
+      const response = await fetch(`${API_BASE_URL}/api/workload/weekly`);
       const data = await response.json();
 
       if (data.status === 'success') {
         setEngineers(data.engineers || []);
       } else {
-        throw new Error(data.error || 'Failed to fetch engineers');
+        throw new Error(data.error || 'Failed to fetch workload data');
       }
     } catch (err) {
-      console.error('Error fetching engineers:', err);
+      console.error('Error fetching workload data:', err);
       setError(err.message);
     } finally {
       setLoading(false);
@@ -42,6 +42,10 @@ const WorkloadHeatmap = () => {
 
   useEffect(() => {
     fetchEngineers();
+
+    // Refresh every 30 seconds to pick up assignment changes
+    const interval = setInterval(fetchEngineers, 30000);
+    return () => clearInterval(interval);
   }, []);
 
   // Generate weeks for the next 8 weeks
@@ -86,17 +90,12 @@ const WorkloadHeatmap = () => {
     return workloadPercent >= 50 ? '#ffffff' : '#1f2937';
   };
 
-  // Calculate simulated workload for a specific week (simplified)
-  // In a real scenario, this would be based on actual project assignments
-  const calculateWorkloadForWeek = (engineer, weekIndex) => {
-    const baseWorkload = engineer.workload_percent || 0;
-
-    // Simulate some variation across weeks (for demo purposes)
-    // In production, this should query actual assignment data
-    const variation = (Math.sin(weekIndex * 0.5) * 20);
-    const weeklyWorkload = Math.max(0, Math.min(150, baseWorkload + variation));
-
-    return Math.round(weeklyWorkload);
+  // Get actual workload for a specific week from the engineer's data
+  const getWorkloadForWeek = (engineer, weekIndex) => {
+    if (!engineer.weekly_workload || !engineer.weekly_workload[weekIndex]) {
+      return 0;
+    }
+    return engineer.weekly_workload[weekIndex];
   };
 
   if (loading) {
@@ -172,7 +171,7 @@ const WorkloadHeatmap = () => {
           </div>
 
           {/* Engineer rows */}
-          {engineers.map((engineer) => (
+          {engineers.map((engineer, engineerIndex) => (
             <div key={engineer.id} className="heatmap-row">
               <div className="engineer-label-cell">
                 <div className="engineer-name">{engineer.name}</div>
@@ -180,11 +179,14 @@ const WorkloadHeatmap = () => {
                 <div className="engineer-team">{engineer.team_name || 'No team'}</div>
               </div>
               {weeks.map((week) => {
-                const workload = calculateWorkloadForWeek(engineer, week.index);
+                const workload = getWorkloadForWeek(engineer, week.index);
+                const weekProjects = engineer.weekly_projects && engineer.weekly_projects[week.index] ? engineer.weekly_projects[week.index] : [];
                 const bgColor = getWorkloadColor(workload);
                 const textColor = getTextColor(workload);
                 const cellKey = `${engineer.id}-${week.index}`;
                 const isHovered = hoveredCell === cellKey;
+                // Show tooltip above if this is one of the last 3 rows
+                const isBottomRow = engineerIndex >= engineers.length - 3;
 
                 return (
                   <div
@@ -200,7 +202,7 @@ const WorkloadHeatmap = () => {
                   >
                     <span className="workload-value">{workload}%</span>
                     {isHovered && (
-                      <div className="workload-tooltip">
+                      <div className={`workload-tooltip ${isBottomRow ? 'tooltip-above' : ''}`}>
                         <div className="tooltip-header">
                           <strong>{engineer.name}</strong>
                         </div>
@@ -209,6 +211,16 @@ const WorkloadHeatmap = () => {
                           <div>Workload: {workload}%</div>
                           <div>Capacity: {engineer.capacity_hours_per_week}h/week</div>
                           <div>Availability: {engineer.availability || 'available'}</div>
+                          {weekProjects.length > 0 && (
+                            <div className="tooltip-projects">
+                              <div style={{ marginTop: '8px', fontWeight: 'bold' }}>Active Projects:</div>
+                              {weekProjects.map((project, idx) => (
+                                <div key={idx} style={{ marginLeft: '8px', fontSize: '12px' }}>
+                                  • {project.name} ({project.hours}h/week)
+                                </div>
+                              ))}
+                            </div>
+                          )}
                         </div>
                       </div>
                     )}
@@ -227,15 +239,15 @@ const WorkloadHeatmap = () => {
           <span className="summary-value">{engineers.length}</span>
         </div>
         <div className="summary-item">
-          <span className="summary-label">Overallocated:</span>
+          <span className="summary-label">Overallocated (Week 1):</span>
           <span className="summary-value alert">
-            {engineers.filter(e => (e.workload_percent || 0) > 100).length}
+            {engineers.filter(e => e.weekly_workload && e.weekly_workload[0] > 100).length}
           </span>
         </div>
         <div className="summary-item">
-          <span className="summary-label">Available:</span>
+          <span className="summary-label">Available (Week 1):</span>
           <span className="summary-value success">
-            {engineers.filter(e => (e.workload_percent || 0) <= 75).length}
+            {engineers.filter(e => e.weekly_workload && e.weekly_workload[0] <= 75).length}
           </span>
         </div>
       </div>

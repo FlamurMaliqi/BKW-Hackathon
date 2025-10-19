@@ -80,6 +80,29 @@ const RiskAlertsPanel = ({ refreshTrigger = 0 }) => {
       });
     }
 
+    // Underutilized engineers
+    if (conflicts.underutilized_engineers && conflicts.underutilized_engineers.length > 0) {
+      conflicts.underutilized_engineers.forEach((engineer, index) => {
+        alertsList.push({
+          id: `underutil-${engineer.engineer_id}-${index}`,
+          type: 'underutilization',
+          severity: 'info',
+          title: `${engineer.engineer_name} is underutilized`,
+          message: `Only ${engineer.assigned_hours_per_week}h/week assigned (${engineer.workload_percent}% capacity), ${engineer.available_hours}h/week available`,
+          details: {
+            engineerName: engineer.engineer_name,
+            capacity: engineer.capacity_hours_per_week,
+            assigned: engineer.assigned_hours_per_week,
+            available: engineer.available_hours,
+            workloadPercent: engineer.workload_percent,
+            teamName: engineer.team_name
+          },
+          icon: '💡',
+          timestamp: new Date().toISOString()
+        });
+      });
+    }
+
     // Deadline overlaps
     if (conflicts.deadline_overlaps && conflicts.deadline_overlaps.length > 0) {
       conflicts.deadline_overlaps.forEach((overlap, index) => {
@@ -323,6 +346,35 @@ const RiskAlertsPanel = ({ refreshTrigger = 0 }) => {
                       <div className="detail-item">
                         <span className="detail-label">Workload:</span>
                         <span className="detail-value alert-highlight">{alert.details.workloadPercent}%</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {alert.type === 'underutilization' && (
+                    <div className="detail-grid">
+                      <div className="detail-item">
+                        <span className="detail-label">Engineer:</span>
+                        <span className="detail-value">{alert.details.engineerName}</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="detail-label">Team:</span>
+                        <span className="detail-value">{alert.details.teamName || 'No team'}</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="detail-label">Capacity:</span>
+                        <span className="detail-value">{alert.details.capacity}h/week</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="detail-label">Assigned:</span>
+                        <span className="detail-value">{alert.details.assigned}h/week</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="detail-label">Available:</span>
+                        <span className="detail-value alert-highlight">{alert.details.available}h/week</span>
+                      </div>
+                      <div className="detail-item">
+                        <span className="detail-label">Utilization:</span>
+                        <span className="detail-value">{alert.details.workloadPercent}%</span>
                       </div>
                     </div>
                   )}

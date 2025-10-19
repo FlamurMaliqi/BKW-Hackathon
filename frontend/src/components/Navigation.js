@@ -19,7 +19,7 @@ const Navigation = ({ activeTab, onTabChange }) => {
   const tabs = [
     { id: 'overview', label: 'Overview' },
     { id: 'management', label: 'Management' },
-    { id: 'ai', label: 'Manir AI' }
+    { id: 'ai', label: 'Liquid AI' }
   ];
 
   return (
