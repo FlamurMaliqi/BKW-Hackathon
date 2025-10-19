@@ -18,6 +18,7 @@ import React, { useState, useMemo, useEffect } from 'react';
 import TeamDetail from './TeamDetail';
 import AddMemberModal from './AddMemberModal';
 import SwitchMemberModal from './SwitchMemberModal';
+import EditWorkerDetailsModal from './EditWorkerDetailsModal';
 import './HumanManagement.css';
 import { getEngineers, getTeams, createEngineer } from '../services/api';
 import { exportToCSV, getTimestamp } from '../utils/csvExport';
@@ -38,6 +39,7 @@ const HumanManagement = () => {
   const [teams, setTeams] = useState([]);
   const [showAddMemberModal, setShowAddMemberModal] = useState(false);
   const [showSwitchMemberModal, setShowSwitchMemberModal] = useState(false);
+  const [showEditDetailsModal, setShowEditDetailsModal] = useState(false);
   const [selectedMember, setSelectedMember] = useState(null);
 
   // Fetch engineers and teams from backend
@@ -336,6 +338,12 @@ const HumanManagement = () => {
     setShowSwitchMemberModal(true);
   };
 
+  // Handle editing worker details
+  const handleEditDetails = (member) => {
+    setSelectedMember(member);
+    setShowEditDetailsModal(true);
+  };
+
   // Handle member switched successfully
   const handleMemberSwitched = async (updatedEngineer) => {
     // Refresh the engineers list
@@ -346,6 +354,19 @@ const HumanManagement = () => {
       }
     } catch (err) {
       console.error('Error refreshing engineers after team switch:', err);
+    }
+  };
+
+  // Handle worker details updated successfully
+  const handleWorkerUpdated = async (updatedWorker) => {
+    // Refresh the engineers list
+    try {
+      const engineersResponse = await getEngineers(7);
+      if (engineersResponse.status === 'success' && engineersResponse.engineers) {
+        setEngineers(engineersResponse.engineers);
+      }
+    } catch (err) {
+      console.error('Error refreshing engineers after details update:', err);
     }
   };
 
@@ -672,7 +693,14 @@ const HumanManagement = () => {
                                 onClick={() => handleSwitchMember(worker)}
                                 title="Switch to another team"
                               >
-                                🔄 Switch Member
+                                🔄 Change of Team
+                              </button>
+                              <button
+                                className="btn-edit-details"
+                                onClick={() => handleEditDetails(worker)}
+                                title="Edit worker contact and personal information"
+                              >
+                                ✏️ Edit Details
                               </button>
                             </div>
                           </div>
@@ -700,6 +728,14 @@ const HumanManagement = () => {
         onClose={() => setShowSwitchMemberModal(false)}
         member={selectedMember}
         onMemberSwitched={handleMemberSwitched}
+      />
+
+      {/* Edit Worker Details Modal */}
+      <EditWorkerDetailsModal
+        isOpen={showEditDetailsModal}
+        onClose={() => setShowEditDetailsModal(false)}
+        worker={selectedMember}
+        onWorkerUpdated={handleWorkerUpdated}
       />
     </div>
   );
