@@ -1,175 +1,188 @@
-Feature Roadmap (AI-Centric)
-🔑 Core MVP Features
+# BKW Engineering AI Project Management System
+
+An intelligent project management platform that uses AI to help project managers, engineers, and executives make better decisions through natural language interaction and automated conflict detection.
+
+## 🚀 Overview
+
+This system provides an AI-powered assistant that can analyze project data, detect conflicts, and answer questions about resource allocation, deadlines, and workload management. The platform combines a React frontend with a Python backend and integrates with AI services for natural language processing.
+
+## ✨ Key Features
+
+### AI Overview Assistant
+- **Chat/Voice Interface**: Ask questions like "How's project Alpha doing?" or "Which engineers are overbooked next month?"
+- **Intelligent Summaries**: Get project status, workload conflicts, and upcoming risks at a glance
+- **Natural Language Queries**: Interact with your project data using conversational language
+
+### Risk & Conflict Detection Engine
+- **Deadline Overlap Alerts**: Automatically detect when project deadlines conflict
+- **Workload Analysis**: Monitor engineer capacity and identify overbooked team members
+- **Holiday Integration**: Factor in absences and holidays when calculating workload
+
+### Modern Dashboard UI
+- **Project Overview**: Visual representation of all projects and their status
+- **Team Management**: Manage engineers and their assignments
+- **Conflict Visualization**: Clear display of detected conflicts and risks
+
+## 🏗️ Architecture
+
+```
+├── frontend/          # React.js frontend application
+├── backend/           # Python Flask API server
+├── docker-compose.yml # Container orchestration
+└── README.md         # This file
+```
+
+## 🚀 Quick Start
+
+### Prerequisites
+- Docker and Docker Compose
+- Node.js 16+ (for local development)
+- Python 3.8+ (for local development)
+
+### Using Docker (Recommended)
+
+1. **Clone the repository**
+   ```bash
+   git clone <repository-url>
+   cd BKW-Hackathon
+   ```
+
+2. **Start the application**
+   ```bash
+   docker-compose up --build
+   ```
+
+3. **Access the application**
+   - Frontend: http://localhost:3000
+   - Backend API: http://localhost:5000
+
+### Local Development
+
+#### Backend Setup
+```bash
+cd backend
+python -m venv venv
+source venv/bin/activate  # On Windows: venv\Scripts\activate
+pip install -r requirements.txt
+python app.py
+```
+
+#### Frontend Setup
+```bash
+cd frontend
+npm install
+npm start
+```
+
+## 📁 Project Structure
+
+### Backend (`/backend`)
+- **Flask API**: RESTful API endpoints for project management
+- **AI Service**: Integration with language models for natural language processing
+- **Conflict Detection**: Algorithms for detecting project conflicts and overbookings
+- **Database**: SQLite database with mock data for development
+
+### Frontend (`/frontend`)
+- **React Application**: Modern UI built with React.js
+- **Components**: Reusable UI components following BKW design system
+- **AI Integration**: Voice-to-text and text-to-speech capabilities
+- **Dashboard**: Project overview and team management interfaces
 
-AI Overview Assistant
+## 🤖 AI Features
 
-Chat/voice interface (“How’s project Alpha doing?”).
+### Natural Language Processing
+- Ask questions about project status in plain English
+- Get intelligent summaries of complex project data
+- Receive proactive alerts about potential issues
 
-Summarizes project status, workload conflicts, upcoming risks.
+### Voice Integration
+- Speech-to-text input for hands-free interaction
+- Text-to-speech responses for accessibility
+- Voice-enabled project queries and updates
 
-Answers: Which engineers are overbooked next month?
+### Conflict Detection
+- Automatic detection of deadline overlaps
+- Workload capacity analysis
+- Holiday and absence impact calculation
 
-Risk & Conflict Detection Engine
+## 🎯 Use Cases
 
-Deadline overlap alerts (from mocked DB).
+### For Project Managers
+- "Summarize my risks for the next quarter"
+- "Which engineer is most overloaded?"
+- "Show me all projects with overlapping deadlines"
 
-Workload vs. capacity check (engineers >100%).
+### For Managing Directors
+- "Which major deadlines are at risk?"
+- "Give me a high-level overview of all projects"
+- "What's our team capacity for next month?"
 
-Absence/holiday adjustment.
+### For Engineers
+- "What's my workload next week?"
+- "Which projects am I assigned to?"
+- "When are my upcoming deadlines?"
 
-Minimal Dashboard UI (Support Role)
+## 🛠️ Development
 
-Simple list of projects + conflicts (visual validation).
+### API Endpoints
+- `GET /api/projects` - List all projects
+- `POST /api/projects` - Create new project
+- `GET /api/engineers` - List all engineers
+- `POST /api/ai/query` - Send AI query
+- `GET /api/conflicts` - Get detected conflicts
 
-Serves as fallback to AI and for demo clarity.
+### Design System
+The frontend follows a comprehensive design system based on BKW Engineering brand guidelines. See `/frontend/src/README.md` for detailed design specifications.
 
-🚀 Stretch Features
+## 📊 Data Model
 
-Voice-enabled AI (speech-to-text + TTS for assistant).
+### Projects
+- ID, name, description, deadline, status
+- Assigned engineers and workload distribution
+- Risk level and priority
 
-Proactive AI Alerts (“Warning: 3 projects overlap in June”).
+### Engineers
+- ID, name, role, capacity
+- Current assignments and availability
+- Holiday and absence tracking
 
-Scenario Q&A (“What if Engineer X takes 2 more weeks off?”).
+### Conflicts
+- Type (deadline overlap, overcapacity, etc.)
+- Severity level
+- Affected projects and engineers
+- Resolution suggestions
 
-Heatmap/Gantt as Visual Answers (“Show me workload for April”).
+## 🔧 Configuration
 
-Feature Flow (AI-first)
-Project Manager
+### Environment Variables
+- `FLASK_ENV`: Development or production mode
+- `AI_API_KEY`: API key for AI service integration
+- `DATABASE_URL`: Database connection string
 
-Opens app → asks AI assistant:
-“Summarize my risks for the next quarter.”
+### Docker Configuration
+- Frontend runs on port 3000
+- Backend runs on port 5000
+- Database is SQLite (development) or PostgreSQL (production)
 
-Assistant replies with spoken + textual overview.
+## 📈 Future Enhancements
 
-PM drills down:
-“Which engineer is most overloaded?”
+- **Advanced Analytics**: Machine learning for predictive project insights
+- **Integration APIs**: Connect with external project management tools
+- **Mobile App**: Native mobile application for on-the-go access
+- **Real-time Collaboration**: Live updates and team collaboration features
 
-Assistant shows name + small heatmap/table.
+## 🤝 Contributing
 
-Managing Director
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-Opens → asks: “Which major deadlines are at risk?”
+## 📄 License
 
-AI summarizes in 3 bullet points.
+This project is developed for BKW Engineering hackathon purposes.
 
-Optionally visualizes with a Gantt snippet.
+## 🆘 Support
 
-Engineer
-
-Asks: “What’s my workload next week?”
-
-AI responds with capacity % and absences factored in.
-
-Design & Build Roadmap (Hackathon)
-🔨 Prioritized Order
-
-Mock DB Setup
-
-Define JSON with projects, deadlines, engineers, holidays.
-
-Include conflict scenarios (so AI can detect them).
-
-Core Conflict Logic
-
-Overlap detection.
-
-Overcapacity detection.
-
-Holiday impact.
-
-AI Integration
-
-Wrap core logic into an LLM prompt.
-
-LLM must “reason” over the DB → generate natural answers.
-
-Add voice (TTS + STT) if time allows.
-
-Frontend Support
-
-Minimal dashboard → fallback & visualization.
-
-Hook up AI assistant → text & optional voice output.
-
-Demo Polish
-
-Prepare scripted Q&A with AI:
-
-“How are we doing this month?”
-
-“Which deadlines overlap?”
-
-“Show me the workload of Alice in April.”
-
-⏱️ Cut Plan
-
-Keep: AI Q&A, conflict detection, simple dashboard.
-
-Cut if short on time: Voice layer, advanced visualization.
-
-Fallback: Even a text-only chat assistant demo + basic dashboard is strong.
-
-Instruction Flow for Team (AI-first Hackathon)
-
-Brainstorm (30m–1h)
-
-Define roles: Who uses AI assistant? What’s most valuable?
-
-Data Mocking (1-2h)
-
-Create JSON with:
-
-Projects {id, name, deadline, status}
-
-Engineers {id, name, capacity}
-
-Assignments {engineer_id, project_id, hours/week}
-
-Absences {engineer_id, start, end}
-
-Core Logic (4h)
-
-Write functions: check_conflicts(), check_overcapacity(), apply_holidays().
-
-These return clean text + structured data (e.g., JSON summaries).
-
-AI Wrapper (4-6h)
-
-Prompt LLM: give it DB + functions → answer natural questions.
-
-Example prompt:
-“Given this JSON of projects/resources, summarize conflicts. Always mention overlaps and overbookings.”
-
-Frontend/Voice (6h)
-
-Minimal UI → input/output panel.
-
-Voice input/output (if time).
-
-Polish & Demo Prep (2h)
-
-Scripted Q&A with AI.
-
-Short storytelling: chaos → ask assistant → clarity.
-
-Visualization & Presentation Suggestions (AI-first)
-
-Main Demo = AI Assistant
-
-Ask: “Give me a project summary.”
-
-AI responds → screen shows bullet points & optional charts.
-
-Supporting Visuals
-
-Resource heatmap (colored cells for workload).
-
-Mini Gantt chart for deadlines.
-
-Presentation Hook
-
-Start: “Today project managers deal with chaos…”
-
-Show messy spreadsheets (your input data).
-
-Then: “Meet our AI assistant → simple, voice-enabled, proactive.”
+For questions or issues, please contact the development team or create an issue in the repository.
