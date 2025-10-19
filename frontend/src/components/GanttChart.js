@@ -276,21 +276,23 @@ const GanttChart = ({ projects, onProjectClick }) => {
                   </div>
                 </div>
                 <div className="timeline-grid">
+                  {/* Grid lines container */}
+                  <div className="grid-lines-container">
+                    {timeMarkers.map((_, index) => (
+                      <div
+                        key={index}
+                        className="grid-line"
+                        style={{ width: `${100 / timeMarkers.length}%` }}
+                      />
+                    ))}
+                  </div>
+
                   {/* Current date indicator */}
                   <div
                     className="current-date-line"
                     style={{ left: `${currentDatePosition}%` }}
                     title={`Today: ${new Date().toLocaleDateString()}`}
                   />
-
-                  {/* Time markers grid */}
-                  {timeMarkers.map((_, index) => (
-                    <div
-                      key={index}
-                      className="grid-line"
-                      style={{ width: `${100 / timeMarkers.length}%` }}
-                    />
-                  ))}
 
                   {/* Project bar */}
                   <div
