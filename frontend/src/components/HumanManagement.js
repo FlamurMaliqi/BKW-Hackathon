@@ -495,7 +495,7 @@ const HumanManagement = () => {
                 onChange={(e) => setSearchTerm(e.target.value)}
                 className="search-input"
               />
-              <span className="search-icon">🔍</span>
+              <span className="search-icon"></span>
             </div>
           </div>
 
@@ -635,11 +635,11 @@ const HumanManagement = () => {
                                 {worker.availability}
                               </span>
                               {worker.isOverworked && (
-                                <span className="overworked-badge">⚠️ Overworked</span>
+                                <span className="overworked-badge">Overworked</span>
                               )}
                               {worker.absence && (
                                 <span className="absence-badge">
-                                  {worker.absence.type === 'holiday' ? '🏖️ Holiday' : '🤒 Sick'}
+                                  {worker.absence.type === 'holiday' ? 'Holiday' : 'Sick'}
                                 </span>
                               )}
                             </div>
@@ -695,8 +695,8 @@ const HumanManagement = () => {
                             </div>
 
                             <div className="worker-contact">
-                              <p>📧 {worker.email}</p>
-                              <p>📞 {worker.phone}</p>
+                              <p>{worker.email}</p>
+                              <p>{worker.phone}</p>
                             </div>
 
                             <div className="worker-actions">
@@ -705,14 +705,14 @@ const HumanManagement = () => {
                                 onClick={() => handleSwitchMember(worker)}
                                 title="Switch to another team"
                               >
-                                🔄 Change of Team
+                                Change Team
                               </button>
                               <button
                                 className="btn-edit-details"
                                 onClick={() => handleEditDetails(worker)}
                                 title="Edit worker contact and personal information"
                               >
-                                ✏️ Edit Details
+                                Edit Details
                               </button>
                             </div>
                           </div>
