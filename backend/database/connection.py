@@ -7,6 +7,7 @@ from typing import Any, Dict, List, Optional, Sequence
 
 import psycopg2
 from psycopg2.extras import RealDictCursor
+from calculation_service import calculation_service
 
 
 class DatabaseManager:
@@ -100,10 +101,10 @@ class DatabaseManager:
         for project in projects:
             budget_total = project.get('budget_total') or 0.0
             budget_spent = project.get('budget_spent') or 0.0
-            project['budget_remaining'] = round(budget_total - budget_spent, 2)
-            project['budget_utilisation'] = round(
-                (budget_spent / budget_total), 2
-            ) if budget_total else 0.0
+            
+            # Use centralized calculation service for consistent calculations
+            project['budget_remaining'] = calculation_service.calculate_budget_remaining(budget_total, budget_spent)
+            project['budget_utilisation'] = calculation_service.calculate_budget_utilization(budget_total, budget_spent)
             project['team_members'] = sorted(project.get('team_members', []))
         return projects
 
@@ -147,6 +148,13 @@ class DatabaseManager:
         """
         engineers = self.execute_query(query)
         for engineer in engineers:
+            # Use centralized calculation service for consistent workload calculations
+            capacity = float(engineer.get('capacity_hours_per_week', 0))
+            current_hours = float(engineer.get('current_hours', 0))
+            
+            # Calculate workload percentage and overwork status using centralized service
+            engineer['workload_percent'] = calculation_service.calculate_workload_percentage(capacity, current_hours)
+            engineer['is_overworked'] = calculation_service.is_overworked(capacity, current_hours)
             engineer['project_names'] = sorted(engineer.get('project_names', []))
         return engineers
 

@@ -13,7 +13,7 @@
  * Main Tabs:
  * 1. Project Overview - Project status, timelines, resource allocation
  * 2. Human Management - Team management, workload, collaboration
- * 3. AI Integration - AI assistant, automation, analytics, ML models
+ * 3. Liquid AI Integration - Liquid AI assistant, automation, analytics, ML models
  */
 
 import React, { useState } from 'react';
