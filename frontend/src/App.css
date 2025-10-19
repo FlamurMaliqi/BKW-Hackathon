@@ -30,7 +30,7 @@
   min-height: 100vh;    /* Minimum viewport height */
   background: var(--background);  /* White background for content */
   overflow-x: hidden;   /* Prevent horizontal scrolling */
-  overflow-y: auto;     /* Allow vertical scrolling when content exceeds viewport */
+  overflow-y: visible;  /* Allow content to flow naturally for page-level scrolling */
   padding: 0;           /* Remove all padding to start content directly next to sidebar */
   position: relative;   /* Ensure proper positioning context */
 }

@@ -12,7 +12,7 @@
 
 import React, { useState, useEffect } from 'react';
 import './OverviewDashboard.css';
-import { getProjects, getEngineers, getTeams, createProject, unassignEngineerFromProject, assignEngineerToProject, importCSVData } from '../services/api';
+import { getProjects, getEngineers, getTeams, createProject, unassignEngineerFromProject, assignEngineerToProject, importAbacusData } from '../services/api';
 import { exportToCSV, getTimestamp } from '../utils/csvExport';
 import CreateProjectModal from './CreateProjectModal';
 import AssignEngineerModal from './AssignEngineerModal';
@@ -28,7 +28,6 @@ const OverviewDashboard = () => {
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [chartsHighlighted, setChartsHighlighted] = useState(false);
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
@@ -254,13 +253,9 @@ const OverviewDashboard = () => {
     // This would typically use React Router or similar navigation
   };
 
-  // Handle View Details button click to highlight charts
-  const handleViewDetails = () => {
-    setChartsHighlighted(!chartsHighlighted);
-  };
 
-  // Handle CSV import
-  const handleImportCSV = async (event) => {
+  // Handle Abacus import
+  const handleImportAbacus = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -273,7 +268,7 @@ const OverviewDashboard = () => {
     setImportResult(null);
 
     try {
-      const result = await importCSVData(file);
+      const result = await importAbacusData(file);
       setImportResult(result);
       
       // Refresh data after successful import
@@ -780,15 +775,14 @@ const OverviewDashboard = () => {
             <input
               type="file"
               accept=".csv"
-              onChange={handleImportCSV}
+              onChange={handleImportAbacus}
               style={{ display: 'none' }}
-              id="csv-import-input"
+              id="abacus-import-input"
             />
-            <label htmlFor="csv-import-input" className="btn-secondary">
-              {importing ? 'Importing...' : 'Import CSV'}
+            <label htmlFor="abacus-import-input" className="btn-secondary">
+              {importing ? 'Importing...' : 'Import Abacus'}
             </label>
             <button className="btn-secondary" onClick={handleExportReport}>Export Report</button>
-            <button className="btn-primary" onClick={handleViewDetails}>View Details</button>
           </div>
         </div>
       </div>
@@ -845,7 +839,7 @@ const OverviewDashboard = () => {
         {/* Charts Grid */}
         <div className="charts-grid">
           {/* Gauge Chart */}
-          <div className={`chart-card gauge-card ${chartsHighlighted ? 'highlighted' : ''}`}>
+          <div className="chart-card gauge-card">
             <div className="chart-header">
               <h3>Project Completion</h3>
               <span className="chart-icon">🎯</span>
@@ -856,7 +850,7 @@ const OverviewDashboard = () => {
           </div>
 
           {/* Bar Chart */}
-          <div className={`chart-card bar-card ${chartsHighlighted ? 'highlighted' : ''}`}>
+          <div className="chart-card bar-card">
             <div className="chart-header">
               <h3>Monthly Activity</h3>
               <span className="chart-icon">📊</span>
@@ -867,7 +861,7 @@ const OverviewDashboard = () => {
           </div>
 
           {/* Area Chart */}
-          <div className={`chart-card area-card ${chartsHighlighted ? 'highlighted' : ''}`}>
+          <div className="chart-card area-card">
             <div className="chart-header">
               <h3>Budget Trends</h3>
               <span className="chart-icon">💰</span>
@@ -878,7 +872,7 @@ const OverviewDashboard = () => {
           </div>
 
           {/* Workload Analysis */}
-          <div className={`chart-card workload-card ${chartsHighlighted ? 'highlighted' : ''}`}>
+          <div className="chart-card workload-card">
             <div className="chart-header">
               <h3>Workload Analysis</h3>
               <span className="chart-icon">⚖️</span>
