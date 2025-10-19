@@ -60,6 +60,8 @@
   padding-bottom: 60px; /* Add bottom padding to ensure content is scrollable */
   display: flex;        /* Flexbox layout */
   flex-direction: column; /* Stack header and content vertically */
+  min-height: 100vh;   /* Ensure full viewport height */
+  overflow: visible;   /* Allow content to flow naturally */
 }
 
 /* Header section with breadcrumbs and page title - matching BKW design */
@@ -91,6 +93,8 @@
   padding: var(--spacing-2xl);        /* Generous padding around the content */
   display: flex;      /* Flexbox layout */
   flex-direction: column; /* Stack controls and workers vertically */
+  min-height: auto;   /* Allow natural height expansion */
+  overflow: visible;  /* Allow content to flow naturally */
 }
 
 /* Controls Section */
@@ -181,11 +185,11 @@
   background: var(--bkw-white);  /* White background */
   border-radius: var(--radius-medium);   /* Rounded corners */
   border: 1px solid var(--bkw-blue);  /* BKW blue border */
-  overflow: hidden;     /* Ensure content doesn't overflow rounded corners */
+  overflow: visible;     /* Allow content to flow naturally */
   display: flex;      /* Flexbox layout */
   flex-direction: column; /* Stack header and list vertically */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* Subtle shadow */
-  max-height: fit-content; /* Wrap around content instead of taking all space */
+  /* Removed max-height constraint to allow natural expansion */
 }
 
 .workers-header {
@@ -265,6 +269,7 @@
 .workers-list {
   padding: 0;          /* Remove default padding */
   overflow: visible;   /* Allow content to flow naturally */
+  /* Removed height constraints to allow natural expansion */
 }
 
 /* Group Section */

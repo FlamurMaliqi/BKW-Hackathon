@@ -419,8 +419,7 @@
   display: flex;
   flex-direction: column;
   gap: var(--spacing-sm);
-  max-height: 120px;
-  overflow-y: auto;
+  /* Removed max-height and overflow-y to allow natural expansion */
 }
 
 .worker-item,
