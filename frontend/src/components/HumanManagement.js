@@ -588,7 +588,19 @@ const HumanManagement = () => {
                   >
                     <div className="group-info">
                       <h3>{groupName}</h3>
-                      <span className="group-count">{groupWorkers.length} member{groupWorkers.length !== 1 ? 's' : ''}</span>
+                      <div className="group-summary">
+                        <span className="group-count">{groupWorkers.length} member{groupWorkers.length !== 1 ? 's' : ''}</span>
+                        {groupWorkers.length > 0 && (
+                          <div className="group-metrics">
+                            <span className="metric">
+                              {groupWorkers.filter(w => w.availability === 'available').length} available
+                            </span>
+                            <span className="metric">
+                              {groupWorkers.filter(w => w.isOverworked).length} overworked
+                            </span>
+                          </div>
+                        )}
+                      </div>
                     </div>
                     <div className="group-actions">
                       <button 

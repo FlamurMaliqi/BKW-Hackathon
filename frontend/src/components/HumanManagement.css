@@ -195,7 +195,8 @@
   display: flex;      /* Flexbox layout */
   flex-direction: column; /* Stack header and list vertically */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* Subtle shadow */
-  /* Removed max-height constraint to allow natural expansion */
+  max-height: 90vh; /* Increase height to show more content */
+  overflow-y: auto;  /* Allow scrolling if needed */
 }
 
 .workers-header {
@@ -272,27 +273,43 @@
   color: var(--bkw-white);  /* White text on hover */
 }
 
-/* Workers List */
+/* Workers List - Grid Layout */
 .workers-list {
-  padding: 0;          /* Remove default padding */
-  overflow: visible;   /* Allow content to flow naturally */
-  /* Removed height constraints to allow natural expansion */
+  padding: var(--spacing-lg) !important;  /* Add padding around grid */
+  display: grid !important;    /* Force grid layout */
+  grid-template-columns: repeat(auto-fit, minmax(320px, 1fr)) !important;  /* Responsive grid - smaller min width */
+  gap: var(--spacing-lg) !important;     /* Space between team cards */
+  max-height: 85vh !important;          /* Increase height to show more teams */
+  overflow-y: auto !important;          /* Allow scrolling only if content exceeds height */
+  background: var(--bg-light) !important;  /* Light background for grid area */
+  border-radius: var(--radius-medium) !important;  /* Rounded corners for grid container */
+  width: 100% !important;  /* Ensure full width */
+  box-sizing: border-box !important;  /* Include padding in width calculation */
 }
 
 /* Group Section */
 .group-section {
-  border-bottom: 1px solid var(--border-color);  /* Border between groups */
+  border: 1px solid var(--border-color);  /* Border around each team card */
   background: var(--bkw-white);  /* White background for each group */
+  border-radius: var(--radius-medium);  /* Rounded corners for cards */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);  /* Subtle shadow for depth */
+  overflow: hidden;  /* Ensure content doesn't overflow rounded corners */
+  transition: all 0.2s ease;  /* Smooth transitions */
+  display: flex !important;  /* Force flexbox for card layout */
+  flex-direction: column;  /* Stack header and content vertically */
+  min-height: 200px;  /* Minimum height for consistent card sizes */
+  max-height: 400px;  /* Maximum height to prevent cards from being too tall */
 }
 
-.group-section:last-child {
-  border-bottom: none; /* Remove border from last group */
+.group-section:hover {
+  transform: translateY(-2px);  /* Lift effect on hover */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);  /* Enhanced shadow on hover */
 }
 
 /* Group Header */
 .group-header {
   background: var(--bkw-white);  /* White background for clean look */
-  padding: var(--spacing-md) var(--spacing-lg);   /* Internal spacing */
+  padding: var(--spacing-md);   /* Reduced padding for more compact cards */
   display: flex;       /* Flexbox for header layout */
   justify-content: space-between;  /* Space between info and actions */
   align-items: center; /* Vertically center header content */
@@ -300,6 +317,8 @@
   border-left: 4px solid var(--medium-blue);  /* Left border for visual separation */
   transition: all 0.2s ease;  /* Smooth transitions */
   border-bottom: 1px solid var(--border-color);  /* Bottom border for separation */
+  flex-shrink: 0;  /* Prevent header from shrinking */
+  min-height: 80px;  /* Minimum height for consistent header size */
 }
 
 .group-header:hover {
@@ -317,6 +336,28 @@
 .group-count {
   font-size: var(--text-small);     /* Smaller font size for count */
   color: var(--text-muted);      /* Muted gray color */
+  font-weight: var(--font-medium);  /* Medium weight for emphasis */
+}
+
+.group-summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.group-metrics {
+  display: flex;
+  gap: var(--spacing-sm);
+  flex-wrap: wrap;
+}
+
+.group-metrics .metric {
+  font-size: var(--text-caption);
+  color: var(--text-secondary);
+  background: var(--bg-light);
+  padding: 2px var(--spacing-xs);
+  border-radius: var(--radius-subtle);
+  font-weight: var(--font-medium);
 }
 
 .group-actions {
@@ -340,6 +381,9 @@
 /* Group Content */
 .group-content {
   padding: 0;          /* Remove default padding */
+  flex: 1;  /* Take up remaining space in card */
+  overflow-y: auto;  /* Allow scrolling within card if needed */
+  max-height: 200px;  /* Reduced height for more compact cards */
 }
 
 /* Worker Card */
@@ -519,6 +563,11 @@
   .worker-details {
     grid-template-columns: 1fr;  /* Single column on smaller screens */
   }
+  
+  .workers-list {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));  /* Smaller cards on tablets */
+    max-height: 80vh;  /* Slightly reduced height on tablets */
+  }
 }
 
 @media (max-width: 768px) {
@@ -578,6 +627,12 @@
   .worker-details {
     grid-template-columns: 1fr;  /* Single column on mobile */
     gap: var(--spacing-md);         /* Reduce gap between detail sections */
+  }
+  
+  .workers-list {
+    grid-template-columns: 1fr !important;  /* Force single column on mobile */
+    max-height: 75vh;  /* Increase height on mobile for better visibility */
+    padding: var(--spacing-md);  /* Reduce padding on mobile */
   }
 }
 
