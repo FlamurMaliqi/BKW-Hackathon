@@ -94,6 +94,92 @@ class ConflictDetector:
 
         return conflicts
 
+    def detect_deadline_overlaps(self, days_window: int = 7) -> List[Dict[str, Any]]:
+        """Detect projects with overlapping deadlines (within N days of each other)."""
+        projects = self.db.get_all_projects()
+        overlaps: List[Dict[str, Any]] = []
+
+        # Sort projects by deadline
+        sorted_projects = sorted(
+            [p for p in projects if p.get('deadline')],
+            key=lambda p: self._parse_date(p.get('deadline'))
+        )
+
+        # Check for projects with deadlines within the time window
+        for i, project1 in enumerate(sorted_projects):
+            deadline1 = self._parse_date(project1.get('deadline'))
+            overlapping_projects = []
+
+            for project2 in sorted_projects[i+1:]:
+                deadline2 = self._parse_date(project2.get('deadline'))
+                days_diff = abs((deadline2 - deadline1).days)
+
+                if days_diff <= days_window:
+                    overlapping_projects.append({
+                        'project_id': project2.get('id'),
+                        'project_name': project2.get('name'),
+                        'deadline': str(deadline2),
+                        'priority': project2.get('priority'),
+                        'completion_percent': project2.get('completion_percent', 0),
+                        'days_apart': days_diff
+                    })
+                else:
+                    break  # Projects are sorted, so we can stop checking
+
+            if overlapping_projects:
+                overlaps.append({
+                    'project_id': project1.get('id'),
+                    'project_name': project1.get('name'),
+                    'deadline': str(deadline1),
+                    'priority': project1.get('priority'),
+                    'completion_percent': project1.get('completion_percent', 0),
+                    'overlapping_projects': overlapping_projects,
+                    'total_overlaps': len(overlapping_projects)
+                })
+
+        return overlaps
+
+    def detect_budget_risks(self) -> List[Dict[str, Any]]:
+        """Detect projects at budget risk (high spend with low completion)."""
+        projects = self.db.get_all_projects()
+        risks: List[Dict[str, Any]] = []
+
+        for project in projects:
+            budget_total = float(project.get('budget_total') or 0)
+            budget_spent = float(project.get('budget_spent') or 0)
+            completion = float(project.get('completion_percent') or 0)
+
+            if budget_total == 0:
+                continue
+
+            spend_percent = (budget_spent / budget_total) * 100
+
+            # Risk criteria: spent >80% but completion <80%
+            # Or spent >90% but completion <90%
+            risk_level = None
+            if spend_percent >= 90 and completion < 90:
+                risk_level = 'critical'
+            elif spend_percent >= 80 and completion < 80:
+                risk_level = 'warning'
+
+            if risk_level:
+                risks.append({
+                    'project_id': project.get('id'),
+                    'project_name': project.get('name'),
+                    'budget_total': budget_total,
+                    'budget_spent': budget_spent,
+                    'budget_remaining': budget_total - budget_spent,
+                    'spend_percent': round(spend_percent, 1),
+                    'completion_percent': completion,
+                    'risk_level': risk_level,
+                    'priority': project.get('priority'),
+                    'deadline': project.get('deadline')
+                })
+
+        # Sort by risk level (critical first) then by spend percentage
+        risks.sort(key=lambda r: (0 if r['risk_level'] == 'critical' else 1, -r['spend_percent']))
+        return risks
+
     # ------------------------------------------------------------------
     # Summary helpers
     # ------------------------------------------------------------------
@@ -140,6 +226,8 @@ class ConflictDetector:
             'overallocated_engineers': self.detect_overallocated_engineers(),
             'projects_without_assignments': self.detect_projects_without_assignments(),
             'upcoming_absences': self.detect_absence_conflicts(days_ahead=days_ahead),
+            'deadline_overlaps': self.detect_deadline_overlaps(days_window=7),
+            'budget_risks': self.detect_budget_risks(),
             'workload_summary': self.get_workload_summary(),
         }
 
