@@ -46,7 +46,9 @@ const OverviewDashboard = () => {
     underloaded: [],
     teamAverages: []
   });
-  const [showAllWorkers, setShowAllWorkers] = useState(false);
+  const [showAllOverloaded, setShowAllOverloaded] = useState(false);
+  const [showAllUnderloaded, setShowAllUnderloaded] = useState(false);
+  const [showAllTeams, setShowAllTeams] = useState(false);
 
   // Fetch all data from APIs
   const fetchDashboardData = async () => {
@@ -181,14 +183,15 @@ const OverviewDashboard = () => {
       };
     });
 
-    // Sort engineers by load percentage
-    const sortedEngineers = engineersWithWorkload.sort((a, b) => b.loadPercentage - a.loadPercentage);
+    // Get overloaded workers (load >= 85%) and sort by highest workload first (most overworked first)
+    const overloaded = engineersWithWorkload
+      .filter(eng => eng.isOverloaded)
+      .sort((a, b) => b.loadPercentage - a.loadPercentage);
     
-    // Get overloaded workers (load >= 85%)
-    const overloaded = sortedEngineers.filter(eng => eng.isOverloaded);
-    
-    // Get underloaded workers (load < 50%)
-    const underloaded = sortedEngineers.filter(eng => eng.isUnderloaded);
+    // Get underloaded workers (load < 50%) and sort by lowest workload first (least worked first)
+    const underloaded = engineersWithWorkload
+      .filter(eng => eng.isUnderloaded)
+      .sort((a, b) => a.loadPercentage - b.loadPercentage);
 
     // Calculate average load per team
     const teamAverages = teamsData.map(team => {
@@ -623,9 +626,10 @@ const OverviewDashboard = () => {
   const renderWorkloadAnalysis = () => {
     const { overloaded, underloaded, teamAverages } = workloadData;
     
-    // Get workers to display (3 by default, all if showAllWorkers is true)
-    const displayOverloaded = showAllWorkers ? overloaded : overloaded.slice(0, 3);
-    const displayUnderloaded = showAllWorkers ? underloaded : underloaded.slice(0, 3);
+    // Get workers to display (3 by default, all if respective showAll is true)
+    const displayOverloaded = showAllOverloaded ? overloaded : overloaded.slice(0, 3);
+    const displayUnderloaded = showAllUnderloaded ? underloaded : underloaded.slice(0, 3);
+    const displayTeams = showAllTeams ? teamAverages : teamAverages.slice(0, 3);
     
     return (
       <div className="workload-analysis">
@@ -658,6 +662,16 @@ const OverviewDashboard = () => {
               <div className="no-data">No overloaded workers</div>
             )}
           </div>
+          {overloaded.length > 3 && (
+            <div className="workload-actions">
+              <button 
+                className="btn-see-more" 
+                onClick={() => setShowAllOverloaded(!showAllOverloaded)}
+              >
+                {showAllOverloaded ? 'Show Less' : 'See More'}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Underloaded Workers */}
@@ -689,6 +703,16 @@ const OverviewDashboard = () => {
               <div className="no-data">No underloaded workers</div>
             )}
           </div>
+          {underloaded.length > 3 && (
+            <div className="workload-actions">
+              <button 
+                className="btn-see-more" 
+                onClick={() => setShowAllUnderloaded(!showAllUnderloaded)}
+              >
+                {showAllUnderloaded ? 'Show Less' : 'See More'}
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Team Averages */}
@@ -697,7 +721,7 @@ const OverviewDashboard = () => {
             <h4>Average Load by Team</h4>
           </div>
           <div className="teams-list">
-            {teamAverages.map((team, index) => (
+            {displayTeams.map((team, index) => (
               <div key={team.teamId} className="team-item">
                 <div className="team-info">
                   <span className="team-name">{team.teamName}</span>
@@ -715,19 +739,17 @@ const OverviewDashboard = () => {
               </div>
             ))}
           </div>
+          {teamAverages.length > 3 && (
+            <div className="workload-actions">
+              <button 
+                className="btn-see-more" 
+                onClick={() => setShowAllTeams(!showAllTeams)}
+              >
+                {showAllTeams ? 'Show Less' : 'See More'}
+              </button>
+            </div>
+          )}
         </div>
-
-        {/* See More Button */}
-        {(overloaded.length > 3 || underloaded.length > 3) && (
-          <div className="workload-actions">
-            <button 
-              className="btn-see-more"
-              onClick={() => setShowAllWorkers(!showAllWorkers)}
-            >
-              {showAllWorkers ? 'Show Less' : 'See More'}
-            </button>
-          </div>
-        )}
       </div>
     );
   };
