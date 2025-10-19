@@ -709,30 +709,60 @@ def _process_project(row, summary):
     completion_percent = float(row.get('completion_percent', 0))
     budget_total = float(row.get('budget_total', 0))
     budget_spent = float(row.get('budget_spent', 0))
-    
+    project_start_date_str = row.get('project_start_date', '').strip()
+    project_deadline_str = row.get('project_deadline', '').strip()
+
     if not project_name:
         return None
-    
+
+    # Parse project start date
+    project_start_date = None
+    if project_start_date_str:
+        try:
+            project_start_date = datetime.strptime(project_start_date_str, '%d-%m-%Y').date()
+        except ValueError:
+            # Try ISO format as fallback
+            try:
+                project_start_date = date.fromisoformat(project_start_date_str)
+            except ValueError:
+                pass  # Use None if parsing fails
+
+    # Parse project deadline
+    project_deadline = None
+    if project_deadline_str:
+        try:
+            project_deadline = datetime.strptime(project_deadline_str, '%d-%m-%Y').date()
+        except ValueError:
+            # Try ISO format as fallback
+            try:
+                project_deadline = date.fromisoformat(project_deadline_str)
+            except ValueError:
+                pass  # Use None if parsing fails
+
+    # Default deadline if not provided
+    if not project_deadline:
+        project_deadline = date.today() + __import__('datetime').timedelta(days=365)
+
     # Check if project exists
     existing_projects = db_manager.execute_query(
-        "SELECT id FROM projects WHERE name = %s", 
+        "SELECT id FROM projects WHERE name = %s",
         (project_name,)
     )
-    
+
     if existing_projects:
         summary['projects_skipped'] += 1
         return existing_projects[0]['id']
-    
+
     # Create new project
     try:
         with db_manager.get_connection() as conn:
             with conn.cursor() as cursor:
                 cursor.execute(
-                    """INSERT INTO projects (name, status, priority, completion_percent, 
-                       budget_total, budget_spent, deadline) VALUES (%s, %s, %s, %s, %s, %s, %s) 
+                    """INSERT INTO projects (name, start_date, status, priority, completion_percent,
+                       budget_total, budget_spent, deadline) VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                        RETURNING id""",
-                    (project_name, project_status, priority, completion_percent, 
-                     budget_total, budget_spent, date.today() + __import__('datetime').timedelta(days=365))
+                    (project_name, project_start_date, project_status, priority, completion_percent,
+                     budget_total, budget_spent, project_deadline)
                 )
                 conn.commit()
                 project_id = cursor.fetchone()[0]
