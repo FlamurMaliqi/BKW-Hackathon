@@ -45,6 +45,39 @@ class ConflictDetector:
         overloaded.sort(key=lambda item: item['overload_hours'], reverse=True)
         return overloaded
 
+    def detect_underutilized_engineers(self) -> List[Dict[str, Any]]:
+        """Detect engineers with low workload (below 50% capacity)."""
+        engineers = self.db.get_all_engineers()
+        underutilized: List[Dict[str, Any]] = []
+        for engineer in engineers:
+            capacity = float(engineer.get('capacity_hours_per_week') or 0)
+            current_hours = float(engineer.get('current_hours') or 0)
+            status = engineer.get('status', '')
+            availability = engineer.get('availability', '')
+
+            # Skip engineers who are not active or available
+            if status != 'active' or availability in ['holiday', 'out_of_office']:
+                continue
+
+            if capacity > 0:
+                workload_percent = (current_hours / capacity) * 100
+
+                # Flag if workload is below 50%
+                if workload_percent < 50:
+                    underutilized.append({
+                        'engineer_id': engineer.get('id'),
+                        'engineer_name': engineer.get('name'),
+                        'capacity_hours_per_week': capacity,
+                        'assigned_hours_per_week': current_hours,
+                        'available_hours': capacity - current_hours,
+                        'workload_percent': round(workload_percent, 1),
+                        'team_name': engineer.get('team_name')
+                    })
+
+        # Sort by workload percent (lowest first)
+        underutilized.sort(key=lambda item: item['workload_percent'])
+        return underutilized
+
     def detect_projects_without_assignments(self) -> List[Dict[str, Any]]:
         return self.db.get_projects_without_assignments()
 
@@ -224,6 +257,7 @@ class ConflictDetector:
     def get_all_conflicts(self, days_ahead: int = 28) -> Dict[str, Any]:
         return {
             'overallocated_engineers': self.detect_overallocated_engineers(),
+            'underutilized_engineers': self.detect_underutilized_engineers(),
             'projects_without_assignments': self.detect_projects_without_assignments(),
             'upcoming_absences': self.detect_absence_conflicts(days_ahead=days_ahead),
             'deadline_overlaps': self.detect_deadline_overlaps(days_window=7),
