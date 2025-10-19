@@ -133,7 +133,26 @@ def ai_chat():
             'model': result.get('model', 'gemini-1.5-flash'),
             'status': 'success'
         })
-        
+
+    except Exception as exc:
+        return jsonify({
+            'error': str(exc),
+            'status': 'error'
+        }), 500
+
+@app.route('/api/ai/proactive-alerts', methods=['GET'])
+def get_proactive_alerts():
+    """Generate AI-powered proactive alerts about risks and opportunities."""
+    try:
+        result = ai_service.generate_proactive_alerts()
+
+        return jsonify({
+            'alerts': result.get('alerts', []),
+            'generated_at': datetime.now(timezone.utc).isoformat(),
+            'model': result.get('model', 'gemini-2.0-flash'),
+            'status': 'success'
+        })
+
     except Exception as exc:
         return jsonify({
             'error': str(exc),

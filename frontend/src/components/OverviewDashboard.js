@@ -16,6 +16,9 @@ import { getProjects, getEngineers, getTeams, createProject, unassignEngineerFro
 import { exportToCSV, getTimestamp } from '../utils/csvExport';
 import CreateProjectModal from './CreateProjectModal';
 import AssignEngineerModal from './AssignEngineerModal';
+import RiskAlertsPanel from './RiskAlertsPanel';
+import GanttChart from './GanttChart';
+import WorkloadHeatmap from './WorkloadHeatmap';
 
 const OverviewDashboard = () => {
   // State management
@@ -662,6 +665,15 @@ const OverviewDashboard = () => {
 
       {/* Main content area */}
       <div className="content-body">
+        {/* Risk Alerts Panel */}
+        <RiskAlertsPanel refreshTrigger={projects.length} />
+
+        {/* Gantt Chart Timeline */}
+        <GanttChart projects={projects} onProjectClick={goToProjectDetails} />
+
+        {/* Workload Heatmap */}
+        <WorkloadHeatmap />
+
         {/* Charts Grid */}
         <div className="charts-grid">
           {/* Gauge Chart */}
