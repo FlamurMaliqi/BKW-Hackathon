@@ -14,7 +14,7 @@ import React from 'react';
 import './Navigation.css';
 
 const Navigation = ({ activeTab, onTabChange }) => {
-  // Define the three main navigation tabs with their properties
+  // Define the main navigation tabs with their properties
   // Each tab has an ID and professional single-word label
   const tabs = [
     { id: 'overview', label: 'Overview' },
