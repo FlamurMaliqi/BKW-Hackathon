@@ -1,7 +1,16 @@
-# BKW Engineering - Design Language System
+# BKW Engineering Design System
 
 ## Overview
-This document defines the global design language for the BKW Engineering AI Project Management application. The design system is based on the BKW Engineering brand identity and follows professional, clean design principles similar to modern medical applications.
+This document defines the comprehensive design language system for the BKW Engineering AI Project Management application. The design system is based on the BKW Engineering brand identity and follows professional, clean design principles optimized for enterprise project management interfaces.
+
+## 🎯 Design Philosophy
+
+The BKW Engineering design system prioritizes:
+- **Clarity**: Clear visual hierarchy and information architecture
+- **Efficiency**: Streamlined workflows for project management tasks
+- **Accessibility**: WCAG AA compliant design for inclusive user experience
+- **Consistency**: Unified visual language across all components
+- **Professionalism**: Enterprise-grade aesthetics reflecting BKW Engineering's brand values
 
 ## Brand Colors
 
@@ -222,12 +231,55 @@ This document defines the global design language for the BKW Engineering AI Proj
 - Minimum 44px for interactive elements
 - Adequate spacing between clickable elements
 
-## Implementation Guidelines
+## 🧩 Component Guidelines
 
-### CSS Variables
-Use CSS custom properties for consistent theming:
+### Component Architecture
+- **Atomic Design**: Build components from atoms to organisms
+- **Reusability**: Create flexible, configurable components
+- **Composition**: Combine smaller components to build complex interfaces
+- **Props Interface**: Clear, well-documented component APIs
+
+### Component Categories
+
+#### Layout Components
+- **Container**: Main content wrapper with consistent padding
+- **Grid**: Responsive grid system for content organization
+- **Stack**: Vertical and horizontal content stacking
+- **Divider**: Visual separation between content sections
+
+#### Navigation Components
+- **Sidebar**: Main application navigation
+- **Breadcrumb**: Hierarchical navigation trail
+- **Tabs**: Content organization and switching
+- **Pagination**: Data navigation controls
+
+#### Form Components
+- **Input**: Text input with validation states
+- **Select**: Dropdown selection with search
+- **Checkbox**: Boolean input with proper labeling
+- **Radio**: Single selection from options
+- **Button**: Interactive elements with multiple variants
+
+#### Data Display Components
+- **Card**: Content container with consistent styling
+- **Table**: Data presentation with sorting and filtering
+- **Badge**: Status and category indicators
+- **Progress**: Task and loading progress indicators
+- **Chart**: Data visualization components
+
+#### Feedback Components
+- **Alert**: System messages and notifications
+- **Modal**: Overlay dialogs for focused interactions
+- **Tooltip**: Contextual help and information
+- **Loading**: Progress and loading state indicators
+
+## 🛠️ Implementation Guidelines
+
+### CSS Architecture
+Use a modular CSS approach with the following structure:
 
 ```css
+/* Global styles and CSS variables */
 :root {
   --bkw-blue: #004488;
   --bkw-white: #FFFFFF;
@@ -240,19 +292,40 @@ Use CSS custom properties for consistent theming:
   --spacing-md: 16px;
   --spacing-lg: 24px;
 }
+
+/* Component-specific styles */
+.component-name {
+  /* Base styles */
+}
+
+.component-name__element {
+  /* Element styles */
+}
+
+.component-name--modifier {
+  /* Modifier styles */
+}
 ```
 
-### Component Structure
-- Use semantic HTML elements
-- Implement proper ARIA labels
-- Follow BEM naming convention for CSS classes
-- Maintain consistent spacing using the defined scale
+### Naming Conventions
+- **CSS Classes**: BEM (Block Element Modifier) methodology
+- **Components**: PascalCase (e.g., `ProjectCard`)
+- **Files**: kebab-case (e.g., `project-card.css`)
+- **Variables**: camelCase (e.g., `primaryColor`)
 
-### Performance
-- Use system fonts for optimal loading
-- Minimize custom CSS properties
-- Optimize images and icons
-- Use CSS Grid and Flexbox for layouts
+### Accessibility Standards
+- **Semantic HTML**: Use appropriate HTML elements
+- **ARIA Labels**: Provide descriptive labels for screen readers
+- **Keyboard Navigation**: Ensure all interactive elements are keyboard accessible
+- **Color Contrast**: Maintain WCAG AA contrast ratios (4.5:1 for normal text)
+- **Focus Management**: Clear focus indicators and logical tab order
+
+### Performance Optimization
+- **CSS Optimization**: Minimize unused styles and use efficient selectors
+- **Font Loading**: Use system fonts for optimal performance
+- **Image Optimization**: Compress and optimize all images
+- **Bundle Size**: Monitor and minimize CSS bundle size
+- **Critical CSS**: Inline critical styles for faster rendering
 
 ## Examples
 
@@ -285,4 +358,160 @@ Use CSS custom properties for consistent theming:
 }
 ```
 
-This design system ensures consistency across the BKW Engineering application while maintaining a professional, clean appearance that reflects the brand identity.
+## 📚 Usage Examples
+
+### Creating a Project Card
+```jsx
+import React from 'react';
+import './ProjectCard.css';
+
+const ProjectCard = ({ project, onEdit, onDelete }) => {
+  return (
+    <div className="card project-card">
+      <div className="project-card__header">
+        <h3 className="project-card__title">{project.name}</h3>
+        <span className={`badge badge--${project.status}`}>
+          {project.status}
+        </span>
+      </div>
+      <div className="project-card__content">
+        <p className="project-card__description">{project.description}</p>
+        <div className="project-card__meta">
+          <span className="project-card__deadline">
+            Deadline: {project.deadline}
+          </span>
+          <span className="project-card__priority">
+            Priority: {project.priority}
+          </span>
+        </div>
+      </div>
+      <div className="project-card__actions">
+        <button className="btn btn--primary" onClick={() => onEdit(project)}>
+          Edit
+        </button>
+        <button className="btn btn--secondary" onClick={() => onDelete(project.id)}>
+          Delete
+        </button>
+      </div>
+    </div>
+  );
+};
+```
+
+### Implementing a Form Input
+```jsx
+import React, { useState } from 'react';
+import './FormInput.css';
+
+const FormInput = ({ 
+  label, 
+  type = 'text', 
+  placeholder, 
+  value, 
+  onChange, 
+  error,
+  required = false 
+}) => {
+  const [isFocused, setIsFocused] = useState(false);
+  
+  return (
+    <div className="form-input">
+      <label className="form-input__label">
+        {label}
+        {required && <span className="form-input__required">*</span>}
+      </label>
+      <input
+        type={type}
+        className={`form-input__field ${error ? 'form-input__field--error' : ''} ${isFocused ? 'form-input__field--focused' : ''}`}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange}
+        onFocus={() => setIsFocused(true)}
+        onBlur={() => setIsFocused(false)}
+        aria-invalid={!!error}
+        aria-describedby={error ? `${label}-error` : undefined}
+      />
+      {error && (
+        <span id={`${label}-error`} className="form-input__error">
+          {error}
+        </span>
+      )}
+    </div>
+  );
+};
+```
+
+## 🎨 Design Tokens
+
+### Color Tokens
+```css
+:root {
+  /* Brand Colors */
+  --color-primary: #004488;
+  --color-primary-dark: #003366;
+  --color-primary-light: #1A5276;
+  
+  /* Neutral Colors */
+  --color-text-primary: #212529;
+  --color-text-secondary: #495057;
+  --color-text-muted: #6C757D;
+  --color-background: #FFFFFF;
+  --color-background-light: #F8F9FA;
+  --color-border: #E9ECEF;
+  
+  /* Status Colors */
+  --color-success: #28A745;
+  --color-warning: #FFC107;
+  --color-error: #DC3545;
+  --color-info: #17A2B8;
+}
+```
+
+### Spacing Tokens
+```css
+:root {
+  --spacing-xs: 4px;
+  --spacing-sm: 8px;
+  --spacing-md: 16px;
+  --spacing-lg: 24px;
+  --spacing-xl: 32px;
+  --spacing-2xl: 40px;
+  --spacing-3xl: 48px;
+}
+```
+
+### Typography Tokens
+```css
+:root {
+  --font-family-primary: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', sans-serif;
+  --font-size-xs: 12px;
+  --font-size-sm: 14px;
+  --font-size-md: 16px;
+  --font-size-lg: 18px;
+  --font-size-xl: 20px;
+  --font-size-2xl: 24px;
+  --font-size-3xl: 28px;
+  
+  --font-weight-light: 300;
+  --font-weight-normal: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+}
+```
+
+## 🔄 Version Control
+
+### Design System Updates
+- **Major Changes**: Breaking changes that require component updates
+- **Minor Changes**: New components or non-breaking enhancements
+- **Patch Changes**: Bug fixes and small improvements
+
+### Migration Guide
+When updating the design system:
+1. Review breaking changes in the changelog
+2. Update component implementations
+3. Test visual regression
+4. Update documentation
+
+This design system ensures consistency across the BKW Engineering application while maintaining a professional, clean appearance that reflects the brand identity and supports efficient project management workflows.
