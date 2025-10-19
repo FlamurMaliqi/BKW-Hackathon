@@ -128,8 +128,14 @@ class DatabaseManager:
             e.is_overworked,
             e.skills,
             e.created_at,
-            COALESCE(SUM(pa.hours_per_week), 0) AS current_hours,
-            e.capacity_hours_per_week - COALESCE(SUM(pa.hours_per_week), 0) AS available_hours,
+            COALESCE(SUM(pa.hours_per_week) FILTER (
+                WHERE (pa.start_date IS NULL OR pa.start_date <= CURRENT_DATE)
+                  AND (pa.end_date IS NULL OR pa.end_date >= CURRENT_DATE)
+            ), 0) AS current_hours,
+            e.capacity_hours_per_week - COALESCE(SUM(pa.hours_per_week) FILTER (
+                WHERE (pa.start_date IS NULL OR pa.start_date <= CURRENT_DATE)
+                  AND (pa.end_date IS NULL OR pa.end_date >= CURRENT_DATE)
+            ), 0) AS available_hours,
             COALESCE(array_agg(DISTINCT pr.name) FILTER (WHERE pr.id IS NOT NULL), '{}') AS project_names
         FROM engineers e
         LEFT JOIN teams t ON t.id = e.team_id
@@ -443,8 +449,14 @@ class DatabaseManager:
             e.workload_percent,
             e.is_overworked,
             e.skills,
-            COALESCE(SUM(pa.hours_per_week), 0) AS current_hours,
-            e.capacity_hours_per_week - COALESCE(SUM(pa.hours_per_week), 0) AS available_hours
+            COALESCE(SUM(pa.hours_per_week) FILTER (
+                WHERE (pa.start_date IS NULL OR pa.start_date <= CURRENT_DATE)
+                  AND (pa.end_date IS NULL OR pa.end_date >= CURRENT_DATE)
+            ), 0) AS current_hours,
+            e.capacity_hours_per_week - COALESCE(SUM(pa.hours_per_week) FILTER (
+                WHERE (pa.start_date IS NULL OR pa.start_date <= CURRENT_DATE)
+                  AND (pa.end_date IS NULL OR pa.end_date >= CURRENT_DATE)
+            ), 0) AS available_hours
         FROM engineers e
         LEFT JOIN teams t ON t.id = e.team_id
         LEFT JOIN project_assignments pa ON pa.engineer_id = e.id
