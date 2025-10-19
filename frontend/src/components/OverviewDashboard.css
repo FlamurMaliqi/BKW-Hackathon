@@ -813,3 +813,14 @@
     font-size: 20px;
   }
 }
+
+/* Chart highlighting styles - just border */
+.chart-card.highlighted {
+  border: 3px solid var(--bkw-blue);
+  transition: border 0.3s ease;
+}
+
+/* Smooth transition for highlighting */
+.chart-card {
+  transition: border 0.3s ease;
+}

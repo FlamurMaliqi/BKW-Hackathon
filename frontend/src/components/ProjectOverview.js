@@ -18,6 +18,7 @@ import './ProjectOverview.css';
 import { getProjects, createProject, assignEngineerToProject, unassignEngineerFromProject } from '../services/api';
 import CreateProjectModal from './CreateProjectModal';
 import AssignEngineerModal from './AssignEngineerModal';
+import { exportToCSV, getTimestamp } from '../utils/csvExport';
 
 const ProjectOverview = () => {
   // State for managing expanded project items
@@ -161,6 +162,38 @@ const ProjectOverview = () => {
   const goToProjectDetails = (projectId) => {
     console.log(`Navigate to project details for project ${projectId}`);
     // This would typically use React Router or similar navigation
+  };
+
+  // Export active projects
+  const handleExportProjects = () => {
+    const projectData = projects.map(project => ({
+      name: project.name,
+      deadline: project.deadline,
+      priority: project.priority,
+      status: project.status,
+      completion_percent: project.completion_percent || 0,
+      budget_total: project.budget_total || 0,
+      budget_spent: project.budget_spent || 0,
+      budget_remaining: (project.budget_total || 0) - (project.budget_spent || 0),
+      team_members: project.team_members || [],
+      description: project.description
+    }));
+
+    const columns = [
+      { key: 'name', label: 'Project Name' },
+      { key: 'deadline', label: 'Deadline' },
+      { key: 'priority', label: 'Priority' },
+      { key: 'status', label: 'Status' },
+      { key: 'completion_percent', label: 'Completion %' },
+      { key: 'budget_total', label: 'Total Budget' },
+      { key: 'budget_spent', label: 'Amount Spent' },
+      { key: 'budget_remaining', label: 'Budget Remaining' },
+      { key: 'team_members', label: 'Team Members' },
+      { key: 'description', label: 'Description' }
+    ];
+
+    const timestamp = getTimestamp();
+    exportToCSV(projectData, columns, `projects-overview-${timestamp}.csv`);
   };
 
   // Get priority color
@@ -316,7 +349,7 @@ const ProjectOverview = () => {
           <div className="projects-header">
             <h2>Active Projects</h2>
             <div className="projects-actions">
-              <button className="btn-secondary">Export</button>
+              <button className="btn-secondary" onClick={handleExportProjects}>Export</button>
               <button className="btn-primary" onClick={() => setShowCreateModal(true)}>New Project</button>
             </div>
           </div>

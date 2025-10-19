@@ -12,7 +12,10 @@
 
 import React, { useState, useEffect } from 'react';
 import './OverviewDashboard.css';
-import { getProjects, getEngineers, getTeams } from '../services/api';
+import { getProjects, getEngineers, getTeams, createProject, unassignEngineerFromProject, assignEngineerToProject } from '../services/api';
+import { exportToCSV, getTimestamp } from '../utils/csvExport';
+import CreateProjectModal from './CreateProjectModal';
+import AssignEngineerModal from './AssignEngineerModal';
 
 const OverviewDashboard = () => {
   // State management
@@ -22,6 +25,10 @@ const OverviewDashboard = () => {
   const [teams, setTeams] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const [chartsHighlighted, setChartsHighlighted] = useState(false);
+  const [showCreateModal, setShowCreateModal] = useState(false);
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [selectedProject, setSelectedProject] = useState(null);
 
   // Chart data states
   const [overallCompletion, setOverallCompletion] = useState(0);
@@ -185,6 +192,143 @@ const OverviewDashboard = () => {
   const goToProjectDetails = (projectId) => {
     console.log(`Navigate to project details for project ${projectId}`);
     // This would typically use React Router or similar navigation
+  };
+
+  // Handle View Details button click to highlight charts
+  const handleViewDetails = () => {
+    setChartsHighlighted(!chartsHighlighted);
+  };
+
+  // Export dashboard report
+  const handleExportReport = () => {
+    const reportData = [
+      {
+        metric: 'Total Projects',
+        value: chartStats.totalProjects || 0,
+        description: 'Total number of projects in the system'
+      },
+      {
+        metric: 'Active Projects',
+        value: chartStats.activeProjects || 0,
+        description: 'Currently active projects'
+      },
+      {
+        metric: 'Completed Projects',
+        value: chartStats.completedProjects || 0,
+        description: 'Successfully completed projects'
+      },
+      {
+        metric: 'Overall Completion %',
+        value: `${overallCompletion}%`,
+        description: 'Average completion percentage across all projects'
+      },
+      {
+        metric: 'Total Budget',
+        value: `$${Math.round((chartStats.totalBudget || 0) / 1000000)}M`,
+        description: 'Total budget allocated across all projects'
+      },
+      {
+        metric: 'Total Spent',
+        value: `$${Math.round((chartStats.totalSpent || 0) / 1000000)}M`,
+        description: 'Total amount spent across all projects'
+      },
+      {
+        metric: 'Budget Utilization %',
+        value: `${chartStats.budgetUtilization || 0}%`,
+        description: 'Percentage of total budget utilized'
+      }
+    ];
+
+    const columns = [
+      { key: 'metric', label: 'Metric' },
+      { key: 'value', label: 'Value' },
+      { key: 'description', label: 'Description' }
+    ];
+
+    const timestamp = getTimestamp();
+    exportToCSV(reportData, columns, `dashboard-report-${timestamp}.csv`);
+  };
+
+  // Export active projects
+  const handleExportProjects = () => {
+    const projectData = projects.map(project => ({
+      name: project.name,
+      deadline: project.deadline,
+      priority: project.priority,
+      status: project.status,
+      completion_percent: project.completion_percent || 0,
+      budget_total: project.budget_total || 0,
+      budget_spent: project.budget_spent || 0,
+      budget_remaining: (project.budget_total || 0) - (project.budget_spent || 0),
+      team_members: project.team_members || [],
+      description: project.description
+    }));
+
+    const columns = [
+      { key: 'name', label: 'Project Name' },
+      { key: 'deadline', label: 'Deadline' },
+      { key: 'priority', label: 'Priority' },
+      { key: 'status', label: 'Status' },
+      { key: 'completion_percent', label: 'Completion %' },
+      { key: 'budget_total', label: 'Total Budget' },
+      { key: 'budget_spent', label: 'Amount Spent' },
+      { key: 'budget_remaining', label: 'Budget Remaining' },
+      { key: 'team_members', label: 'Team Members' },
+      { key: 'description', label: 'Description' }
+    ];
+
+    const timestamp = getTimestamp();
+    exportToCSV(projectData, columns, `active-projects-${timestamp}.csv`);
+  };
+
+  // Handle project creation
+  const handleCreateProject = async (projectData) => {
+    const response = await createProject(projectData);
+    if (response.status === 'success') {
+      await fetchDashboardData(); // Refresh dashboard data
+    } else {
+      throw new Error(response.error || 'Failed to create project');
+    }
+  };
+
+  // Handle removing team member from project
+  const handleRemoveTeamMember = async (projectId, memberName) => {
+    try {
+      // Find the engineer ID by name
+      const engineer = engineers.find(eng => eng.name === memberName);
+      if (!engineer) {
+        console.error('Engineer not found:', memberName);
+        return;
+      }
+
+      const response = await unassignEngineerFromProject(projectId, engineer.id);
+      if (response.status === 'success') {
+        // Refresh dashboard data to update the UI
+        await fetchDashboardData();
+        console.log(`Successfully removed ${memberName} from project`);
+      } else {
+        console.error('Failed to remove team member:', response.error);
+      }
+    } catch (error) {
+      console.error('Error removing team member:', error);
+    }
+  };
+
+  // Handle assigning engineer to project
+  const handleAssignEngineer = async (assignmentData) => {
+    try {
+      const response = await assignEngineerToProject(selectedProject.id, assignmentData);
+      if (response.status === 'success') {
+        // Refresh dashboard data to update the UI
+        await fetchDashboardData();
+        console.log(`Successfully assigned engineer to project ${selectedProject.name}`);
+      } else {
+        throw new Error(response.error || 'Failed to assign engineer');
+      }
+    } catch (error) {
+      console.error('Error assigning engineer:', error);
+      throw error;
+    }
   };
 
   // Render gauge chart
@@ -425,8 +569,8 @@ const OverviewDashboard = () => {
             <p>Key metrics and project insights at a glance</p>
           </div>
           <div className="header-actions">
-            <button className="btn-secondary">Export Report</button>
-            <button className="btn-primary">View Details</button>
+            <button className="btn-secondary" onClick={handleExportReport}>Export Report</button>
+            <button className="btn-primary" onClick={handleViewDetails}>View Details</button>
           </div>
         </div>
       </div>
@@ -436,7 +580,7 @@ const OverviewDashboard = () => {
         {/* Charts Grid */}
         <div className="charts-grid">
           {/* Gauge Chart */}
-          <div className="chart-card gauge-card">
+          <div className={`chart-card gauge-card ${chartsHighlighted ? 'highlighted' : ''}`}>
             <div className="chart-header">
               <h3>Project Completion</h3>
               <span className="chart-icon">🎯</span>
@@ -447,7 +591,7 @@ const OverviewDashboard = () => {
           </div>
 
           {/* Bar Chart */}
-          <div className="chart-card bar-card">
+          <div className={`chart-card bar-card ${chartsHighlighted ? 'highlighted' : ''}`}>
             <div className="chart-header">
               <h3>Monthly Activity</h3>
               <span className="chart-icon">📊</span>
@@ -458,7 +602,7 @@ const OverviewDashboard = () => {
           </div>
 
           {/* Area Chart */}
-          <div className="chart-card area-card">
+          <div className={`chart-card area-card ${chartsHighlighted ? 'highlighted' : ''}`}>
             <div className="chart-header">
               <h3>Budget Trends</h3>
               <span className="chart-icon">💰</span>
@@ -475,8 +619,8 @@ const OverviewDashboard = () => {
           <div className="projects-header">
             <h2>Active Projects</h2>
             <div className="projects-actions">
-              <button className="btn-secondary">Export</button>
-              <button className="btn-primary">New Project</button>
+              <button className="btn-secondary" onClick={handleExportProjects}>Export</button>
+              <button className="btn-primary" onClick={() => setShowCreateModal(true)}>New Project</button>
             </div>
           </div>
 
@@ -546,7 +690,7 @@ const OverviewDashboard = () => {
                                 <span className="team-member">{member}</span>
                                 <button
                                   className="btn-remove-member"
-                                  onClick={() => console.log('Remove member:', member)}
+                                  onClick={() => handleRemoveTeamMember(project.id, member)}
                                   title="Remove from project"
                                 >
                                   ×
@@ -556,7 +700,10 @@ const OverviewDashboard = () => {
                           </div>
                           <button
                             className="btn-assign-engineer"
-                            onClick={() => console.log('Assign engineer to:', project.name)}
+                            onClick={() => {
+                              setSelectedProject(project);
+                              setShowAssignModal(true);
+                            }}
                           >
                             + Assign Engineer
                           </button>
@@ -602,6 +749,25 @@ const OverviewDashboard = () => {
           </div>
         </div>
       </div>
+
+      {/* Create Project Modal */}
+      <CreateProjectModal
+        isOpen={showCreateModal}
+        onClose={() => setShowCreateModal(false)}
+        onProjectCreated={handleCreateProject}
+      />
+
+      {/* Assign Engineer Modal */}
+      <AssignEngineerModal
+        isOpen={showAssignModal}
+        onClose={() => {
+          setShowAssignModal(false);
+          setSelectedProject(null);
+        }}
+        projectId={selectedProject?.id}
+        projectName={selectedProject?.name}
+        onEngineerAssigned={handleAssignEngineer}
+      />
     </div>
   );
 };

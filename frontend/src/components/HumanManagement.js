@@ -20,6 +20,7 @@ import AddMemberModal from './AddMemberModal';
 import SwitchMemberModal from './SwitchMemberModal';
 import './HumanManagement.css';
 import { getEngineers, getTeams, createEngineer } from '../services/api';
+import { exportToCSV, getTimestamp } from '../utils/csvExport';
 
 const HumanManagement = () => {
   // State for search and filtering
@@ -348,6 +349,49 @@ const HumanManagement = () => {
     }
   };
 
+  // Export teams/workers data
+  const handleExportTeams = () => {
+    const exportData = filteredWorkers.map(worker => ({
+      name: worker.name,
+      role: worker.role,
+      team: worker.team,
+      projects: worker.projects,
+      status: worker.status,
+      availability: worker.availability,
+      workload_percent: worker.workload,
+      is_overworked: worker.isOverworked ? 'Yes' : 'No',
+      absence_type: worker.absence ? worker.absence.type : 'None',
+      absence_start: worker.absence ? worker.absence.startDate : '',
+      absence_end: worker.absence ? worker.absence.endDate : '',
+      skills: worker.skills,
+      email: worker.email,
+      phone: worker.phone,
+      activity_last_7_days: worker.activity.join(', ')
+    }));
+
+    const columns = [
+      { key: 'name', label: 'Name' },
+      { key: 'role', label: 'Role' },
+      { key: 'team', label: 'Team' },
+      { key: 'projects', label: 'Projects' },
+      { key: 'status', label: 'Status' },
+      { key: 'availability', label: 'Availability' },
+      { key: 'workload_percent', label: 'Workload %' },
+      { key: 'is_overworked', label: 'Overworked' },
+      { key: 'absence_type', label: 'Absence Type' },
+      { key: 'absence_start', label: 'Absence Start' },
+      { key: 'absence_end', label: 'Absence End' },
+      { key: 'skills', label: 'Skills' },
+      { key: 'email', label: 'Email' },
+      { key: 'phone', label: 'Phone' },
+      { key: 'activity_last_7_days', label: 'Activity (Last 7 Days)' }
+    ];
+
+    const timestamp = getTimestamp();
+    const filename = groupBy === 'team' ? `teams-overview-${timestamp}.csv` : `projects-overview-${timestamp}.csv`;
+    exportToCSV(exportData, columns, filename);
+  };
+
   // Get activity level color
   const getActivityColor = (level) => {
     if (level === 0) return '#ebedf0';
@@ -481,7 +525,7 @@ const HumanManagement = () => {
           <div className="workers-header">
             <h2>{groupBy === 'team' ? 'Teams' : 'Projects'} Overview</h2>
             <div className="workers-actions">
-              <button className="btn-secondary">Export</button>
+              <button className="btn-secondary" onClick={handleExportTeams}>Export</button>
               <button 
                 className="btn-primary" 
                 onClick={() => setShowAddMemberModal(true)}
