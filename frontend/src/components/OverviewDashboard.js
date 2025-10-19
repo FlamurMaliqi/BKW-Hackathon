@@ -41,6 +41,14 @@ const OverviewDashboard = () => {
   const [budgetTrendData, setBudgetTrendData] = useState([]);
   const [chartStats, setChartStats] = useState({});
 
+  // Workload analysis states
+  const [workloadData, setWorkloadData] = useState({
+    overloaded: [],
+    underloaded: [],
+    teamAverages: []
+  });
+  const [showAllWorkers, setShowAllWorkers] = useState(false);
+
   // Fetch all data from APIs
   const fetchDashboardData = async () => {
     try {
@@ -63,6 +71,9 @@ const OverviewDashboard = () => {
 
       // Process data for charts
       processChartData(projectsRes.projects || []);
+      
+      // Process workload analysis data
+      processWorkloadData(engineersRes.engineers || [], teamsRes.teams || []);
     } catch (err) {
       console.error('Error fetching dashboard data:', err);
       setError(err.message);
@@ -155,6 +166,50 @@ const OverviewDashboard = () => {
       budgetUtilization: Math.round(budgetUtilization),
       avgCompletion: Math.round(overallCompletion)
     };
+  };
+
+  // Process workload analysis data
+  const processWorkloadData = (engineersData, teamsData) => {
+    // Use the pre-calculated workload_percent from the backend instead of recalculating
+    const engineersWithWorkload = engineersData.map(engineer => {
+      const loadPercentage = engineer.workload_percent || 0;
+      
+      return {
+        ...engineer,
+        loadPercentage: Math.round(loadPercentage),
+        isOverloaded: loadPercentage >= 85, // Changed to 85% as requested
+        isUnderloaded: loadPercentage < 50
+      };
+    });
+
+    // Sort engineers by load percentage
+    const sortedEngineers = engineersWithWorkload.sort((a, b) => b.loadPercentage - a.loadPercentage);
+    
+    // Get overloaded workers (load >= 85%)
+    const overloaded = sortedEngineers.filter(eng => eng.isOverloaded);
+    
+    // Get underloaded workers (load < 50%)
+    const underloaded = sortedEngineers.filter(eng => eng.isUnderloaded);
+
+    // Calculate average load per team
+    const teamAverages = teamsData.map(team => {
+      const teamEngineers = engineersWithWorkload.filter(eng => eng.team_id === team.id);
+      const totalLoad = teamEngineers.reduce((sum, eng) => sum + eng.loadPercentage, 0);
+      const averageLoad = teamEngineers.length > 0 ? totalLoad / teamEngineers.length : 0;
+      
+      return {
+        teamId: team.id,
+        teamName: team.name,
+        averageLoad: Math.round(averageLoad),
+        memberCount: teamEngineers.length
+      };
+    }).sort((a, b) => b.averageLoad - a.averageLoad);
+
+    setWorkloadData({
+      overloaded,
+      underloaded,
+      teamAverages
+    });
   };
 
   // Fetch data on component mount
@@ -569,6 +624,119 @@ const OverviewDashboard = () => {
     );
   };
 
+  // Render workload analysis
+  const renderWorkloadAnalysis = () => {
+    const { overloaded, underloaded, teamAverages } = workloadData;
+    
+    // Get workers to display (3 by default, all if showAllWorkers is true)
+    const displayOverloaded = showAllWorkers ? overloaded : overloaded.slice(0, 3);
+    const displayUnderloaded = showAllWorkers ? underloaded : underloaded.slice(0, 3);
+    
+    return (
+      <div className="workload-analysis">
+        {/* Overloaded Workers */}
+        <div className="workload-section">
+          <div className="workload-header">
+            <h4>Overloaded Workers</h4>
+            <span className="workload-count">{overloaded.length}</span>
+          </div>
+          <div className="workers-list">
+            {displayOverloaded.length > 0 ? (
+              displayOverloaded.map((engineer, index) => (
+                <div key={engineer.id} className="worker-item overloaded">
+                  <div className="worker-info">
+                    <span className="worker-name">{engineer.name}</span>
+                    <span className="worker-role">{engineer.role}</span>
+                  </div>
+                  <div className="worker-load">
+                    <span className="load-percentage">{engineer.loadPercentage}%</span>
+                    <div className="load-bar">
+                      <div 
+                        className="load-fill overloaded-fill"
+                        style={{ width: `${Math.min(engineer.loadPercentage, 100)}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="no-data">No overloaded workers</div>
+            )}
+          </div>
+        </div>
+
+        {/* Underloaded Workers */}
+        <div className="workload-section">
+          <div className="workload-header">
+            <h4>Underloaded Workers</h4>
+            <span className="workload-count">{underloaded.length}</span>
+          </div>
+          <div className="workers-list">
+            {displayUnderloaded.length > 0 ? (
+              displayUnderloaded.map((engineer, index) => (
+                <div key={engineer.id} className="worker-item underloaded">
+                  <div className="worker-info">
+                    <span className="worker-name">{engineer.name}</span>
+                    <span className="worker-role">{engineer.role}</span>
+                  </div>
+                  <div className="worker-load">
+                    <span className="load-percentage">{engineer.loadPercentage}%</span>
+                    <div className="load-bar">
+                      <div 
+                        className="load-fill underloaded-fill"
+                        style={{ width: `${engineer.loadPercentage}%` }}
+                      ></div>
+                    </div>
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className="no-data">No underloaded workers</div>
+            )}
+          </div>
+        </div>
+
+        {/* Team Averages */}
+        <div className="workload-section">
+          <div className="workload-header">
+            <h4>Average Load by Team</h4>
+          </div>
+          <div className="teams-list">
+            {teamAverages.map((team, index) => (
+              <div key={team.teamId} className="team-item">
+                <div className="team-info">
+                  <span className="team-name">{team.teamName}</span>
+                  <span className="team-members">{team.memberCount} members</span>
+                </div>
+                <div className="team-load">
+                  <span className="load-percentage">{team.averageLoad}%</span>
+                  <div className="load-bar">
+                    <div 
+                      className="load-fill team-fill"
+                      style={{ width: `${Math.min(team.averageLoad, 100)}%` }}
+                    ></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* See More Button */}
+        {(overloaded.length > 3 || underloaded.length > 3) && (
+          <div className="workload-actions">
+            <button 
+              className="btn-see-more"
+              onClick={() => setShowAllWorkers(!showAllWorkers)}
+            >
+              {showAllWorkers ? 'Show Less' : 'See More'}
+            </button>
+          </div>
+        )}
+      </div>
+    );
+  };
+
   // Show loading state
   if (loading) {
     return (
@@ -706,6 +874,17 @@ const OverviewDashboard = () => {
             </div>
             <div className="chart-content">
               {renderAreaChart()}
+            </div>
+          </div>
+
+          {/* Workload Analysis */}
+          <div className={`chart-card workload-card ${chartsHighlighted ? 'highlighted' : ''}`}>
+            <div className="chart-header">
+              <h3>Workload Analysis</h3>
+              <span className="chart-icon">⚖️</span>
+            </div>
+            <div className="chart-content">
+              {renderWorkloadAnalysis()}
             </div>
           </div>
         </div>
