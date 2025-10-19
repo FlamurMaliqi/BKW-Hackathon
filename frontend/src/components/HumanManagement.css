@@ -142,6 +142,12 @@
   transform: translateY(-50%);  /* Perfect vertical centering */
   color: var(--bkw-blue);      /* BKW blue color */
   font-size: var(--text-body);     /* Icon size */
+  width: 16px;         /* Fixed width */
+  height: 16px;        /* Fixed height */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='%23004488'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: contain;
 }
 
 /* Filter Controls */
@@ -183,9 +189,9 @@
 /* Workers Section */
 .workers-section {
   background: var(--bkw-white);  /* White background */
-  border-radius: var(--radius-medium);   /* Rounded corners */
+  border-radius: var(--radius-medium) var(--radius-medium) var(--radius-medium) var(--radius-medium);   /* Consistent rounded corners on all sides */
   border: 1px solid var(--bkw-blue);  /* BKW blue border */
-  overflow: visible;     /* Allow content to flow naturally */
+  overflow: hidden;     /* Ensure content respects border radius */
   display: flex;      /* Flexbox layout */
   flex-direction: column; /* Stack header and list vertically */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* Subtle shadow */
@@ -201,6 +207,7 @@
   align-items: center; /* Vertically center header content */
   border-bottom: 1px solid var(--bkw-blue);  /* BKW blue border */
   flex-shrink: 0;     /* Prevent header from shrinking */
+  border-radius: var(--radius-medium) var(--radius-medium) 0 0;  /* Rounded top corners to match container */
 }
 
 .workers-header h2 {
@@ -574,7 +581,7 @@
   }
 }
 
-/* Switch Member Button Styles */
+/* Worker Actions */
 .worker-actions {
   margin-top: var(--spacing-md);
   padding-top: var(--spacing-md);
@@ -585,70 +592,64 @@
   flex-wrap: wrap;
 }
 
-.btn-switch-member {
-  background: linear-gradient(135deg, var(--bkw-blue), var(--medium-blue));
-  color: var(--bkw-white);
+/* Consistent Button Styles */
+.btn-switch-member,
+.btn-edit-details {
+  padding: var(--button-padding);  /* Use consistent button padding */
   border: none;
-  padding: var(--spacing-sm) var(--spacing-md);
   border-radius: var(--radius-rounded);
   font-size: var(--text-small);
-  font-weight: var(--font-medium);
+  font-weight: var(--font-semibold);
   cursor: pointer;
   transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  box-shadow: 0 2px 4px rgba(0, 68, 136, 0.1);
+  text-transform: none;
+  min-width: 120px;  /* Consistent minimum width */
+  text-align: center;
+}
+
+/* Switch Member Button */
+.btn-switch-member {
+  background: var(--bkw-blue);
+  color: var(--bkw-white);
+  border: 1px solid var(--bkw-blue);
 }
 
 .btn-switch-member:hover {
-  background: linear-gradient(135deg, var(--medium-blue), var(--dark-blue));
+  background: var(--dark-blue);
+  border-color: var(--dark-blue);
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(0, 68, 136, 0.2);
+  box-shadow: 0 2px 4px rgba(0, 68, 136, 0.2);
 }
 
 .btn-switch-member:active {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(0, 68, 136, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 68, 136, 0.1);
 }
 
-.btn-switch-member:disabled {
-  background: var(--text-muted);
-  cursor: not-allowed;
-  transform: none;
-  box-shadow: none;
-}
-
-/* Edit Details Button Styles */
+/* Edit Details Button */
 .btn-edit-details {
-  background: linear-gradient(135deg, var(--success), #20a745);
+  background: var(--success);
   color: var(--bkw-white);
-  border: none;
-  padding: var(--spacing-sm) var(--spacing-md);
-  border-radius: var(--radius-rounded);
-  font-size: var(--text-small);
-  font-weight: var(--font-medium);
-  cursor: pointer;
-  transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  gap: var(--spacing-xs);
-  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.1);
+  border: 1px solid var(--success);
 }
 
 .btn-edit-details:hover {
-  background: linear-gradient(135deg, #20a745, #1e7e34);
+  background: #20a745;
+  border-color: #20a745;
   transform: translateY(-1px);
-  box-shadow: 0 4px 8px rgba(40, 167, 69, 0.2);
+  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.2);
 }
 
 .btn-edit-details:active {
   transform: translateY(0);
-  box-shadow: 0 2px 4px rgba(40, 167, 69, 0.1);
+  box-shadow: 0 1px 2px rgba(40, 167, 69, 0.1);
 }
 
+/* Disabled state for both buttons */
+.btn-switch-member:disabled,
 .btn-edit-details:disabled {
   background: var(--text-muted);
+  border-color: var(--text-muted);
   cursor: not-allowed;
   transform: none;
   box-shadow: none;
