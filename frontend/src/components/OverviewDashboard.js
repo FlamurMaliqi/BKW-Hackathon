@@ -167,16 +167,14 @@ const OverviewDashboard = () => {
 
   // Process workload analysis data
   const processWorkloadData = (engineersData, teamsData) => {
-    // Calculate workload for each engineer
+    // Use the pre-calculated workload_percent from the backend instead of recalculating
     const engineersWithWorkload = engineersData.map(engineer => {
-      const currentLoad = engineer.current_load || 0;
-      const capacity = engineer.capacity_hours_per_week || 40;
-      const loadPercentage = capacity > 0 ? (currentLoad / capacity) * 100 : 0;
+      const loadPercentage = engineer.workload_percent || 0;
       
       return {
         ...engineer,
         loadPercentage: Math.round(loadPercentage),
-        isOverloaded: loadPercentage > 100,
+        isOverloaded: loadPercentage >= 85, // Changed to 85% as requested
         isUnderloaded: loadPercentage < 50
       };
     });
@@ -184,7 +182,7 @@ const OverviewDashboard = () => {
     // Sort engineers by load percentage
     const sortedEngineers = engineersWithWorkload.sort((a, b) => b.loadPercentage - a.loadPercentage);
     
-    // Get overloaded workers (load > 100%)
+    // Get overloaded workers (load >= 85%)
     const overloaded = sortedEngineers.filter(eng => eng.isOverloaded);
     
     // Get underloaded workers (load < 50%)
