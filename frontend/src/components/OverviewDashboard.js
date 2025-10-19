@@ -369,25 +369,26 @@ const OverviewDashboard = () => {
 
   // Render gauge chart
   const renderGaugeChart = () => {
-    const radius = 60;
+    const size = 160;
     const strokeWidth = 12;
-    const normalizedRadius = radius - strokeWidth * 2;
-    const circumference = normalizedRadius * 2 * Math.PI;
+    const radius = (size - strokeWidth) / 2;
+    const circumference = radius * 2 * Math.PI;
     const strokeDasharray = `${circumference} ${circumference}`;
     const strokeDashoffset = circumference - (overallCompletion / 100) * circumference;
+    const center = size / 2;
 
     return (
       <div className="gauge-chart">
         <div className="gauge-container">
-          <svg width={radius * 2} height={radius * 2} className="gauge-svg">
+          <svg width={size} height={size} className="gauge-svg">
             {/* Background circle */}
             <circle
               stroke="#E9ECEF"
               fill="transparent"
               strokeWidth={strokeWidth}
-              r={normalizedRadius}
-              cx={radius}
-              cy={radius}
+              r={radius}
+              cx={center}
+              cy={center}
             />
             {/* Progress circle */}
             <circle
@@ -400,9 +401,9 @@ const OverviewDashboard = () => {
                 strokeLinecap: 'round',
                 transition: 'stroke-dashoffset 0.5s ease-in-out'
               }}
-              r={normalizedRadius}
-              cx={radius}
-              cy={radius}
+              r={radius}
+              cx={center}
+              cy={center}
             />
           </svg>
           <div className="gauge-text">
