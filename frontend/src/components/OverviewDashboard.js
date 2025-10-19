@@ -709,126 +709,97 @@ const OverviewDashboard = () => {
             </div>
           </div>
 
-          <div className="projects-list">
+          <div className="projects-grid">
             {projects.map(project => (
-              <div key={project.id} className="project-item">
-                <div 
-                  className="project-summary"
-                  onClick={() => toggleProject(project.id)}
-                >
-                  <div className="project-info">
-                    <div className="project-name">{project.name}</div>
-                    <div className="project-meta">
-                      <span className="project-deadline">Deadline: {project.deadline}</span>
-                      <span 
-                        className="project-priority"
-                        style={{ color: getPriorityColor(project.priority) }}
-                      >
-                        {project.priority} Priority
-                      </span>
-                      <span 
-                        className="project-status"
-                        style={{ color: getStatusColor(project.status) }}
-                      >
-                        {project.status}
-                      </span>
-                    </div>
-                  </div>
-                  <div className="project-progress">
-                    <div className="progress-bar">
-                      <div
-                        className="progress-fill"
-                        style={{ width: `${project.completion_percent || 0}%` }}
-                      ></div>
-                    </div>
-                    <div className="progress-text">{project.completion_percent || 0}%</div>
-                  </div>
-                  <div className="project-actions">
-                    <button 
-                      className="btn-details"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        goToProjectDetails(project.id);
-                      }}
+              <div key={project.id} className="project-card">
+                <div className="project-header">
+                  <div className="project-title">{project.name}</div>
+                  <div className="project-badges">
+                    <span 
+                      className="priority-badge"
+                      style={{ backgroundColor: getPriorityColor(project.priority) + '20', color: getPriorityColor(project.priority) }}
                     >
-                      View Details
-                    </button>
-                    <span className="expand-icon">
-                      {expandedProjects.has(project.id) ? '▼' : '▶'}
+                      {project.priority}
+                    </span>
+                    <span 
+                      className="status-badge"
+                      style={{ backgroundColor: getStatusColor(project.status) + '20', color: getStatusColor(project.status) }}
+                    >
+                      {project.status}
                     </span>
                   </div>
                 </div>
 
-                {expandedProjects.has(project.id) && (
-                  <div className="project-details">
-                    <div className="details-grid">
-                      <div className="detail-section">
-                        <h4>Description</h4>
-                        <p>{project.description}</p>
-                      </div>
-                      <div className="detail-section">
-                        <h4>Team Members</h4>
-                        <div className="team-members-section">
-                          <div className="team-list">
-                            {(project.team_members || []).map((member, index) => (
-                              <div key={index} className="team-member-item">
-                                <span className="team-member">{member}</span>
-                                <button
-                                  className="btn-remove-member"
-                                  onClick={() => handleRemoveTeamMember(project.id, member)}
-                                  title="Remove from project"
-                                >
-                                  ×
-                                </button>
-                              </div>
-                            ))}
-                          </div>
-                          <button
-                            className="btn-assign-engineer"
-                            onClick={() => {
-                              setSelectedProject(project);
-                              setShowAssignModal(true);
-                            }}
-                          >
-                            + Assign Engineer
-                          </button>
+                <div className="project-content">
+                  <div className="project-description">
+                    {project.description}
+                  </div>
+
+                  <div className="project-metrics">
+                    <div className="metric-item">
+                      <div className="metric-label">Progress</div>
+                      <div className="metric-value">
+                        <div className="progress-bar-small">
+                          <div
+                            className="progress-fill-small"
+                            style={{ width: `${project.completion_percent || 0}%` }}
+                          ></div>
                         </div>
-                      </div>
-                      <div className="detail-section">
-                        <h4>Budget Information</h4>
-                        <div className="budget-info">
-                          <div className="budget-item">
-                            <span>Total Budget:</span>
-                            <span>${(project.budget_total || 0).toLocaleString()}</span>
-                          </div>
-                          <div className="budget-item">
-                            <span>Amount Spent:</span>
-                            <span>${(project.budget_spent || 0).toLocaleString()}</span>
-                          </div>
-                          <div className="budget-item">
-                            <span>Remaining:</span>
-                            <span>${((project.budget_total || 0) - (project.budget_spent || 0)).toLocaleString()}</span>
-                          </div>
-                        </div>
-                      </div>
-                      <div className="detail-section">
-                        <h4>Progress Details</h4>
-                        <div className="progress-details">
-                          <div className="progress-item">
-                            <span>Completion:</span>
-                            <span>{project.completion_percent || 0}%</span>
-                          </div>
-                          <div className="progress-item">
-                            <span>Status:</span>
-                            <span style={{ color: getStatusColor(project.status) }}>
-                              {project.status}
-                            </span>
-                          </div>
-                        </div>
+                        <span className="progress-text-small">{project.completion_percent || 0}%</span>
                       </div>
                     </div>
+
+                    <div className="metric-item">
+                      <div className="metric-label">Budget</div>
+                      <div className="metric-value">
+                        <div className="budget-bar-small">
+                          <div 
+                            className="budget-used-small"
+                            style={{ width: `${project.budget_total > 0 ? (project.budget_spent / project.budget_total) * 100 : 0}%` }}
+                          ></div>
+                        </div>
+                        <span className="budget-text-small">
+                          ${(project.budget_spent || 0).toLocaleString()} / ${(project.budget_total || 0).toLocaleString()}
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="metric-item">
+                      <div className="metric-label">Deadline</div>
+                      <div className="metric-value deadline">{project.deadline}</div>
+                    </div>
                   </div>
-                )}
+
+                  <div className="project-team">
+                    <div className="team-label">Team ({project.team_members?.length || 0})</div>
+                    <div className="team-members-compact">
+                      {(project.team_members || []).slice(0, 3).map((member, index) => (
+                        <div key={index} className="team-member-item-compact">
+                          <span className="team-member-compact">{member}</span>
+                          <button
+                            className="btn-remove-member-compact"
+                            onClick={() => handleRemoveTeamMember(project.id, member)}
+                            title="Remove from project"
+                          >
+                            ×
+                          </button>
+                        </div>
+                      ))}
+                      {(project.team_members || []).length > 3 && (
+                        <span className="team-more">+{(project.team_members || []).length - 3} more</span>
+                      )}
+                    </div>
+                    <button
+                      className="btn-assign-compact"
+                      onClick={() => {
+                        setSelectedProject(project);
+                        setShowAssignModal(true);
+                      }}
+                    >
+                      + Add Member
+                    </button>
+                  </div>
+                </div>
               </div>
             ))}
           </div>
