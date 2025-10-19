@@ -197,8 +197,10 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
   z-index: 20;
   min-width: 180px;
+  max-width: 250px;
   margin-top: 4px;
   pointer-events: none;
+  white-space: normal;
 }
 
 .workload-tooltip::before {
@@ -209,6 +211,21 @@
   transform: translateX(-50%);
   border: 6px solid transparent;
   border-bottom-color: var(--bkw-blue);
+}
+
+/* Tooltip positioned above (for bottom rows) */
+.workload-tooltip.tooltip-above {
+  top: auto;
+  bottom: 100%;
+  margin-top: 0;
+  margin-bottom: 4px;
+}
+
+.workload-tooltip.tooltip-above::before {
+  top: 100%;
+  bottom: auto;
+  border-bottom-color: transparent;
+  border-top-color: var(--bkw-blue);
 }
 
 .tooltip-header {
