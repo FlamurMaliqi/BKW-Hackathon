@@ -220,11 +220,11 @@ export const getCompanyForecast = async (daysAhead = 90) => {
 };
 
 /**
- * Import CSV data with duplicate prevention
- * @param {File} file - CSV file to import
+ * Import Abacus data with duplicate prevention
+ * @param {File} file - Abacus file to import
  * @returns {Promise<{summary: Object, message: string, status: string}>}
  */
-export const importCSVData = async (file) => {
+export const importAbacusData = async (file) => {
   const formData = new FormData();
   formData.append('file', file);
   
@@ -241,7 +241,7 @@ export const importCSVData = async (file) => {
     const data = await response.json();
     return data;
   } catch (error) {
-    console.error('Error importing CSV:', error);
+    console.error('Error importing Abacus:', error);
     throw error;
   }
 };
@@ -264,5 +264,5 @@ export default {
   getTeamWorkload,
   getWorkloadConflicts,
   getCompanyForecast,
-  importCSVData,
+  importAbacusData,
 };

@@ -12,7 +12,7 @@
 
 import React, { useState, useEffect } from 'react';
 import './OverviewDashboard.css';
-import { getProjects, getEngineers, getTeams, createProject, unassignEngineerFromProject, assignEngineerToProject, importCSVData } from '../services/api';
+import { getProjects, getEngineers, getTeams, createProject, unassignEngineerFromProject, assignEngineerToProject, importAbacusData } from '../services/api';
 import { exportToCSV, getTimestamp } from '../utils/csvExport';
 import CreateProjectModal from './CreateProjectModal';
 import AssignEngineerModal from './AssignEngineerModal';
@@ -259,8 +259,8 @@ const OverviewDashboard = () => {
     setChartsHighlighted(!chartsHighlighted);
   };
 
-  // Handle CSV import
-  const handleImportCSV = async (event) => {
+  // Handle Abacus import
+  const handleImportAbacus = async (event) => {
     const file = event.target.files[0];
     if (!file) return;
 
@@ -273,7 +273,7 @@ const OverviewDashboard = () => {
     setImportResult(null);
 
     try {
-      const result = await importCSVData(file);
+      const result = await importAbacusData(file);
       setImportResult(result);
       
       // Refresh data after successful import
@@ -780,12 +780,12 @@ const OverviewDashboard = () => {
             <input
               type="file"
               accept=".csv"
-              onChange={handleImportCSV}
+              onChange={handleImportAbacus}
               style={{ display: 'none' }}
-              id="csv-import-input"
+              id="abacus-import-input"
             />
-            <label htmlFor="csv-import-input" className="btn-secondary">
-              {importing ? 'Importing...' : 'Import CSV'}
+            <label htmlFor="abacus-import-input" className="btn-secondary">
+              {importing ? 'Importing...' : 'Import Abacus'}
             </label>
             <button className="btn-secondary" onClick={handleExportReport}>Export Report</button>
             <button className="btn-primary" onClick={handleViewDetails}>View Details</button>
