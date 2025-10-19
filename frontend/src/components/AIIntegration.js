@@ -1,13 +1,13 @@
 /**
- * AI Integration Component
+ * Liquid AI Integration Component
  * 
- * This component displays the AI-powered features dashboard.
- * It showcases artificial intelligence capabilities for project
+ * This component displays the Liquid AI-powered features dashboard.
+ * It showcases Liquid AI capabilities for project
  * management, automation, analytics, and machine learning.
  * This is the third tab in the main navigation.
  * 
  * Features:
- * - AI assistant for natural language queries
+ * - Liquid AI for natural language queries
  * - Workflow automation and task management
  * - Advanced analytics and predictive insights
  * - Custom AI model training and deployment
@@ -18,7 +18,7 @@ import './AIIntegration.css';
 import { sendAIChat } from '../services/api';
 import useSpeechToText from '../hooks/useSpeechToText';
 
-// Function to parse markdown-like formatting in AI responses
+// Function to parse markdown-like formatting in Liquid AI responses
 const parseMarkdown = (text) => {
   if (!text) return '';
   
@@ -69,7 +69,7 @@ const parseMarkdown = (text) => {
 
 // Chat bubble component for individual messages
 const ChatBubble = ({ message, isUser, timestamp }) => {
-  // Parse markdown for AI messages, keep user messages as plain text
+  // Parse markdown for Liquid AI messages, keep user messages as plain text
   const formattedMessage = isUser ? message : parseMarkdown(message);
   
   return (
@@ -99,7 +99,7 @@ const AIIntegration = () => {
   const [messages, setMessages] = useState([
     {
       id: 1,
-      text: "Hello! I'm your AI project assistant. How can I help you today? You can type or speak your questions!",
+      text: "Hello! How can I help you today? You can type or speak your questions!",
       isUser: false,
       timestamp: "10:30 AM"
     }
@@ -284,7 +284,7 @@ const AIIntegration = () => {
     setMessages([
       {
         id: 1,
-        text: "Hello! I'm your AI project assistant. How can I help you today? You can type or speak your questions!",
+        text: "Hello! How can I help you today? You can type or speak your questions!",
         isUser: false,
         timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
       }
@@ -296,8 +296,8 @@ const AIIntegration = () => {
     <div className="ai-integration">
       {/* Header section with page title */}
       <div className="content-header">
-        <h1>AI Integration</h1>
-        <p>Leverage AI for intelligent project management and automation</p>
+        <h1>Liquid AI</h1>
+        <p>Intelligent project management and automation powered by advanced AI</p>
       </div>
 
       {/* Main content area with chat interface */}
@@ -306,7 +306,7 @@ const AIIntegration = () => {
           {/* Chat header */}
           <div className="chat-header">
             <div className="chat-title">
-              <h3>AI Project Assistant</h3>
+              <h3>Liquid AI</h3>
             </div>
             <div className="chat-actions">
               <button className="btn-secondary" onClick={handleClearChat}>Clear Chat</button>
