@@ -185,7 +185,7 @@
   background: var(--bkw-white);  /* White background */
   border-radius: var(--radius-medium);   /* Rounded corners */
   border: 1px solid var(--bkw-blue);  /* BKW blue border */
-  overflow: visible;     /* Allow content to flow naturally */
+  overflow: hidden;     /* Ensure content respects border radius */
   display: flex;      /* Flexbox layout */
   flex-direction: column; /* Stack header and list vertically */
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);  /* Subtle shadow */
@@ -201,6 +201,7 @@
   align-items: center; /* Vertically center header content */
   border-bottom: 1px solid var(--bkw-blue);  /* BKW blue border */
   flex-shrink: 0;     /* Prevent header from shrinking */
+  border-radius: var(--radius-medium) var(--radius-medium) 0 0;  /* Rounded top corners to match container */
 }
 
 .workers-header h2 {
