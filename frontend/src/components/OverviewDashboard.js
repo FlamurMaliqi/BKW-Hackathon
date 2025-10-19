@@ -12,7 +12,7 @@
 
 import React, { useState, useEffect } from 'react';
 import './OverviewDashboard.css';
-import { getProjects, getEngineers, getTeams, createProject, unassignEngineerFromProject, assignEngineerToProject } from '../services/api';
+import { getProjects, getEngineers, getTeams, createProject, unassignEngineerFromProject, assignEngineerToProject, importCSVData } from '../services/api';
 import { exportToCSV, getTimestamp } from '../utils/csvExport';
 import CreateProjectModal from './CreateProjectModal';
 import AssignEngineerModal from './AssignEngineerModal';
@@ -29,6 +29,8 @@ const OverviewDashboard = () => {
   const [showCreateModal, setShowCreateModal] = useState(false);
   const [showAssignModal, setShowAssignModal] = useState(false);
   const [selectedProject, setSelectedProject] = useState(null);
+  const [importing, setImporting] = useState(false);
+  const [importResult, setImportResult] = useState(null);
 
   // Chart data states
   const [overallCompletion, setOverallCompletion] = useState(0);
@@ -197,6 +199,40 @@ const OverviewDashboard = () => {
   // Handle View Details button click to highlight charts
   const handleViewDetails = () => {
     setChartsHighlighted(!chartsHighlighted);
+  };
+
+  // Handle CSV import
+  const handleImportCSV = async (event) => {
+    const file = event.target.files[0];
+    if (!file) return;
+
+    if (!file.name.endsWith('.csv')) {
+      alert('Please select a CSV file');
+      return;
+    }
+
+    setImporting(true);
+    setImportResult(null);
+
+    try {
+      const result = await importCSVData(file);
+      setImportResult(result);
+      
+      // Refresh data after successful import
+      if (result.status === 'success') {
+        await fetchDashboardData();
+      }
+    } catch (error) {
+      console.error('Import failed:', error);
+      setImportResult({
+        status: 'error',
+        message: error.message || 'Import failed'
+      });
+    } finally {
+      setImporting(false);
+      // Clear the file input
+      event.target.value = '';
+    }
   };
 
   // Export dashboard report
@@ -569,11 +605,59 @@ const OverviewDashboard = () => {
             <p>Key metrics and project insights at a glance</p>
           </div>
           <div className="header-actions">
+            <input
+              type="file"
+              accept=".csv"
+              onChange={handleImportCSV}
+              style={{ display: 'none' }}
+              id="csv-import-input"
+            />
+            <label htmlFor="csv-import-input" className="btn-secondary">
+              {importing ? 'Importing...' : 'Import CSV'}
+            </label>
             <button className="btn-secondary" onClick={handleExportReport}>Export Report</button>
             <button className="btn-primary" onClick={handleViewDetails}>View Details</button>
           </div>
         </div>
       </div>
+
+      {/* Import Result Display */}
+      {importResult && (
+        <div className={`import-result ${importResult.status === 'success' ? 'success' : 'error'}`}>
+          <div className="import-result-content">
+            <h3>{importResult.status === 'success' ? '✅ Import Successful' : '❌ Import Failed'}</h3>
+            <p>{importResult.message}</p>
+            {importResult.summary && (
+              <div className="import-summary">
+                <p><strong>Summary:</strong></p>
+                <ul>
+                  <li>Teams: {importResult.summary.teams_added} added, {importResult.summary.teams_skipped} skipped</li>
+                  <li>Engineers: {importResult.summary.engineers_added} added, {importResult.summary.engineers_skipped} skipped</li>
+                  <li>Projects: {importResult.summary.projects_added} added, {importResult.summary.projects_skipped} skipped</li>
+                  <li>Assignments: {importResult.summary.assignments_added} added, {importResult.summary.assignments_skipped} skipped</li>
+                </ul>
+                {importResult.summary.errors && importResult.summary.errors.length > 0 && (
+                  <div className="import-errors">
+                    <p><strong>Errors:</strong></p>
+                    <ul>
+                      {importResult.summary.errors.map((error, index) => (
+                        <li key={index}>{error}</li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            )}
+            <button 
+              className="btn-secondary" 
+              onClick={() => setImportResult(null)}
+              style={{ marginTop: '10px' }}
+            >
+              Close
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Main content area */}
       <div className="content-body">

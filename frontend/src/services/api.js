@@ -219,6 +219,33 @@ export const getCompanyForecast = async (daysAhead = 90) => {
   return apiFetch(`/api/workload/forecast?days_ahead=${daysAhead}`);
 };
 
+/**
+ * Import CSV data with duplicate prevention
+ * @param {File} file - CSV file to import
+ * @returns {Promise<{summary: Object, message: string, status: string}>}
+ */
+export const importCSVData = async (file) => {
+  const formData = new FormData();
+  formData.append('file', file);
+  
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/import/csv`, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!response.ok) {
+      throw new Error(`Import failed: ${response.status} ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return data;
+  } catch (error) {
+    console.error('Error importing CSV:', error);
+    throw error;
+  }
+};
+
 // Export all API functions as a default object for convenience
 export default {
   getProjects,
@@ -237,4 +264,5 @@ export default {
   getTeamWorkload,
   getWorkloadConflicts,
   getCompanyForecast,
+  importCSVData,
 };

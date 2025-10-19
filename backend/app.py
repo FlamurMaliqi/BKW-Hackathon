@@ -4,6 +4,9 @@ from typing import Dict, List
 
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import csv
+import io
+from datetime import datetime
 
 from conflict_detection import conflict_detector
 from database.connection import db_manager
@@ -441,6 +444,236 @@ def get_company_forecast():
         })
     except Exception as exc:
         return jsonify({'status': 'error', 'error': str(exc)}), 500
+
+# ---------------------------------------------------------------------
+# CSV Import Endpoint
+# ---------------------------------------------------------------------
+
+@app.route('/api/import/csv', methods=['POST'])
+def import_csv_data():
+    """Import CSV data with duplicate prevention."""
+    try:
+        # Check if file is present
+        if 'file' not in request.files:
+            return jsonify({'status': 'error', 'error': 'No file provided'}), 400
+        
+        file = request.files['file']
+        if file.filename == '':
+            return jsonify({'status': 'error', 'error': 'No file selected'}), 400
+        
+        if not file.filename.endswith('.csv'):
+            return jsonify({'status': 'error', 'error': 'File must be a CSV'}), 400
+        
+        # Read CSV content
+        csv_content = file.read().decode('utf-8')
+        csv_reader = csv.DictReader(io.StringIO(csv_content))
+        
+        # Initialize counters
+        summary = {
+            'teams_added': 0,
+            'teams_skipped': 0,
+            'engineers_added': 0,
+            'engineers_skipped': 0,
+            'projects_added': 0,
+            'projects_skipped': 0,
+            'assignments_added': 0,
+            'assignments_skipped': 0,
+            'errors': []
+        }
+        
+        # Process each row
+        for row_num, row in enumerate(csv_reader, start=2):  # Start at 2 because header is row 1
+            try:
+                # Process team
+                team_id = _process_team(row, summary)
+                if not team_id:
+                    continue
+                
+                # Process engineer
+                engineer_id = _process_engineer(row, team_id, summary)
+                if not engineer_id:
+                    continue
+                
+                # Process project
+                project_id = _process_project(row, summary)
+                if not project_id:
+                    continue
+                
+                # Process assignment
+                _process_assignment(row, engineer_id, project_id, summary)
+                
+            except Exception as e:
+                summary['errors'].append(f"Row {row_num}: {str(e)}")
+                continue
+        
+        return jsonify({
+            'status': 'success',
+            'summary': summary,
+            'message': f"Import completed. Added {summary['teams_added']} teams, {summary['engineers_added']} engineers, {summary['projects_added']} projects, {summary['assignments_added']} assignments."
+        })
+        
+    except Exception as exc:
+        return jsonify({'status': 'error', 'error': str(exc)}), 500
+
+def _process_team(row, summary):
+    """Process team data and return team_id."""
+    team_name = row.get('team_name', '').strip()
+    team_label = row.get('team_label', '').strip()
+    performance_score = float(row.get('performance_score', 0))
+    
+    if not team_name:
+        return None
+    
+    # Check if team exists
+    existing_teams = db_manager.execute_query(
+        "SELECT id FROM teams WHERE name = %s", 
+        (team_name,)
+    )
+    
+    if existing_teams:
+        summary['teams_skipped'] += 1
+        return existing_teams[0]['id']
+    
+    # Create new team
+    try:
+        with db_manager.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    "INSERT INTO teams (name, description, performance_score) VALUES (%s, %s, %s) RETURNING id",
+                    (team_name, team_label, performance_score)
+                )
+                conn.commit()
+                team_id = cursor.fetchone()[0]
+                summary['teams_added'] += 1
+                return team_id
+    except Exception as e:
+        summary['errors'].append(f"Failed to create team {team_name}: {str(e)}")
+        return None
+
+def _process_engineer(row, team_id, summary):
+    """Process engineer data and return engineer_id."""
+    email = row.get('engineer_email', '').strip()
+    name = row.get('engineer_name', '').strip()
+    role = row.get('role', '').strip()
+    workload_percent = int(float(row.get('workload_percent', 0)))
+    availability = row.get('availability', 'available').strip()
+    is_overworked = row.get('is_overworked', 'FALSE').upper() == 'TRUE'
+    
+    if not email or not name:
+        return None
+    
+    # Check if engineer exists
+    existing_engineers = db_manager.execute_query(
+        "SELECT id FROM engineers WHERE email = %s", 
+        (email,)
+    )
+    
+    if existing_engineers:
+        summary['engineers_skipped'] += 1
+        return existing_engineers[0]['id']
+    
+    # Create new engineer
+    try:
+        with db_manager.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    """INSERT INTO engineers (name, email, role, team_id, workload_percent, 
+                       availability, is_overworked, status) VALUES (%s, %s, %s, %s, %s, %s, %s, 'active') 
+                       RETURNING id""",
+                    (name, email, role, team_id, workload_percent, availability, is_overworked)
+                )
+                conn.commit()
+                engineer_id = cursor.fetchone()[0]
+                summary['engineers_added'] += 1
+                return engineer_id
+    except Exception as e:
+        summary['errors'].append(f"Failed to create engineer {name}: {str(e)}")
+        return None
+
+def _process_project(row, summary):
+    """Process project data and return project_id."""
+    project_name = row.get('project_name', '').strip()
+    project_status = row.get('project_status', 'active').strip()
+    priority = row.get('priority', 'medium').strip()
+    completion_percent = float(row.get('completion_percent', 0))
+    budget_total = float(row.get('budget_total', 0))
+    budget_spent = float(row.get('budget_spent', 0))
+    
+    if not project_name:
+        return None
+    
+    # Check if project exists
+    existing_projects = db_manager.execute_query(
+        "SELECT id FROM projects WHERE name = %s", 
+        (project_name,)
+    )
+    
+    if existing_projects:
+        summary['projects_skipped'] += 1
+        return existing_projects[0]['id']
+    
+    # Create new project
+    try:
+        with db_manager.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    """INSERT INTO projects (name, status, priority, completion_percent, 
+                       budget_total, budget_spent, deadline) VALUES (%s, %s, %s, %s, %s, %s, %s) 
+                       RETURNING id""",
+                    (project_name, project_status, priority, completion_percent, 
+                     budget_total, budget_spent, date.today() + __import__('datetime').timedelta(days=365))
+                )
+                conn.commit()
+                project_id = cursor.fetchone()[0]
+                summary['projects_added'] += 1
+                return project_id
+    except Exception as e:
+        summary['errors'].append(f"Failed to create project {project_name}: {str(e)}")
+        return None
+
+def _process_assignment(row, engineer_id, project_id, summary):
+    """Process assignment data."""
+    hours_per_week = int(float(row.get('hours_per_week', 0)))
+    start_date_str = row.get('assignment_start_date', '').strip()
+    end_date_str = row.get('assignment_end_date', '').strip()
+    
+    if not hours_per_week or not engineer_id or not project_id:
+        return
+    
+    # Parse dates
+    start_date = None
+    end_date = None
+    try:
+        if start_date_str:
+            start_date = datetime.strptime(start_date_str, '%d-%m-%Y').date()
+        if end_date_str:
+            end_date = datetime.strptime(end_date_str, '%d-%m-%Y').date()
+    except ValueError:
+        pass  # Use None if date parsing fails
+    
+    # Check if assignment exists
+    existing_assignments = db_manager.execute_query(
+        "SELECT id FROM project_assignments WHERE engineer_id = %s AND project_id = %s", 
+        (engineer_id, project_id)
+    )
+    
+    if existing_assignments:
+        summary['assignments_skipped'] += 1
+        return
+    
+    # Create new assignment
+    try:
+        with db_manager.get_connection() as conn:
+            with conn.cursor() as cursor:
+                cursor.execute(
+                    """INSERT INTO project_assignments (engineer_id, project_id, hours_per_week, 
+                       start_date, end_date) VALUES (%s, %s, %s, %s, %s)""",
+                    (engineer_id, project_id, hours_per_week, start_date, end_date)
+                )
+                conn.commit()
+                summary['assignments_added'] += 1
+    except Exception as e:
+        summary['errors'].append(f"Failed to create assignment: {str(e)}")
 
 if __name__ == '__main__':
     # Development server
